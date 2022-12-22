@@ -1,0 +1,185 @@
+import { useState, useEffect, createContext } from "react";
+import Home from "../components/Home";
+import Login from "../components/Login";
+import { Route, Routes, BrowserRouter as Router, useParams } from "react-router-dom";
+import Profile from "../components/Profile";
+import ProtectedRoutes, { useAuth } from "./ProtectedRoutes";
+import { UserContextProvider } from "./UserContext";
+import axios from "axios";
+import UserList from "../components/UserList";
+import FullPost from "./FullPost";
+import Notifications from "./Notifications";
+
+export default function App() {
+    const [modalState, setModalState] = useState(false);
+    const [isAuth, setIsAuth] = useState();
+    const [targetPost, setTargetPost] = useState();
+    const { handle, id, interaction } = useParams();
+
+    function toggleModal(post) {
+        console.log(post);
+        setTargetPost(post);
+        setModalState((prevState) => {
+            return !prevState;
+        });
+    }
+
+    useEffect(() => {
+        document.body.style.overflowY = modalState ? "hidden" : "auto";
+    }, [modalState]);
+
+    function handleSubmit(content) {
+        console.log("POSTED", content);
+        axios({
+            url: `http://localhost:8080/process-post${
+                targetPost != null ? `?targetId=${targetPost.id}` : ""
+            }`,
+            withCredentials: true,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            data: content,
+        })
+            .then((res) => {
+                console.log(res);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+        window.location = `http://localhost:3000/home`;
+    }
+
+    useEffect(() => {
+        if (JSON.parse(localStorage.getItem("userDetails")) == null) {
+            setIsAuth(false);
+        } else {
+            setIsAuth(true);
+        }
+    }, []);
+
+    return (
+        <div className="app">
+            <UserContextProvider>
+                <Router>
+                    <Routes>
+                        <Route path="/login" element={<Login />} />
+                        <Route
+                            path=":handle"
+                            element={
+                                <Profile
+                                    toggleModal={toggleModal}
+                                    modalState={modalState}
+                                    handleSubmit={handleSubmit}
+                                    isAuth={isAuth}
+                                    targetPost={targetPost}
+                                />
+                            }
+                        />
+                        <Route
+                            path=":handle/likes"
+                            element={
+                                <Profile
+                                    toggleModal={toggleModal}
+                                    modalState={modalState}
+                                    handleSubmit={handleSubmit}
+                                    isAuth={isAuth}
+                                    targetPost={targetPost}
+                                />
+                            }
+                        />
+                        <Route
+                            path=":handle/post/:id"
+                            element={
+                                <FullPost
+                                    toggleModal={toggleModal}
+                                    modalState={modalState}
+                                    handleSubmit={handleSubmit}
+                                    isAuth={isAuth}
+                                    targetPost={targetPost}
+                                />
+                            }
+                        />
+                        <Route
+                            path=":handle/post/:id/:interaction"
+                            element={
+                                <UserList
+                                    toggleModal={toggleModal}
+                                    modalState={modalState}
+                                    handleSubmit={handleSubmit}
+                                    isAuth={isAuth}
+                                    targetPost={targetPost}
+                                    interaction={interaction}
+                                />
+                            }
+                        />
+                        <Route element={<ProtectedRoutes />}>
+                            <Route
+                                path="/"
+                                element={
+                                    <Home
+                                        toggleModal={toggleModal}
+                                        modalState={modalState}
+                                        handleSubmit={handleSubmit}
+                                        isAuth={isAuth}
+                                        targetPost={targetPost}
+                                    />
+                                }
+                            />
+                            <Route
+                                path="/home"
+                                element={
+                                    <Home
+                                        toggleModal={toggleModal}
+                                        modalState={modalState}
+                                        handleSubmit={handleSubmit}
+                                        isAuth={isAuth}
+                                        targetPost={targetPost}
+                                    />
+                                }
+                            />
+                            <Route
+                                path=":handle/followers"
+                                element={
+                                    <UserList
+                                        toggleModal={toggleModal}
+                                        modalState={modalState}
+                                        handleSubmit={handleSubmit}
+                                        isAuth={isAuth}
+                                        targetPost={targetPost}
+                                    />
+                                }
+                            />
+                            <Route
+                                path=":handle/following"
+                                element={
+                                    <UserList
+                                        toggleModal={toggleModal}
+                                        modalState={modalState}
+                                        handleSubmit={handleSubmit}
+                                        isAuth={isAuth}
+                                        targetPost={targetPost}
+                                    />
+                                }
+                            />
+                            <Route
+                                path=":handle/notifications"
+                                element={
+                                    <Notifications
+                                        toggleModal={toggleModal}
+                                        modalState={modalState}
+                                        handleSubmit={handleSubmit}
+                                        isAuth={isAuth}
+                                        targetPost={targetPost}
+                                    />
+                                }
+                            />
+                        </Route>
+                    </Routes>
+                </Router>
+            </UserContextProvider>
+        </div>
+    );
+}
+
+//notice how you wrapped everything in the UserContextProvider component

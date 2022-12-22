@@ -1,0 +1,26 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/social_db
+    username: root
+    password: password123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: false #change back to true once done testing it just gets in the way
+    hibernate:
+      ddl-auto: update
+  cache:
+    type: none
+
+#  security:
+#    oauth2:
+#      client:
+#        registration:
+#          google:
+#            clientId: 1028055706332-7qiiis1sto4he4noj4p94ahi978vt00s.apps.googleusercontent.com
+#            clientSecret: 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
+#            scope:
+#              - email
+#              - profile
