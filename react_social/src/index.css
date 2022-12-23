@@ -4,6 +4,9 @@
   box-sizing: border-box;
   text-decoration: none;
 }
+input[type='file'] {
+  display: none;
+}
 body,html {
   margin: 0;
   padding: 0;
@@ -931,19 +934,26 @@ input:focus{
   display: flex;
   justify-content: center;
   height: 100%;
-  width: 100vh;
+  width: 100%;
   background: rgba(0, 0, 0, .35);
   padding: 100px;
 }
 .editModal{
-  background: #f6f6f6;
+  background: white;
   height: 700px;
   width: 500px;
-  padding: 10px;
   border-radius: 20px;
-  overflow: auto;
+  overflow: hidden;
+  background-color: transparent;
+}
+.editModal--main{
+  background: white;
+  height: 700px;
+  width: 100%;
+  padding: 20px;
 }
 .editModal--pic-wrapper{
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -962,7 +972,7 @@ input:focus{
   display: flex;
   flex-direction: column;
   height: 400px;
-  width: 80%;
+  width: 100%;
 }
 .editModal--input{
   display: flex;
@@ -972,15 +982,81 @@ input:focus{
 .editModal--input > input{
   padding: 8px;
   width: 100%;
-  font-size: 20px;
   margin-block: 5px;
   border-radius: 5px;
   background-color: white;
   font-size: 17px;
-  border: none;
+  border: 2px solid #e8e8e8;
 }
 .editModal--input > textarea{
   height: 200px;
   margin-inline: 0px;
+  border: 2px solid #e8e8e8;
+  font-size: 17px;
+  padding: 8px;
+}
+.editModal--input > h4{
+  margin-left: 5px;
+}
+.editModal--bioField:focus{
+  outline: none !important;
+  box-shadow: 0 0 5px rgba(134, 63, 217, .9);
+}
+.editModal--header{
+  background-color: rgba(134, 63, 217, 1);
+  padding: 10px;
+  position: relative;
+  top: 0;
+  color: white;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+}
+.editModal--title{
+  width: 100%;
+}
+.editModal--exit{
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  padding: 17px;
+  color: white;
+}
+.editModal--save-wrapper{
+  display: flex;
+  justify-content: end;
+}
+.editModal--save{
+  background-color: rgba(134, 63, 217, .9);
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 5px;
+  font-weight: bold;
+  color: white;
+  font-size: 15px;
+  height: 40px;
+  width: 75px;
+}
+.editModal--upload-image{
+  background-color: black;
+  width: 100px;
+  text-align: center;
+  font-size: 13px;
+  padding: 5px;
+  border-radius: 50px;
+  margin-top: 10px;
+  color: white;
+  font-weight: 600;
+  height: 30px;
+  margin-bottom: 20px;
 }
 /*i took away the borders for now, lets see if we like it*/

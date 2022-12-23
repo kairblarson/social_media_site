@@ -30,6 +30,7 @@ export default function PostModal({ open, closeModal, onSubmit, targetPost }) {
     const exitStyle = {
         background: hoverState.exitHover ? "#eae6ed" : "#f6f6f6",
         cursor: hoverState.exitHover ? "pointer" : "none",
+        transition: "all .08s linear",
     };
 
     const submitStyle = {
