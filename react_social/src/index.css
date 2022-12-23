@@ -926,4 +926,61 @@ input:focus{
   font-size: 16px;
   color: #757575;
 }
+.editModal--wrapper{
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  width: 100vh;
+  background: rgba(0, 0, 0, .35);
+  padding: 100px;
+}
+.editModal{
+  background: #f6f6f6;
+  height: 700px;
+  width: 500px;
+  padding: 10px;
+  border-radius: 20px;
+  overflow: auto;
+}
+.editModal--pic-wrapper{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  width: 100px;
+  min-width: 50px;
+  min-height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #e8e8e8;
+}
+.editModal--pic{
+  height: 100%;
+}
+.editModal--fields{
+  display: flex;
+  flex-direction: column;
+  height: 400px;
+  width: 80%;
+}
+.editModal--input{
+  display: flex;
+  flex-direction: column;
+  margin-block: 10px;
+}
+.editModal--input > input{
+  padding: 8px;
+  width: 100%;
+  font-size: 20px;
+  margin-block: 5px;
+  border-radius: 5px;
+  background-color: white;
+  font-size: 17px;
+  border: none;
+}
+.editModal--input > textarea{
+  height: 200px;
+  margin-inline: 0px;
+}
 /*i took away the borders for now, lets see if we like it*/

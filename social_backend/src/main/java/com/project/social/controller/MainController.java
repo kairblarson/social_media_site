@@ -2,6 +2,7 @@ package com.project.social.controller;
 
 import com.project.social.entity.*;
 import com.project.social.model.PostModel;
+import com.project.social.model.UserModel;
 import com.project.social.service.CustomUserDetailsService;
 import com.project.social.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -162,6 +163,12 @@ public class MainController {
     public ResponseEntity<List<Notification>> getNotifications(Authentication authentication,
                                                                @RequestParam(value = "exact") Boolean exact) {
         return ResponseEntity.ok().body(userService.getNotifications(getEmailFromAuth(authentication), exact)); //exact vs relative
+    }
+
+    @PostMapping("/{username}/handle-edit")
+    public void handleEdit(@RequestBody UserModel userModel,
+                           @RequestParam(value = "username") String username) {
+        System.out.println("Edit profile");
     }
 
     public String getEmailFromAuth(Authentication authentication) {

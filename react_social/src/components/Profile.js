@@ -7,6 +7,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { useState, useEffect } from "react";
 import Header from "./Header";
 import { ColorRing } from "react-loader-spinner";
+import EditModal from "./EditModal";
 
 export default function Profile(props) {
     const [profileDetails, setProfileDetails] = useState({
@@ -266,6 +267,7 @@ export default function Profile(props) {
                                 style={editStyle}
                                 onMouseEnter={handleEditHover}
                                 onMouseLeave={handleEditHover}
+                                onClick={() => props.toggleEdit()}
                             >
                                 Edit profile
                             </button>
@@ -430,6 +432,10 @@ export default function Profile(props) {
                 onSubmit={props.handleSubmit}
                 isAuth={props.isAuth}
                 targetPost={props.targetPost}
+            />
+            <EditModal
+                open={props.editModalState}
+                toggleEdit={props.toggleEdit}
             />
         </div>
     );

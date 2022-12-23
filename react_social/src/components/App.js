@@ -12,21 +12,26 @@ import Notifications from "./Notifications";
 
 export default function App() {
     const [modalState, setModalState] = useState(false);
+    const [editModalState, setEditModalState] = useState(false); //change to false
     const [isAuth, setIsAuth] = useState();
     const [targetPost, setTargetPost] = useState();
     const { handle, id, interaction } = useParams();
 
     function toggleModal(post) {
-        console.log(post);
         setTargetPost(post);
         setModalState((prevState) => {
             return !prevState;
         });
     }
 
+    function toggleEdit(e) {
+        setEditModalState(prevState => !prevState);
+    }
+
     useEffect(() => {
         document.body.style.overflowY = modalState ? "hidden" : "auto";
-    }, [modalState]);
+        document.body.style.overflowY = editModalState ? "hidden" : "auto";
+    }, [modalState, editModalState]);
 
     function handleSubmit(content) {
         console.log("POSTED", content);
@@ -73,6 +78,8 @@ export default function App() {
                                     handleSubmit={handleSubmit}
                                     isAuth={isAuth}
                                     targetPost={targetPost}
+                                    toggleEdit={toggleEdit}
+                                    editModalState={editModalState}
                                 />
                             }
                         />
@@ -85,6 +92,8 @@ export default function App() {
                                     handleSubmit={handleSubmit}
                                     isAuth={isAuth}
                                     targetPost={targetPost}
+                                    toggleEdit={toggleEdit}
+                                    editModalState={editModalState}
                                 />
                             }
                         />
