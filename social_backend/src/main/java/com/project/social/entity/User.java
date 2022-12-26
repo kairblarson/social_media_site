@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.project.social.provider.Provider;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.data.repository.cdi.Eager;
 
 import javax.persistence.*;
 
@@ -52,6 +53,7 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "to")
     private List<Notification> notifications = new ArrayList<>();
     private boolean isFollowed = false;
+    private String profilePicture;
 
     public User(String fullName, String username, String email, String password, String role, String bio, boolean enabled) {
         this.fullName = fullName;
@@ -213,12 +215,19 @@ public class User {
     public void setNotifications(List<Notification> notifications) {
         this.notifications = notifications;
     }
-
     public void addToNotifications(Notification notification) {
         notifications.add(notification);
     }
     public void removeNotification(Notification notification) {
         notifications.remove(notification);
+    }
+
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
     }
 
     @Override

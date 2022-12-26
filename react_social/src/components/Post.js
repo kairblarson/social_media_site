@@ -25,6 +25,7 @@ export default function Post(props) {
         repostedByHover: false,
     });
     const { handle } = useParams();
+    const [profilePicture, setProfilePicture] = useState(null);
 
     const date = new Date(); //raw
     date.setTime(state.postDate);
@@ -287,6 +288,16 @@ export default function Post(props) {
 
     //------------------------------
 
+    useEffect(() => {
+        // const blob = new Blob([profileDetails.profilePicture?.picByte], {
+        //     type: "image/jpeg",
+        // });
+        // console.log(blob);
+        setProfilePicture("data:image/png;base64,"+state.author.profilePicture);
+    }, [state]);
+
+    // console.log(state);
+
     return (
         <div
             className="post--wrapper"
@@ -299,10 +310,7 @@ export default function Post(props) {
             <div className="post">
                 <div className="post--left">
                     <div className="post--pic-wrapper">
-                        <img
-                            src={"/images/standard.jpg"}
-                            className="post--pic"
-                        />
+                        <img src={profilePicture} className="post--pic" />
                     </div>
                     {state.isThread && state.comments.length > 0 && (
                         <div className="post--thread"></div>

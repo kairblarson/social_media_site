@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 
 export default function EditModal({ open, toggleEdit }) {
     if (!open) return null;
@@ -6,14 +7,15 @@ export default function EditModal({ open, toggleEdit }) {
     const [currentUser, setCurrentUser] = useState(
         JSON.parse(localStorage.getItem("userDetails"))
     );
-    const [inputState, setInputState] = useState({
-        usernameField: currentUser.name,
-        bioField: currentUser.principal.bio,
-        profilePicField: "",
+    const [userModel, setUserModel] = useState({
+        username: currentUser.name,
+        bio: currentUser.principal.bio,
+        profilePicture: ""
     });
     const [exitHover, setExitHover] = useState(false);
     const [changePicHover, setChangePicHover] = useState(false);
     const [saveHover, setSaveHover] = useState(false);
+    const [imagePreview, setImagePreview] = useState(null);
 
     const exitStyle = {
         background: exitHover ? "#e8e8e8" : "rgba(134, 63, 217, 1)",
@@ -38,7 +40,29 @@ export default function EditModal({ open, toggleEdit }) {
 
     function handleChange(e) {
         const { name, value, type } = e.target;
-        setInputState((prevState) => ({ ...prevState, [name]: value }));
+        setUserModel((prevState) => ({ ...prevState, [name]: value }));
+    }
+
+    function handleImage(e) {
+        console.log(e.target.files[0]);
+        setUserModel(prevState => ({...prevState, profilePicture: e.target.files[0]}));
+        setImagePreview(URL.createObjectURL(e.target.files[0]));
+    }
+
+    function handleSubmit() {
+        const formData = new FormData();
+        formData.append("username", userModel.username);
+        formData.append("bio", userModel.bio);
+        formData.append("profilePicture", userModel.profilePicture);
+        axios({
+                url: `http://localhost:8080/${currentUser.name}/handle-edit`,
+                withCredentials: true,
+                method: "POST",
+                data: formData,
+            })
+            .then((res) => console.log(res));
+        //the above works do not change anything 
+        toggleEdit();
     }
 
     return (
@@ -63,7 +87,7 @@ export default function EditModal({ open, toggleEdit }) {
                 <div className="editModal--main">
                     <div className="editModal--pic-wrapper">
                         <img
-                            src={"/images/standard.jpg"}
+                            src={imagePreview}
                             className="editModal--pic"
                         />
                     </div>
@@ -77,20 +101,21 @@ export default function EditModal({ open, toggleEdit }) {
                         }
                         style={changeStyle}
                     >
-                        <label for="upload-image">Change pic</label>
+                        <label htmlFor="upload-image">Change pic</label>
                     </div>
                     <input
                         type="file"
                         accept="image/*"
                         id="upload-image"
+                        onChange={handleImage}
                     ></input>
                     <div className="editModal--fields">
                         <div className="editModal--input">
                             <h4>Username</h4>
                             <input
                                 type="text"
-                                name="usernameField"
-                                value={inputState.usernameField}
+                                name="username"
+                                value={userModel.username}
                                 onChange={handleChange}
                             ></input>
                         </div>
@@ -98,8 +123,8 @@ export default function EditModal({ open, toggleEdit }) {
                             <h4>Bio</h4>
                             <textarea
                                 type="text"
-                                name="bioField"
-                                value={inputState.bioField}
+                                name="bio"
+                                value={userModel.bio}
                                 onChange={handleChange}
                                 className="editModal--bioField"
                             ></textarea>
@@ -115,6 +140,7 @@ export default function EditModal({ open, toggleEdit }) {
                                 setSaveHover((prevState) => !prevState)
                             }
                             style={saveStyle}
+                            onClick={handleSubmit}
                         >
                             Save
                         </button>

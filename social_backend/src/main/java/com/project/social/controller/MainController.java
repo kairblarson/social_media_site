@@ -6,12 +6,14 @@ import com.project.social.model.UserModel;
 import com.project.social.service.CustomUserDetailsService;
 import com.project.social.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +33,9 @@ public class MainController {
 
     @Autowired
     private CustomUserDetailsService service;
+
+    @Value("${project.image}")
+    private String path;
 
     @GetMapping("/getSessionId")
     public ResponseEntity<String> getSessionId() {
@@ -166,9 +171,17 @@ public class MainController {
     }
 
     @PostMapping("/{username}/handle-edit")
-    public void handleEdit(@RequestBody UserModel userModel,
-                           @RequestParam(value = "username") String username) {
-        System.out.println("Edit profile");
+    public ResponseEntity<User> handleEdit(@RequestPart(value = "username") String username,
+                                           @RequestPart(value = "bio") String bio,
+                                           @RequestPart(value = "profilePicture") MultipartFile image,
+                                           Authentication authentication) {
+        try{
+            User currentUser = userService.handleEditProfile(username, bio, image, path, getEmailFromAuth(authentication)); //CHANGE PATH
+            return ResponseEntity.ok().body(currentUser);
+        } catch (Exception e) {
+            System.out.println(e.getLocalizedMessage());
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 
     public String getEmailFromAuth(Authentication authentication) {

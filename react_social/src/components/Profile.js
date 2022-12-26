@@ -251,6 +251,15 @@ export default function Profile(props) {
             });
     }
 
+    const [profilePicture, setProfilePicture] = useState();
+    useEffect(() => {
+        // const blob = new Blob([profileDetails.profilePicture?.picByte], {
+        //     type: "image/jpeg",
+        // });
+        // console.log(blob);
+        setProfilePicture("data:image/png;base64,"+profileDetails.profilePicture);
+    }, [profileDetails]);
+
     return (
         <div className="profile">
             <Navbar />
@@ -287,6 +296,10 @@ export default function Profile(props) {
                             </button>
                         )}
                     </div>
+                    <img
+                        src={profilePicture}
+                        className="profile--image"
+                    ></img>
                     <div className="profile--details">
                         <h3 className="profile--username">
                             {profileDetails.username}

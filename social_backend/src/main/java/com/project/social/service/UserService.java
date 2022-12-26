@@ -4,7 +4,9 @@ import com.project.social.entity.*;
 import com.project.social.model.PostModel;
 import com.project.social.model.UserModel;
 import com.project.social.util.NotificationType;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -28,5 +30,6 @@ public interface UserService {
     Notification createNotification(User agent, String action, Post content, User userTo);
     void viewNotifications(User to);
     List<Notification> getNotifications(String email, Boolean exact);
+    User handleEditProfile(String username, String bio, MultipartFile file, String path, String email) throws IOException;
 
 }

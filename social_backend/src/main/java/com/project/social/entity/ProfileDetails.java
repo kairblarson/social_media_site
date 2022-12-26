@@ -1,5 +1,8 @@
 package com.project.social.entity;
 
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,11 +16,12 @@ public class ProfileDetails {
     private List<Post> posts = new ArrayList<>();
     private Integer followers;
     private Integer following;
+    private byte[] profilePicture;
 
     public ProfileDetails() {
     }
 
-    public ProfileDetails(String username, String fullName, String bio, boolean isFollowed, List<Post> posts, Integer followers, Integer following) {
+    public ProfileDetails(String username, String fullName, String bio, boolean isFollowed, List<Post> posts, Integer followers, Integer following, byte[] profilePicture) {
         this.username = username;
         this.fullName = fullName;
         this.bio = bio;
@@ -25,6 +29,7 @@ public class ProfileDetails {
         this.posts = posts;
         this.followers = followers;
         this.following = following;
+        this.profilePicture = profilePicture;
     }
 
     public String getUsername() {
@@ -81,5 +86,13 @@ public class ProfileDetails {
 
     public void setFollowing(Integer following) {
         this.following = following;
+    }
+
+    public byte[] getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(byte[] profilePicture) {
+        this.profilePicture = profilePicture;
     }
 }

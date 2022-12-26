@@ -7,15 +7,32 @@ import com.project.social.provider.Provider;
 import com.project.social.repo.*;
 import com.project.social.util.NotificationType;
 import com.project.social.wrapper.PaginatedList;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.aspectj.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.transaction.Transactional;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 //i know its bad practice to have one huge service class but i didnt realize how large this was going to be
+@Transactional
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -199,13 +216,32 @@ public class UserServiceImpl implements UserService {
         }));
 
         PaginatedList<Post> paginatedList = new PaginatedList<>(returnPosts);
+
+        //CLASSPATH NOT FOUND UNTIL AFTER SERVER RESTART
+        ClassPathResource imgFile = new ClassPathResource(userProfile.getProfilePicture());
+        Resource src = new ClassPathResource(userProfile.getProfilePicture());
+
+        if(imgFile.exists()) {
+            System.out.println("IMG PATH FOUND");
+            return new ProfileDetails(username,
+                    userProfile.getFullName(),
+                    userProfile.getBio(),
+                    isFollowed,
+                    paginatedList.getPage(pageNum),
+                    userProfile.getFollowers().size(),
+                    userProfile.getFollowing().size(),
+                    StreamUtils.copyToByteArray(imgFile.getInputStream())); //THIS IS WHERE YOU ADD PROF PIC WHEN GETTING PROFILE
+        }
+
+        System.out.println("IMG PATH NOT FOUND");
         return new ProfileDetails(username,
                 userProfile.getFullName(),
                 userProfile.getBio(),
                 isFollowed,
                 paginatedList.getPage(pageNum),
                 userProfile.getFollowers().size(),
-                userProfile.getFollowing().size());
+                userProfile.getFollowing().size(),
+                null); //THIS IS WHERE YOU ADD PROF PIC WHEN GETTING PROFILE
     }
 
     @Override
@@ -616,5 +652,48 @@ public class UserServiceImpl implements UserService {
         });
 
         return numOfNotifs;
+    }
+
+    @Override
+    public User handleEditProfile(String username, String bio, MultipartFile file, String path, String email) throws IOException {
+        User currentUser = userRepo.findByEmail(email);
+
+        if(currentUser == null) {
+            return null;
+        }
+        if(bio != null) {
+            currentUser.setBio(bio);
+        }
+        if(username != null) {
+            //not supported, will have to change every instance where you get a user based on their username
+            //to get it based on the email
+        }
+        if(!file.isEmpty()) {
+            //file name
+            String name = file.getOriginalFilename();
+
+            //generate random string
+            String randomID = UUID.randomUUID().toString();
+            //adds random uuid before .jpg/.png
+            String newFileName = randomID.concat(name.substring(name.lastIndexOf(".")));
+
+            //adds a slash between filepath and the file w/ new name
+            String filePath = path+"/"+newFileName;
+
+            //creates images folder in project
+            File f = new File(path);
+            if(!f.exists()) {
+                f.mkdir();
+            }
+
+            //this sets the file into the file path
+            Files.copy(file.getInputStream(), Paths.get(filePath));
+
+            //sets the 
+            currentUser.setProfilePicture(filePath.substring(19));
+            //moose
+        }
+        userRepo.save(currentUser);
+        return currentUser;
     }
 }
