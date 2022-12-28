@@ -19,6 +19,7 @@ public class UserModel {
     String password;
     String role;
     String bio;
-    MultipartFile profilePicture;
+    String profilePicture;
+    byte[] fullImage;
     boolean enabled;
 }

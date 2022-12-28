@@ -34,9 +34,6 @@ public class MainController {
     @Autowired
     private CustomUserDetailsService service;
 
-    @Value("${project.image}")
-    private String path;
-
     @GetMapping("/getSessionId")
     public ResponseEntity<String> getSessionId() {
         return ResponseEntity.ok().body("REDIRECT");
@@ -167,16 +164,19 @@ public class MainController {
     @GetMapping("/get-notifications")
     public ResponseEntity<List<Notification>> getNotifications(Authentication authentication,
                                                                @RequestParam(value = "exact") Boolean exact) {
+        if(authentication == null){
+            return ResponseEntity.ok().body(null);
+        }
         return ResponseEntity.ok().body(userService.getNotifications(getEmailFromAuth(authentication), exact)); //exact vs relative
     }
 
     @PostMapping("/{username}/handle-edit")
-    public ResponseEntity<User> handleEdit(@RequestPart(value = "username") String username,
-                                           @RequestPart(value = "bio") String bio,
-                                           @RequestPart(value = "profilePicture") MultipartFile image,
+    public ResponseEntity<User> handleEdit(@RequestPart(value = "username", required = false) String username,
+                                           @RequestPart(value = "bio", required = false) String bio,
+                                           @RequestPart(value = "profilePicture", required = false) MultipartFile image,
                                            Authentication authentication) {
         try{
-            User currentUser = userService.handleEditProfile(username, bio, image, path, getEmailFromAuth(authentication)); //CHANGE PATH
+            User currentUser = userService.handleEditProfile(username, bio, image, getEmailFromAuth(authentication)); //CHANGE PATH
             return ResponseEntity.ok().body(currentUser);
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());

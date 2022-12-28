@@ -2,6 +2,7 @@ import {
     BsFillHandThumbsUpFill,
     BsChatDotsFill,
     BsArrowRepeat,
+    BsThreeDots,
 } from "react-icons/bs";
 import { useState, useEffect } from "react";
 import { hover } from "@testing-library/user-event/dist/hover";
@@ -23,6 +24,7 @@ export default function Post(props) {
         commentHover: false,
         usernameHover: false,
         repostedByHover: false,
+        menuHover: false,
     });
     const { handle } = useParams();
     const [profilePicture, setProfilePicture] = useState(null);
@@ -159,6 +161,13 @@ export default function Post(props) {
         }));
     }
 
+    function handleMenuHover() {
+        setHoverState((prevState) => ({
+            ...prevState,
+            menuHover: !prevState.menuHover,
+        }));
+    }
+
     const repostedByStyle = {
         textDecoration: hoverState.repostedByHover ? "underline" : "none",
     };
@@ -170,6 +179,12 @@ export default function Post(props) {
     const postStyles = {
         background: hoverState.mainHover ? "#eae6ed" : "#f6f6f6",
         cursor: hoverState.mainHover ? "pointer" : "none",
+        transition: "all .08s linear",
+    };
+
+    const menuStyle = {
+        background: hoverState.menuHover ? "#eae6ed" : "none",
+        cursor: hoverState.menuHover ? "pointer" : "none",
         transition: "all .08s linear",
     };
     //------------------------------
@@ -284,19 +299,11 @@ export default function Post(props) {
         props.openModal(state);
     }
 
-    //add some commenting logic?
-
     //------------------------------
 
     useEffect(() => {
-        // const blob = new Blob([profileDetails.profilePicture?.picByte], {
-        //     type: "image/jpeg",
-        // });
-        // console.log(blob);
-        setProfilePicture("data:image/png;base64,"+state.author.profilePicture);
+        setProfilePicture("data:image/png;base64,"+state.profilePicture);
     }, [state]);
-
-    // console.log(state);
 
     return (
         <div
@@ -310,7 +317,10 @@ export default function Post(props) {
             <div className="post">
                 <div className="post--left">
                     <div className="post--pic-wrapper">
-                        <img src={profilePicture} className="post--pic" />
+                        <img
+                            src={profilePicture}
+                            className="post--pic"
+                        />
                     </div>
                     {state.isThread && state.comments.length > 0 && (
                         <div className="post--thread"></div>
@@ -335,16 +345,26 @@ export default function Post(props) {
                         </small>
                     )}
                     <div className="post--main">
-                        <div>
-                            <h1
-                                className="post--username"
-                                onClick={handleUsernameClick}
-                                style={usernameStyle}
-                                onMouseEnter={handleUsernameMouseOver}
-                                onMouseLeave={handleUsernameMouseOver}
+                        <div className="post--main-top">
+                            <div className="post--username-wrapper">
+                                <h1
+                                    className="post--username"
+                                    onClick={handleUsernameClick}
+                                    style={usernameStyle}
+                                    onMouseEnter={handleUsernameMouseOver}
+                                    onMouseLeave={handleUsernameMouseOver}
+                                >
+                                    {state.author.username}
+                                </h1>
+                            </div>
+                            <div
+                                className="post--menu-wrapper"
+                                style={menuStyle}
+                                onMouseEnter={handleMenuHover}
+                                onMouseLeave={handleMenuHover}
                             >
-                                {state.author.username}
-                            </h1>
+                                <BsThreeDots />
+                            </div>
                         </div>
                         {props.replyTo != null && (
                             <p className="post--reply-to">

@@ -260,6 +260,39 @@ export default function Profile(props) {
         setProfilePicture("data:image/png;base64,"+profileDetails.profilePicture);
     }, [profileDetails]);
 
+    const [postElements, setPostElements] = useState(null);
+
+    useEffect(() => {
+        setPostElements(posts?.map((post) => {
+            const replyTo =
+                post.replyTo == null
+                    ? null
+                    : post.replyTo.author.username;
+            return (
+                <Post
+                    key={post.id}
+                    id={post.id}
+                    content={post.content}
+                    author={post.author}
+                    postDate={post.postDate}
+                    likes={post.likes}
+                    isLiked={post.liked}
+                    reposts={post.reposts}
+                    isReposted={post.reposted}
+                    repostedBy={post.repostedBy}
+                    replyTo={replyTo}
+                    comments={post.comments}
+                    modalState={props.modalState}
+                    openModal={props.toggleModal}
+                    isAuth={props.isAuth}
+                    isHome={false}
+                    profilePicture={post.profPicBytes}
+                />
+            );
+        }));
+        console.log(posts);
+    }, [posts]);
+
     return (
         <div className="profile">
             <Navbar />
@@ -270,7 +303,7 @@ export default function Profile(props) {
                         className="profile--background"
                     ></img>
                     <div className="profile--edit-wrapper">
-                        {isUserProfile ? (
+                        {isUserProfile && props.isAuth ? (
                             <button
                                 className="profile--edit"
                                 style={editStyle}
@@ -405,32 +438,7 @@ export default function Profile(props) {
                         }
                         endMessage={<p>You're all up to date!</p>}
                     >
-                        {posts.map((post) => {
-                            const replyTo =
-                                post.replyTo == null
-                                    ? null
-                                    : post.replyTo.author.username;
-                            return (
-                                <Post
-                                    key={post.id}
-                                    id={post.id}
-                                    content={post.content}
-                                    author={post.author}
-                                    postDate={post.postDate}
-                                    likes={post.likes}
-                                    isLiked={post.liked}
-                                    reposts={post.reposts}
-                                    isReposted={post.reposted}
-                                    repostedBy={post.repostedBy}
-                                    replyTo={replyTo}
-                                    comments={post.comments}
-                                    modalState={props.modalState}
-                                    openModal={props.toggleModal}
-                                    isAuth={props.isAuth}
-                                    isHome={false}
-                                />
-                            );
-                        })}
+                        {postElements}
                     </InfiniteScroll>
                 </div>
             </div>
@@ -449,6 +457,7 @@ export default function Profile(props) {
             <EditModal
                 open={props.editModalState}
                 toggleEdit={props.toggleEdit}
+                oldImg={profilePicture}
             />
         </div>
     );

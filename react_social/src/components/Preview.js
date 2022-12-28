@@ -2,7 +2,7 @@ import { useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 
-export default function Preview() {
+export default function Preview(props) {
     const [userDetails, setUserDetails] = useState(
         JSON.parse(localStorage.getItem("userDetails"))
     );
@@ -48,9 +48,9 @@ export default function Preview() {
                 <img src={"/images/standard.jpg"} className="preview--pic" />
             </div>
             <h4 className="preview--username">
-                {userDetails == null
+                {!props.isAuth
                     ? "Sign in"
-                    : userDetails.principal.username}
+                    : userDetails?.principal.username}
             </h4>
         </div>
     );

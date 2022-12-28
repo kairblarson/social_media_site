@@ -54,6 +54,7 @@ public class User {
     private List<Notification> notifications = new ArrayList<>();
     private boolean isFollowed = false;
     private String profilePicture;
+    private byte[] fullImage;
 
     public User(String fullName, String username, String email, String password, String role, String bio, boolean enabled) {
         this.fullName = fullName;
@@ -63,6 +64,17 @@ public class User {
         this.role = role;
         this.bio = bio;
         this.enabled = enabled;
+    }
+
+    public User(String fullName, String username, String email, String password, String role, String bio, boolean enabled, byte[] fullImage) {
+        this.fullName = fullName;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.bio = bio;
+        this.enabled = enabled;
+        this.fullImage = fullImage;
     }
 
     @Enumerated(EnumType.STRING)
@@ -228,6 +240,14 @@ public class User {
 
     public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
+    }
+
+    public byte[] getFullImage() {
+        return fullImage;
+    }
+
+    public void setFullImage(byte[] fullImage) {
+        this.fullImage = fullImage;
     }
 
     @Override

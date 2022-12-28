@@ -1,7 +1,12 @@
 import { useState, useEffect, createContext } from "react";
 import Home from "../components/Home";
 import Login from "../components/Login";
-import { Route, Routes, BrowserRouter as Router, useParams } from "react-router-dom";
+import {
+    Route,
+    Routes,
+    BrowserRouter as Router,
+    useParams
+} from "react-router-dom";
 import Profile from "../components/Profile";
 import ProtectedRoutes, { useAuth } from "./ProtectedRoutes";
 import { UserContextProvider } from "./UserContext";
@@ -25,7 +30,7 @@ export default function App() {
     }
 
     function toggleEdit(e) {
-        setEditModalState(prevState => !prevState);
+        setEditModalState((prevState) => !prevState);
     }
 
     useEffect(() => {
@@ -56,12 +61,31 @@ export default function App() {
     }
 
     useEffect(() => {
-        if (JSON.parse(localStorage.getItem("userDetails")) == null) {
-            setIsAuth(false);
-        } else {
-            setIsAuth(true);
-        }
+        axios({
+            url: `http://localhost:8080/isAuth`,
+            withCredentials: true,
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        })
+            .then((res) => {
+                if(res.status === 200) {
+                    console.log("AUTH");
+                    setIsAuth(true);
+                }
+                else {
+                    console.log("NOT AUTH");
+                    setIsAuth(false);
+                    localStorage.setItem("userDetails", null);
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }, []);
+
+    //make api call on startup to check if logged in with every request
 
     return (
         <div className="app">

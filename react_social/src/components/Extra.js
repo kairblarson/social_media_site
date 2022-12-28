@@ -9,7 +9,7 @@ import NoteToSelf from "./NoteToSelf";
 export default function Extra(props) {
 
     const [userState, setUserState] = useState({
-        username: "kairblarson",
+        username: "",
         profile_img: "",
     });
 
@@ -45,6 +45,7 @@ export default function Extra(props) {
             <Preview
                 username={userState.username}
                 img={userState.profile_img}
+                isAuth={props.isAuth}
             />
             <input
                 type="text"

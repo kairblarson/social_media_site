@@ -59,7 +59,7 @@ export default function Navbar() {
                 if(currentLocation.pathname == `/${handle}/notifications`) {
                     setNotifications(0);
                 }
-            });
+            }).catch((err) => setNotifications(0));
         //maybe make this api call in the app component and pass it down through props
     }, []);
 

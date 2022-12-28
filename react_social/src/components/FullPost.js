@@ -9,6 +9,7 @@ import {
     BsChatDotsFill,
     BsArrowRepeat,
     BsArrowLeft,
+    BsThreeDots
 } from "react-icons/bs";
 import Header from "./Header";
 import { ColorRing } from "react-loader-spinner";
@@ -58,11 +59,13 @@ export default function FullPost(props) {
                 return res.json();
             })
             .then((data) => {
-                // console.log(data);
+                console.log(data);
                 data.forEach((post) => {
                     if (post.focus == true) {
+                        console.log("FOCUS POST: ",post);
                         setPost(post);
                     } else {
+                        // console.log(post);
                         setThread((prevState) => [...prevState, post]);
                     }
                 });
@@ -280,6 +283,8 @@ export default function FullPost(props) {
         }
     }
     //----------------------
+
+    // console.log(thread);
 
     return (
         <div className="fullpost">

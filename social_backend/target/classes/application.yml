@@ -11,15 +11,13 @@ spring:
     show-sql: false #change back to true once done testing it just gets in the way
     hibernate:
       ddl-auto: update
-  cache:
-    type: none
   servlet:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
 
 project:
-  image: src/main/resources/images
+  image: /Users/kairb/Desktop/Fullstack projects/social_site/images
 
 
 #  security:

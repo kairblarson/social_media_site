@@ -30,6 +30,6 @@ public interface UserService {
     Notification createNotification(User agent, String action, Post content, User userTo);
     void viewNotifications(User to);
     List<Notification> getNotifications(String email, Boolean exact);
-    User handleEditProfile(String username, String bio, MultipartFile file, String path, String email) throws IOException;
+    User handleEditProfile(String username, String bio, MultipartFile file, String email) throws IOException;
 
 }

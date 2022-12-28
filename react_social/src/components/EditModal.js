@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-export default function EditModal({ open, toggleEdit }) {
+export default function EditModal({ open, toggleEdit, oldImg }) {
     if (!open) return null;
 
     const [currentUser, setCurrentUser] = useState(
@@ -10,12 +10,12 @@ export default function EditModal({ open, toggleEdit }) {
     const [userModel, setUserModel] = useState({
         username: currentUser.name,
         bio: currentUser.principal.bio,
-        profilePicture: ""
+        profilePicture: "",
     });
     const [exitHover, setExitHover] = useState(false);
     const [changePicHover, setChangePicHover] = useState(false);
     const [saveHover, setSaveHover] = useState(false);
-    const [imagePreview, setImagePreview] = useState(null);
+    const [imagePreview, setImagePreview] = useState(oldImg);
 
     const exitStyle = {
         background: exitHover ? "#e8e8e8" : "rgba(134, 63, 217, 1)",
@@ -45,7 +45,10 @@ export default function EditModal({ open, toggleEdit }) {
 
     function handleImage(e) {
         console.log(e.target.files[0]);
-        setUserModel(prevState => ({...prevState, profilePicture: e.target.files[0]}));
+        setUserModel((prevState) => ({
+            ...prevState,
+            profilePicture: e.target.files[0],
+        }));
         setImagePreview(URL.createObjectURL(e.target.files[0]));
     }
 
@@ -55,15 +58,28 @@ export default function EditModal({ open, toggleEdit }) {
         formData.append("bio", userModel.bio);
         formData.append("profilePicture", userModel.profilePicture);
         axios({
-                url: `http://localhost:8080/${currentUser.name}/handle-edit`,
-                withCredentials: true,
-                method: "POST",
-                data: formData,
-            })
-            .then((res) => console.log(res));
-        //the above works do not change anything 
-        toggleEdit();
+            url: `http://localhost:8080/${currentUser.name}/handle-edit`,
+            withCredentials: true,
+            method: "POST",
+            data: formData,
+        }).then((res) => console.log(res));
+        //the above works do not change anything
+        setCurrentUser((prevState) => {
+            return {
+                ...prevState,
+                principal: {
+                    ...prevState.principal,
+                    bio: userModel.bio,
+                    username: userModel.username,
+                },
+            };
+        });
+        window.location = `http://localhost:3000/${currentUser.name}`;
     }
+
+    useEffect(() => {
+        localStorage.setItem("userDetails", JSON.stringify(currentUser));
+    }, [currentUser]);
 
     return (
         <div className="editModal--wrapper" onClick={() => toggleEdit()}>
@@ -86,12 +102,10 @@ export default function EditModal({ open, toggleEdit }) {
                 </div>
                 <div className="editModal--main">
                     <div className="editModal--pic-wrapper">
-                        <img
-                            src={imagePreview}
-                            className="editModal--pic"
-                        />
+                        <img src={imagePreview} className="editModal--pic" />
                     </div>
-                    <div
+                    <label
+                        htmlFor="upload-image"
                         className="editModal--upload-image"
                         onMouseEnter={() =>
                             setChangePicHover((prevState) => !prevState)
@@ -101,8 +115,8 @@ export default function EditModal({ open, toggleEdit }) {
                         }
                         style={changeStyle}
                     >
-                        <label htmlFor="upload-image">Change pic</label>
-                    </div>
+                        Change pic
+                    </label>
                     <input
                         type="file"
                         accept="image/*"

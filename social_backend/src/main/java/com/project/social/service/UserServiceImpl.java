@@ -1,32 +1,23 @@
 package com.project.social.service;
 
+import com.project.social.dto.PostDTO;
 import com.project.social.entity.*;
 import com.project.social.model.PostModel;
 import com.project.social.model.UserModel;
 import com.project.social.provider.Provider;
 import com.project.social.repo.*;
-import com.project.social.util.NotificationType;
 import com.project.social.wrapper.PaginatedList;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.aspectj.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -51,6 +42,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     @Lazy
     private PasswordEncoder passwordEncoder;
+
+    @Value("${project.image}")
+    private String basePath;
 
     @Override
     public List<User> getAllUsers() {
@@ -215,22 +209,53 @@ public class UserServiceImpl implements UserService {
             return post2.compareTo(post1);
         }));
 
-        PaginatedList<Post> paginatedList = new PaginatedList<>(returnPosts);
+        ArrayList<PostDTO> postDTOArray = new ArrayList<>();
 
-        //CLASSPATH NOT FOUND UNTIL AFTER SERVER RESTART
-        ClassPathResource imgFile = new ClassPathResource(userProfile.getProfilePicture());
-        Resource src = new ClassPathResource(userProfile.getProfilePicture());
+        returnPosts.forEach(post -> {
+            PostDTO postDTO = new PostDTO();
+            postDTO.setContent(post.getContent());
+            postDTO.setPostDate(post.getPostDate());
+            postDTO.setReposted(post.getReposted());
+            postDTO.setLiked(post.getLiked());
+            postDTO.setRepostedBy(post.getRepostedBy());
+            postDTO.setReposts(post.getReposts());
+            postDTO.setReplyTo(post.getReplyTo());
+            postDTO.setAuthor(post.getAuthor());
+            postDTO.setId(post.getId());
+            postDTO.setComments(post.getComments());
+            postDTO.setLikes(post.getLikes());
+            File imagePath = new File(basePath+"\\"+post.getAuthor().getProfilePicture());
+            try{
+                if(imagePath != null) {
+                    if(imagePath.exists()) {
+                        postDTO.setProfPicBytes(FileUtil.readAsByteArray(imagePath));
+                    }
+                }
+            }catch (Exception e) {
+                System.out.println("CAUGHT!: "+e.getLocalizedMessage());
+            }
+            postDTOArray.add(postDTO);
+        });
+        //refactor to send over postDTO instead
+        //you will have to set each property manually unfortunately, but it should work
 
-        if(imgFile.exists()) {
-            System.out.println("IMG PATH FOUND");
-            return new ProfileDetails(username,
-                    userProfile.getFullName(),
-                    userProfile.getBio(),
-                    isFollowed,
-                    paginatedList.getPage(pageNum),
-                    userProfile.getFollowers().size(),
-                    userProfile.getFollowing().size(),
-                    StreamUtils.copyToByteArray(imgFile.getInputStream())); //THIS IS WHERE YOU ADD PROF PIC WHEN GETTING PROFILE
+        PaginatedList<PostDTO> paginatedList = new PaginatedList<>(postDTOArray);
+        File imgFile = new File(basePath+"\\"+userProfile.getProfilePicture());
+        System.out.println("LOADED RESOURCE: "+imgFile);
+        //StreamUtils.copyToByteArray(imgFile.getInputStream())
+
+        if(userProfile.getProfilePicture() != null) {
+            if(imgFile.exists()) {
+                System.out.println("IMG PATH FOUND");
+                return new ProfileDetails(username,
+                        userProfile.getFullName(),
+                        userProfile.getBio(),
+                        isFollowed,
+                        paginatedList.getPage(pageNum),
+                        userProfile.getFollowers().size(),
+                        userProfile.getFollowing().size(),
+                        FileUtil.readAsByteArray(imgFile)); //THIS IS WHERE YOU ADD PROF PIC WHEN GETTING PROFILE
+            }
         }
 
         System.out.println("IMG PATH NOT FOUND");
@@ -242,10 +267,10 @@ public class UserServiceImpl implements UserService {
                 userProfile.getFollowers().size(),
                 userProfile.getFollowing().size(),
                 null); //THIS IS WHERE YOU ADD PROF PIC WHEN GETTING PROFILE
-    }
+    } //moose
 
     @Override
-    public List<Post> requestTimeline(String email, Integer pageNum) {
+    public List<Post> requestTimeline(String email, Integer pageNum){
         List<Post> timeline = new ArrayList<>();
         if(pageNum == null || pageNum == 0) {
             pageNum = 1;
@@ -300,6 +325,7 @@ public class UserServiceImpl implements UserService {
                 post.setLiked(false);
             }
         });
+
         //check if the post is a reply first by checking if replyTo is null or not
         return paginatedList.getPage(pageNum);
         //this strategy works but, it might be slow if someone has a bunch of posts
@@ -328,7 +354,7 @@ public class UserServiceImpl implements UserService {
             }
         }
 
-        createNotification(agent, "follow", null, recipient); //moose
+        createNotification(agent, "follow", null, recipient);
         //if you are not following, this logic does the following
         Followers follower = new Followers(
                 agent,
@@ -387,7 +413,7 @@ public class UserServiceImpl implements UserService {
         Post post = postRepo.getReferenceById(id);
         User user = userRepo.findByEmail(email); //currentUser
         User receiver = post.getAuthor();
-        Notification notification = notificationRepo.findExact("repost", user, post); //moose
+        Notification notification = notificationRepo.findExact("repost", user, post);
         //add notification logic
 
         //checking if user has already reposted the post
@@ -491,6 +517,9 @@ public class UserServiceImpl implements UserService {
                 thread.add(0, replyTo);
             }
         }
+
+        System.out.println("TARGET POST: "+targetPost);
+        System.out.println("REPLY TO POST: "+targetPost.getReplyTo());
 
         if(currentUser == null) { //checking if user is logged in
             return thread;
@@ -655,7 +684,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User handleEditProfile(String username, String bio, MultipartFile file, String path, String email) throws IOException {
+    public User handleEditProfile(String username, String bio, MultipartFile file, String email) throws IOException {
         User currentUser = userRepo.findByEmail(email);
 
         if(currentUser == null) {
@@ -668,30 +697,35 @@ public class UserServiceImpl implements UserService {
             //not supported, will have to change every instance where you get a user based on their username
             //to get it based on the email
         }
-        if(!file.isEmpty()) {
-            //file name
-            String name = file.getOriginalFilename();
+        if(file != null) {
+            if(!file.isEmpty()) {
+                //file name
+                String name = file.getOriginalFilename();
 
-            //generate random string
-            String randomID = UUID.randomUUID().toString();
-            //adds random uuid before .jpg/.png
-            String newFileName = randomID.concat(name.substring(name.lastIndexOf(".")));
+                //generate random string
+                String randomID = UUID.randomUUID().toString();
+                //adds random uuid before .jpg/.png
+                String newFileName = randomID.concat(name.substring(name.lastIndexOf(".")));
 
-            //adds a slash between filepath and the file w/ new name
-            String filePath = path+"/"+newFileName;
+                //adds a slash between filepath and the file w/ new name
+                String filePath = basePath+"/"+newFileName;
 
-            //creates images folder in project
-            File f = new File(path);
-            if(!f.exists()) {
-                f.mkdir();
+                //creates images folder in project
+                File f = new File(basePath);
+                if(!f.exists()) {
+                    f.mkdir();
+                    System.out.println("DIR CREATED AT: "+basePath);
+                }
+
+                //this sets the file into the file path
+                Files.copy(file.getInputStream(), Paths.get(filePath));
+                System.out.println("FILE STREAM PLACED HERE: "+Paths.get(filePath));
+
+                //sets the profile picture path for the user
+                currentUser.setProfilePicture(newFileName);
+                System.out.println("FILE NAME SAVED TO USER: "+filePath);
+                //moose
             }
-
-            //this sets the file into the file path
-            Files.copy(file.getInputStream(), Paths.get(filePath));
-
-            //sets the 
-            currentUser.setProfilePicture(filePath.substring(19));
-            //moose
         }
         userRepo.save(currentUser);
         return currentUser;

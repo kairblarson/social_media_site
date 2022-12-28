@@ -23,7 +23,7 @@ export default function Timeline(props) {
                 return res.json();
             })
             .then((data) => {
-                // console.log(data);
+                console.log(data);
                 if (data.length <= 0 || data.length >= 200) {
                     setHasMore(false);
                 } else {

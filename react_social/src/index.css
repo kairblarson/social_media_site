@@ -74,10 +74,12 @@ textarea{
   min-height: 50px;
   border-radius: 50%;
   overflow: hidden;
-  border: 2px solid #e8e8e8;
+  /* border: 1px solid #e8e8e8; */
 }
 .post--pic{
-  height: 100%;
+  height: 50px;
+  width: 50px;
+  object-fit: cover;
 }
 .post--thread{
   background-color: #e8e8e8;
@@ -97,6 +99,9 @@ textarea{
 }
 .post--text{
   margin-block: 8px;
+}
+.post--username-wrapper{
+  width: 100%;
 }
 .post--username{
   display: inline;
@@ -201,6 +206,19 @@ input:focus{
 .post--postdate{
   color: #757575;
   font-size: 13px;
+}
+.post--main-top{
+  display: flex;
+}
+.post--menu-wrapper{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  font-size: 20px;
+  background: rebeccapurple;
+  border-radius: 25px;
+
 }
 .navbar, .extra{
   align-self: flex-start;
@@ -401,7 +419,7 @@ input:focus{
   height: 80px;
   width: 80px;
   overflow: hidden;
-  border: 2px solid #e8e8e8;
+  border: 1px solid #e8e8e8;
   margin-right: 10px;
   border-radius: 50px;
 }
@@ -512,6 +530,9 @@ input:focus{
   width: 100px;
   height: 100px;
   object-fit: cover;
+  /* border: 1px solid #e8e8e8; */
+  margin-left: 10px;
+  border-radius: 100px;
 }
 .profile--edit-wrapper{
   display: flex;
@@ -770,7 +791,7 @@ input:focus{
   border-radius: 50%;
   overflow: hidden;
   margin-right: 10px;
-  border: 2px solid #e8e8e8;
+  /* border: 2px solid #e8e8e8; */
 }
 .fullpost--image{
   height: 100%;
@@ -969,6 +990,7 @@ input:focus{
   border-radius: 50%;
   overflow: hidden;
   border: 1px solid #e8e8e8;
+  margin-bottom: 10px;
 }
 .editModal--pic{
   width: 110px;
@@ -1054,16 +1076,16 @@ input:focus{
   width: 75px;
 }
 .editModal--upload-image{
+  display: inline-block;
   background-color: black;
-  width: 100px;
   text-align: center;
   font-size: 13px;
-  padding: 5px;
-  border-radius: 50px;
-  margin-top: 10px;
+  padding: 6px;
   color: white;
   font-weight: 600;
   height: 30px;
   margin-bottom: 20px;
+  border-radius: 100px;
+  margin-left: 10px;
 }
 /*i took away the borders for now, lets see if we like it*/

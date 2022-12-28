@@ -1,5 +1,6 @@
 package com.project.social.entity;
 
+import com.project.social.dto.PostDTO;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,7 +14,7 @@ public class ProfileDetails {
     private String fullName;
     private String bio;
     private boolean isFollowed;
-    private List<Post> posts = new ArrayList<>();
+    private List<PostDTO> posts = new ArrayList<>();
     private Integer followers;
     private Integer following;
     private byte[] profilePicture;
@@ -21,7 +22,7 @@ public class ProfileDetails {
     public ProfileDetails() {
     }
 
-    public ProfileDetails(String username, String fullName, String bio, boolean isFollowed, List<Post> posts, Integer followers, Integer following, byte[] profilePicture) {
+    public ProfileDetails(String username, String fullName, String bio, boolean isFollowed, List<PostDTO> posts, Integer followers, Integer following, byte[] profilePicture) {
         this.username = username;
         this.fullName = fullName;
         this.bio = bio;
@@ -64,11 +65,11 @@ public class ProfileDetails {
         isFollowed = followed;
     }
 
-    public List<Post> getPosts() {
+    public List<PostDTO> getPosts() {
         return posts;
     }
 
-    public void setPosts(List<Post> posts) {
+    public void setPosts(List<PostDTO> posts) {
         this.posts = posts;
     }
 
