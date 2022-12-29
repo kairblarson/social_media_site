@@ -1,5 +1,6 @@
 package com.project.social.controller;
 
+import com.project.social.dto.PostDTO;
 import com.project.social.entity.*;
 import com.project.social.model.PostModel;
 import com.project.social.model.UserModel;
@@ -87,8 +88,8 @@ public class MainController {
     }
 
     @GetMapping("/request-timeline")
-    public ResponseEntity<List<Post>> requestTimeline(@RequestParam(value = "page", required = false) Integer pageNum,
-                                                      Authentication authentication) throws IOException {
+    public ResponseEntity<List<PostDTO>> requestTimeline(@RequestParam(value = "page", required = false) Integer pageNum,
+                                                         Authentication authentication) throws IOException {
         if(authentication == null) {
             System.out.println("RE DIRECT");
             return ResponseEntity.badRequest().body(null);
@@ -149,7 +150,7 @@ public class MainController {
     }
 
     @GetMapping("/{username}/post/{id}") //this returns you the post
-    public ResponseEntity<List<Post>> getPostDetails(@PathVariable(value = "id") Long postId,
+    public ResponseEntity<List<PostDTO>> getPostDetails(@PathVariable(value = "id") Long postId,
                                                Authentication authentication) {
         return ResponseEntity.ok().body(userService.getPost(postId, userService.findByEmail(getEmailFromAuth(authentication))));
     }

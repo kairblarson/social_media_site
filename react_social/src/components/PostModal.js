@@ -92,9 +92,11 @@ export default function PostModal({ open, closeModal, onSubmit, targetPost }) {
                             name="postInput"
                             value={inputState.postInput}
                             onChange={handleChange}
+                            maxLength={150}
                         ></textarea>
                     </div>
                     <div className="postmodal--bottom">
+                        <div>Chars left: {150-inputState.postInput?.length}</div>
                         <button
                             className="postmodal--post-button"
                             onClick={() => onSubmit(inputState.postInput)}

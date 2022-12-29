@@ -91,6 +91,7 @@ export default function Timeline(props) {
                             openModal={props.openModal}
                             isAuth={props.isAuth}
                             isHome={true}
+                            profilePicture={post.profPicBytes}
                         />
                     );
                 })}

@@ -236,13 +236,10 @@ public class UserServiceImpl implements UserService {
             }
             postDTOArray.add(postDTO);
         });
-        //refactor to send over postDTO instead
-        //you will have to set each property manually unfortunately, but it should work
+        //probably smarter to only add profile data to posts that have paginated not every post to make loading faster
 
         PaginatedList<PostDTO> paginatedList = new PaginatedList<>(postDTOArray);
         File imgFile = new File(basePath+"\\"+userProfile.getProfilePicture());
-        System.out.println("LOADED RESOURCE: "+imgFile);
-        //StreamUtils.copyToByteArray(imgFile.getInputStream())
 
         if(userProfile.getProfilePicture() != null) {
             if(imgFile.exists()) {
@@ -270,7 +267,7 @@ public class UserServiceImpl implements UserService {
     } //moose
 
     @Override
-    public List<Post> requestTimeline(String email, Integer pageNum){
+    public List<PostDTO> requestTimeline(String email, Integer pageNum){
         List<Post> timeline = new ArrayList<>();
         if(pageNum == null || pageNum == 0) {
             pageNum = 1;
@@ -314,10 +311,8 @@ public class UserServiceImpl implements UserService {
             return post2.compareTo(post1);
         }));
 
-        PaginatedList<Post> paginatedList = new PaginatedList<>(timeline);
-
         //checking if the current user has liked any posts
-        paginatedList.getPage(pageNum).forEach(post -> {
+        timeline.forEach(post -> {
             if (post.getLikes().contains(user)) {
                 post.setLiked(true);
             }
@@ -325,6 +320,39 @@ public class UserServiceImpl implements UserService {
                 post.setLiked(false);
             }
         });
+
+        ArrayList<PostDTO> postDTOArray = new ArrayList<>();
+
+        timeline.forEach(post -> {
+            PostDTO postDTO = new PostDTO();
+            postDTO.setContent(post.getContent());
+            postDTO.setPostDate(post.getPostDate());
+            postDTO.setReposted(post.getReposted());
+            postDTO.setLiked(post.getLiked());
+            postDTO.setRepostedBy(post.getRepostedBy());
+            postDTO.setReposts(post.getReposts());
+            postDTO.setReplyTo(post.getReplyTo());
+            postDTO.setAuthor(post.getAuthor());
+            postDTO.setId(post.getId());
+            postDTO.setComments(post.getComments());
+            postDTO.setLikes(post.getLikes());
+            File imagePath = new File(basePath+"\\"+post.getAuthor().getProfilePicture());
+            try{
+                if(imagePath != null) {
+                    if(imagePath.exists()) {
+                        postDTO.setProfPicBytes(FileUtil.readAsByteArray(imagePath));
+                    }
+                }
+            }catch (Exception e) {
+                System.out.println("CAUGHT!: "+e.getLocalizedMessage());
+            }
+            postDTOArray.add(postDTO);
+        });
+        //instead of writing this code 4 separate times you couldve just wrote 1 util method
+        /* for performance reasons you should only be doing this for paginated posts not all the posts,
+        if you do it for all posts it could take a long time to load someone who has a lot of posts profile */
+
+        PaginatedList<PostDTO> paginatedList = new PaginatedList<>(postDTOArray);
 
         //check if the post is a reply first by checking if replyTo is null or not
         return paginatedList.getPage(pageNum);
@@ -498,10 +526,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Post> getPost(Long id, User currentUser) {
+    public List<PostDTO> getPost(Long id, User currentUser) {
         //check if the author of the original post is the same as the commenter, if they are the same then ->
         //figure out how to display those first? (Maybe not a good idea/not worth the effort)
         List<Post> thread = new ArrayList<>();
+        List<PostDTO> returnPosts = new ArrayList<>();
         Post targetPost = postRepo.getReferenceById(id); //getting post
         targetPost.setFocus(true);
         thread.add(targetPost);
@@ -514,15 +543,70 @@ public class UserServiceImpl implements UserService {
                     break;
                 }
                 Post replyTo = thread.get(0).getReplyTo();
+                replyTo.setFocus(false);
                 thread.add(0, replyTo);
             }
         }
 
-        System.out.println("TARGET POST: "+targetPost);
-        System.out.println("REPLY TO POST: "+targetPost.getReplyTo());
+        if(currentUser == null) { //checking if user is logged in and runs if not
+            thread.forEach(post -> {
+                PostDTO postDTO = new PostDTO();
+                postDTO.setContent(post.getContent());
+                postDTO.setPostDate(post.getPostDate());
+                postDTO.setReposted(post.getReposted());
+                postDTO.setLiked(post.getLiked());
+                postDTO.setRepostedBy(post.getRepostedBy());
+                postDTO.setReposts(post.getReposts());
+                postDTO.setReplyTo(post.getReplyTo());
+                postDTO.setAuthor(post.getAuthor());
+                postDTO.setId(post.getId());
+                postDTO.setLikes(post.getLikes());
+                postDTO.setFocus(post.getFocus());
+                postDTO.setComments(post.getComments());
+                postDTO.getComments().forEach(comment -> {
+                    PostDTO commentDTO = new PostDTO();
+                    commentDTO.setContent(post.getContent());
+                    commentDTO.setPostDate(post.getPostDate());
+                    commentDTO.setReposted(post.getReposted());
+                    commentDTO.setLiked(post.getLiked());
+                    commentDTO.setRepostedBy(post.getRepostedBy());
+                    commentDTO.setReposts(post.getReposts());
+                    commentDTO.setReplyTo(post.getReplyTo());
+                    commentDTO.setAuthor(post.getAuthor());
+                    commentDTO.setId(post.getId());
+                    commentDTO.setLikes(post.getLikes());
+                    commentDTO.setFocus(post.getFocus());
+                    commentDTO.setComments(post.getComments());
 
-        if(currentUser == null) { //checking if user is logged in
-            return thread;
+                    File imagePath = new File(basePath+"\\"+comment.getAuthor().getProfilePicture());
+                    try{
+                        if(imagePath != null) {
+                            if(imagePath.exists()) {
+                                commentDTO.setProfPicBytes(FileUtil.readAsByteArray(imagePath));
+                            }
+                        }
+                    }catch (Exception e) {
+                        System.out.println("CAUGHT!: "+e.getLocalizedMessage());
+                    }
+
+                    postDTO.addToReplies(commentDTO);
+                });
+
+                File imagePath = new File(basePath+"\\"+post.getAuthor().getProfilePicture());
+                try{
+                    if(imagePath != null) {
+                        if(imagePath.exists()) {
+                            postDTO.setProfPicBytes(FileUtil.readAsByteArray(imagePath));
+                        }
+                    }
+                }catch (Exception e) {
+                    System.out.println("CAUGHT!: "+e.getLocalizedMessage());
+                }
+                returnPosts.add(postDTO);
+            });
+            System.out.println("TREAD: "+thread);
+            System.out.println("RETURN: "+returnPosts);
+            return returnPosts;
         }
 
         List<Post> userLikes = currentUser.getLikedPosts();
@@ -575,7 +659,64 @@ public class UserServiceImpl implements UserService {
                 comment.setReposted(true);
             }
         });
-        return thread;
+
+        thread.forEach(post -> {
+            PostDTO postDTO = new PostDTO();
+            postDTO.setContent(post.getContent());
+            postDTO.setPostDate(post.getPostDate());
+            postDTO.setReposted(post.getReposted());
+            postDTO.setLiked(post.getLiked());
+            postDTO.setRepostedBy(post.getRepostedBy());
+            postDTO.setReposts(post.getReposts());
+            postDTO.setReplyTo(post.getReplyTo());
+            postDTO.setAuthor(post.getAuthor());
+            postDTO.setId(post.getId());
+            postDTO.setLikes(post.getLikes());
+            postDTO.setFocus(post.getFocus());
+            postDTO.setComments(post.getComments());
+            postDTO.getComments().forEach(comment -> {
+                PostDTO commentDTO = new PostDTO();
+                commentDTO.setContent(post.getContent());
+                commentDTO.setPostDate(post.getPostDate());
+                commentDTO.setReposted(post.getReposted());
+                commentDTO.setLiked(post.getLiked());
+                commentDTO.setRepostedBy(post.getRepostedBy());
+                commentDTO.setReposts(post.getReposts());
+                commentDTO.setReplyTo(post.getReplyTo());
+                commentDTO.setAuthor(post.getAuthor());
+                commentDTO.setId(post.getId());
+                commentDTO.setLikes(post.getLikes());
+                commentDTO.setFocus(post.getFocus());
+                commentDTO.setComments(post.getComments());
+
+                File imagePath = new File(basePath+"\\"+comment.getAuthor().getProfilePicture());
+                try{
+                    if(imagePath != null) {
+                        if(imagePath.exists()) {
+                            commentDTO.setProfPicBytes(FileUtil.readAsByteArray(imagePath));
+                        }
+                    }
+                }catch (Exception e) {
+                    System.out.println("CAUGHT!: "+e.getLocalizedMessage());
+                }
+
+                postDTO.addToReplies(commentDTO);
+                //i did this in the most inefficient way possible but it works, make a UTIL method for converting post to DTO
+            });
+            File imagePath = new File(basePath+"\\"+post.getAuthor().getProfilePicture());
+            try{
+                if(imagePath != null) {
+                    if(imagePath.exists()) {
+                        postDTO.setProfPicBytes(FileUtil.readAsByteArray(imagePath));
+                    }
+                }
+            }catch (Exception e) {
+                System.out.println("CAUGHT!: "+e.getLocalizedMessage());
+            }
+            returnPosts.add(postDTO);
+        });
+        //having a non focused post being set to focused should be fixed
+        return returnPosts;
     }
 
     @Override

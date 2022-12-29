@@ -1,6 +1,12 @@
 import { useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
+import {
+    BsArrowUpSquareFill,
+    BsThreeDots,
+    BsTriangle,
+    BsTriangleFill,
+} from "react-icons/bs";
 
 export default function Preview(props) {
     const [userDetails, setUserDetails] = useState(
@@ -44,13 +50,11 @@ export default function Preview(props) {
             onMouseLeave={handleHover}
             style={previewStyle}
         >
-            <div className="preview--pic-wrapper">
-                <img src={"/images/standard.jpg"} className="preview--pic" />
+            <div className="preview--triangle">
+                <BsTriangleFill />
             </div>
             <h4 className="preview--username">
-                {!props.isAuth
-                    ? "Sign in"
-                    : userDetails?.principal.username}
+                {!props.isAuth ? "Sign in" : userDetails?.principal.username}
             </h4>
         </div>
     );

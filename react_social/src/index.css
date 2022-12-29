@@ -74,6 +74,7 @@ textarea{
   min-height: 50px;
   border-radius: 50%;
   overflow: hidden;
+  background-color: #e8e8e8;
   /* border: 1px solid #e8e8e8; */
 }
 .post--pic{
@@ -261,7 +262,7 @@ input:focus{
   width: 100%;
   font-size: 30px;
   margin-block: 15px;
-  color: rgba(134, 63, 217, .9);
+  color: rgba(134, 63, 217, 1);
 }
 .navbar--notifs{
   position: absolute;
@@ -292,15 +293,13 @@ input:focus{
   font-weight:700;
 }
 .preview{
-  background: #f6f6f6;
-  border-radius: 20px;
   width: 100%;
-  padding: 2px;
-  border: 1px solid #e8e8e8;
   display: flex;
   align-items: center;
   justify-content:left;
   margin-block: 15px;
+  border-bottom: 2px solid black;
+  height: 40px;
 }
 .preview--pic-wrapper{
   position: relative;
@@ -321,6 +320,11 @@ input:focus{
   white-space: nowrap;
   overflow: hidden;
   text-overflow:ellipsis;
+  margin-left: 10px;
+  font-size: 18px;
+}
+.preview--triangle{
+  color: rgba(134, 63, 217, 1);
 }
 .extra--search{
   width: 100%;
@@ -527,12 +531,13 @@ input:focus{
   border-radius: 10px;
 }
 .profile--image{
+  border-radius: 100px;
   width: 100px;
   height: 100px;
   object-fit: cover;
   /* border: 1px solid #e8e8e8; */
   margin-left: 10px;
-  border-radius: 100px;
+  background-color: #e8e8e8;
 }
 .profile--edit-wrapper{
   display: flex;
@@ -794,7 +799,9 @@ input:focus{
   /* border: 2px solid #e8e8e8; */
 }
 .fullpost--image{
-  height: 100%;
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
 }
 .fullpost--content-wrapper{
   margin-block: 15px;
@@ -861,6 +868,14 @@ input:focus{
   margin-bottom: 10px;
   color: #757575;
 }
+.fullpost--dots-wrapper{
+  display: flex;
+  justify-content: end;
+  align-items:flex-start;
+  font-size: 20px;
+  width: 100%;
+  margin-right: 5px;
+}
 .notetoself{
   display: flex;
   flex-direction: column;
@@ -899,8 +914,9 @@ input:focus{
   top: 0;
   position: sticky;
   width: 100%;
-  background-color: white;
-  border-bottom: 1px solid #e8e8e8;
+  background-color: rgba(255,255,255,0.3);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
 }
 .notifications{
   display: flex;

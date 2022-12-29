@@ -40,20 +40,18 @@ public class SocialApplication {
 //		};
 //	}
 
-//	@Bean
-//	CommandLineRunner commandLineRunner(PostRepo postRepo) {
-//		return args -> {
-//			List<Post> posts = postRepo.findAll();
-//			posts.forEach(post -> {
-//				post.setReposted(false);
-//				post.setReposts(0);
-//				post.setRepostedBy(null);
-//			});
-//			posts.forEach(post -> {
-//				postRepo.save(post);
-//			});
-//		};
-//	}
+	@Bean
+	CommandLineRunner commandLineRunner(PostRepo postRepo) {
+		return args -> {
+			List<Post> posts = postRepo.findAll();
+			posts.forEach(post -> {
+				post.setFocus(false);
+			});
+			posts.forEach(post -> {
+				postRepo.save(post);
+			});
+		};
+	}
 	//if repost feature breaks again just run this code
 
 	@Bean

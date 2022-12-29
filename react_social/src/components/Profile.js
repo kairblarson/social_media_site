@@ -35,6 +35,7 @@ export default function Profile(props) {
         likesHover: false,
     });
     const currentLocation = useLocation();
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (currentLocation.pathname == `/${handle}`) {
@@ -253,195 +254,218 @@ export default function Profile(props) {
 
     const [profilePicture, setProfilePicture] = useState();
     useEffect(() => {
-        // const blob = new Blob([profileDetails.profilePicture?.picByte], {
-        //     type: "image/jpeg",
-        // });
-        // console.log(blob);
-        setProfilePicture("data:image/png;base64,"+profileDetails.profilePicture);
+        setProfilePicture(
+            "data:image/png;base64," + profileDetails.profilePicture
+        );
+        if (profileDetails != undefined) {
+            setLoading(false);
+        }
     }, [profileDetails]);
 
     const [postElements, setPostElements] = useState(null);
 
     useEffect(() => {
-        setPostElements(posts?.map((post) => {
-            const replyTo =
-                post.replyTo == null
-                    ? null
-                    : post.replyTo.author.username;
-            return (
-                <Post
-                    key={post.id}
-                    id={post.id}
-                    content={post.content}
-                    author={post.author}
-                    postDate={post.postDate}
-                    likes={post.likes}
-                    isLiked={post.liked}
-                    reposts={post.reposts}
-                    isReposted={post.reposted}
-                    repostedBy={post.repostedBy}
-                    replyTo={replyTo}
-                    comments={post.comments}
-                    modalState={props.modalState}
-                    openModal={props.toggleModal}
-                    isAuth={props.isAuth}
-                    isHome={false}
-                    profilePicture={post.profPicBytes}
-                />
-            );
-        }));
+        setPostElements(
+            posts?.map((post) => {
+                const replyTo =
+                    post.replyTo == null ? null : post.replyTo.author.username;
+                return (
+                    <Post
+                        key={post.id}
+                        id={post.id}
+                        content={post.content}
+                        author={post.author}
+                        postDate={post.postDate}
+                        likes={post.likes}
+                        isLiked={post.liked}
+                        reposts={post.reposts}
+                        isReposted={post.reposted}
+                        repostedBy={post.repostedBy}
+                        replyTo={replyTo}
+                        comments={post.comments}
+                        modalState={props.modalState}
+                        openModal={props.toggleModal}
+                        isAuth={props.isAuth}
+                        isHome={false}
+                        profilePicture={post.profPicBytes}
+                    />
+                );
+            })
+        );
         console.log(posts);
     }, [posts]);
 
     return (
         <div className="profile">
             <Navbar />
-            <div className="profile--middle">
-                <div className="profile--content">
-                    <img
-                        src={"../images/background.jpg"}
-                        className="profile--background"
-                    ></img>
-                    <div className="profile--edit-wrapper">
-                        {isUserProfile && props.isAuth ? (
-                            <button
-                                className="profile--edit"
-                                style={editStyle}
-                                onMouseEnter={handleEditHover}
-                                onMouseLeave={handleEditHover}
-                                onClick={() => props.toggleEdit()}
-                            >
-                                Edit profile
-                            </button>
-                        ) : (
-                            <button
-                                className="profile--follow"
-                                style={followStyle}
-                                onClick={handleFollow}
-                                onMouseEnter={handleFollowHover}
-                                onMouseLeave={handleFollowHover}
-                            >
-                                {profileDetails.followed
-                                    ? hoverState.followHover
-                                        ? "Unfollow"
-                                        : "Following"
-                                    : "Follow"}
-                            </button>
-                        )}
-                    </div>
-                    <img
-                        src={profilePicture}
-                        className="profile--image"
-                    ></img>
-                    <div className="profile--details">
-                        <h3 className="profile--username">
-                            {profileDetails.username}
-                        </h3>
-                        <p className="profile--fullname">
-                            {profileDetails.fullName}
-                        </p>
-                        <div className="profile--bio">{profileDetails.bio}</div>
-                    </div>
-                    <div className="profile--follow-details">
-                        <div
-                            className="profile--followers"
-                            onClick={() =>
-                                (window.location = `http://localhost:3000/${handle}/followers`)
-                            }
-                        >
-                            <h4>{profileDetails.followers}</h4>
-                            <p
-                                style={followersStyle}
-                                onMouseEnter={handleFollowersHover}
-                                onMouseLeave={handleFollowersHover}
-                            >
-                                Followers
-                            </p>
+            {!loading ? (
+                <div className="profile--middle">
+                    <div className="profile--content">
+                        <img
+                            src={"../images/background.jpg"}
+                            className="profile--background"
+                        ></img>
+                        <div className="profile--edit-wrapper">
+                            {isUserProfile && props.isAuth ? (
+                                <button
+                                    className="profile--edit"
+                                    style={editStyle}
+                                    onMouseEnter={handleEditHover}
+                                    onMouseLeave={handleEditHover}
+                                    onClick={() => props.toggleEdit()}
+                                >
+                                    Edit profile
+                                </button>
+                            ) : (
+                                <button
+                                    className="profile--follow"
+                                    style={followStyle}
+                                    onClick={handleFollow}
+                                    onMouseEnter={handleFollowHover}
+                                    onMouseLeave={handleFollowHover}
+                                >
+                                    {profileDetails.followed
+                                        ? hoverState.followHover
+                                            ? "Unfollow"
+                                            : "Following"
+                                        : "Follow"}
+                                </button>
+                            )}
                         </div>
-                        <div
-                            className="profile--following"
-                            onClick={() =>
-                                (window.location = `http://localhost:3000/${handle}/following`)
-                            }
-                        >
-                            <h4>{profileDetails.following}</h4>
-                            <p
-                                style={followingStyle}
-                                onMouseEnter={handleFollowingHover}
-                                onMouseLeave={handleFollowingHover}
-                            >
-                                Following
+                        <img
+                            src={profilePicture}
+                            className="profile--image"
+                        ></img>
+                        <div className="profile--details">
+                            <h3 className="profile--username">
+                                {profileDetails.username}
+                            </h3>
+                            <p className="profile--fullname">
+                                {profileDetails.fullName}
                             </p>
+                            <div className="profile--bio">
+                                {profileDetails.bio}
+                            </div>
                         </div>
-                    </div>
-                    <div className="profile--navbar">
-                        <button
-                            className="profile--navbutton"
-                            onClick={() =>
-                                (window.location = `http://localhost:3000/${handle}`)
-                            }
-                            style={postsTabButtonStyle}
-                            onMouseEnter={handlePostsHover}
-                            onMouseLeave={handlePostsHover}
-                        >
-                            <h4
-                                className="profile--nav-text"
-                                style={postTabStyle}
+                        <div className="profile--follow-details">
+                            <div
+                                className="profile--followers"
+                                onClick={() =>
+                                    (window.location = `http://localhost:3000/${handle}/followers`)
+                                }
                             >
-                                Posts
-                            </h4>
-                        </button>
-                        {/* <button className="profile--navbutton">
+                                <h4>{profileDetails.followers}</h4>
+                                <p
+                                    style={followersStyle}
+                                    onMouseEnter={handleFollowersHover}
+                                    onMouseLeave={handleFollowersHover}
+                                >
+                                    Followers
+                                </p>
+                            </div>
+                            <div
+                                className="profile--following"
+                                onClick={() =>
+                                    (window.location = `http://localhost:3000/${handle}/following`)
+                                }
+                            >
+                                <h4>{profileDetails.following}</h4>
+                                <p
+                                    style={followingStyle}
+                                    onMouseEnter={handleFollowingHover}
+                                    onMouseLeave={handleFollowingHover}
+                                >
+                                    Following
+                                </p>
+                            </div>
+                        </div>
+                        <div className="profile--navbar">
+                            <button
+                                className="profile--navbutton"
+                                onClick={() =>
+                                    (window.location = `http://localhost:3000/${handle}`)
+                                }
+                                style={postsTabButtonStyle}
+                                onMouseEnter={handlePostsHover}
+                                onMouseLeave={handlePostsHover}
+                            >
+                                <h4
+                                    className="profile--nav-text"
+                                    style={postTabStyle}
+                                >
+                                    Posts
+                                </h4>
+                            </button>
+                            {/* <button className="profile--navbutton">
                             <h4 className="profile--nav-text">Reposts</h4>
                         </button> */}
-                        <button
-                            className="profile--navbutton"
-                            onClick={() =>
-                                (window.location = `http://localhost:3000/${handle}/likes`)
-                            }
-                            style={likesTabButtonStyle}
-                            onMouseEnter={handleLikesHover}
-                            onMouseLeave={handleLikesHover}
-                        >
-                            <h4
-                                className="profile--nav-text"
-                                style={likeTabStyle}
+                            <button
+                                className="profile--navbutton"
+                                onClick={() =>
+                                    (window.location = `http://localhost:3000/${handle}/likes`)
+                                }
+                                style={likesTabButtonStyle}
+                                onMouseEnter={handleLikesHover}
+                                onMouseLeave={handleLikesHover}
                             >
-                                Likes
-                            </h4>
-                        </button>
+                                <h4
+                                    className="profile--nav-text"
+                                    style={likeTabStyle}
+                                >
+                                    Likes
+                                </h4>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <InfiniteScroll
+                            dataLength={posts.length}
+                            className="timeline"
+                            style={{ overflow: "hidden" }}
+                            next={fetchMoreData}
+                            hasMore={hasMore}
+                            endMessage={<p>You're all up to date!</p>}
+                            loader={
+                                <ColorRing
+                                    visible={true}
+                                    height="80"
+                                    width="80"
+                                    ariaLabel="blocks-loading"
+                                    wrapperStyle={{}}
+                                    wrapperClass="blocks-wrapper"
+                                    colors={[
+                                        "rgba(134, 63, 217, .9)",
+                                        "rgba(134, 63, 217, .7)",
+                                        "rgba(134, 63, 217, .5)",
+                                        "rgba(134, 63, 217, .3)",
+                                        "rgba(134, 63, 217, .1)",
+                                    ]}
+                                />
+                            }
+                        >
+                            {postElements}
+                        </InfiniteScroll>
                     </div>
                 </div>
-                <div>
-                    <InfiniteScroll
-                        dataLength={posts.length}
-                        className="timeline"
-                        style={{ overflow: "hidden" }}
-                        next={fetchMoreData}
-                        hasMore={hasMore}
-                        loader={
-                            <ColorRing
-                                visible={true}
-                                height="80"
-                                width="80"
-                                ariaLabel="blocks-loading"
-                                wrapperStyle={{}}
-                                wrapperClass="blocks-wrapper"
-                                colors={[
-                                    "rgba(134, 63, 217, .9)",
-                                    "rgba(134, 63, 217, .7)",
-                                    "rgba(134, 63, 217, .5)",
-                                    "rgba(134, 63, 217, .3)",
-                                    "rgba(134, 63, 217, .1)",
-                                ]}
-                            />
-                        }
-                        endMessage={<p>You're all up to date!</p>}
-                    >
-                        {postElements}
-                    </InfiniteScroll>
+            ) : (
+                <div className="profile--middle">
+                    <ColorRing
+                        visible={true}
+                        height="80"
+                        width="80"
+                        ariaLabel="blocks-loading"
+                        wrapperStyle={{}}
+                        wrapperClass="blocks-wrapper"
+                        colors={[
+                            "rgba(134, 63, 217, .9)",
+                            "rgba(134, 63, 217, .7)",
+                            "rgba(134, 63, 217, .5)",
+                            "rgba(134, 63, 217, .3)",
+                            "rgba(134, 63, 217, .1)",
+                        ]}
+                    />
                 </div>
-            </div>
+            )}
             <Extra
                 modalState={props.modalState}
                 openModal={props.toggleModal}

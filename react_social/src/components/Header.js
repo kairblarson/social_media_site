@@ -54,7 +54,7 @@ export default function Header() {
     }, []);
 
     const backStyle = {
-        background: hoverState.backHover ? "#eae6ed" : "white",
+        background: hoverState.backHover ? "#eae6ed" : "none",
         cursor: hoverState.backHover ? "pointer" : "none",
     };
 

@@ -62,10 +62,8 @@ export default function FullPost(props) {
                 console.log(data);
                 data.forEach((post) => {
                     if (post.focus == true) {
-                        console.log("FOCUS POST: ",post);
                         setPost(post);
                     } else {
-                        // console.log(post);
                         setThread((prevState) => [...prevState, post]);
                     }
                 });
@@ -284,7 +282,10 @@ export default function FullPost(props) {
     }
     //----------------------
 
-    // console.log(thread);
+    const [profilePicture, setProfilePicture] = useState();
+    useEffect(() => {
+        setProfilePicture("data:image/png;base64,"+post.profPicBytes);
+    }, [post]);
 
     return (
         <div className="fullpost">
@@ -317,6 +318,7 @@ export default function FullPost(props) {
                                     openModal={props.toggleModal}
                                     isAuth={props.isAuth}
                                     isHome={false}
+                                    profilePicture={post.profPicBytes}
                                 />
                             );
                         })}
@@ -351,7 +353,7 @@ export default function FullPost(props) {
                                 <div className="fullpost--top">
                                     <div className="fullpost--image-wrapper">
                                         <img
-                                            src={"/images/standard.jpg"}
+                                            src={profilePicture}
                                             className="fullpost--image"
                                         />
                                     </div>
@@ -377,6 +379,9 @@ export default function FullPost(props) {
                                             </p>
                                         </div>
                                     )}
+                                    <div className="fullpost--dots-wrapper">
+                                        <BsThreeDots />
+                                    </div>
                                 </div>
                                 {post.replyTo != null && (
                                     <div className="fullpost--replyTo">
@@ -467,7 +472,8 @@ export default function FullPost(props) {
                                 </div>
                             </div>
                         </div>
-                        {post.comments.map((comment) => {
+                        {post?.replies?.map((comment) => {
+                            console.log(comment);
                             return (
                                 <Post
                                     key={comment.id}
@@ -487,6 +493,7 @@ export default function FullPost(props) {
                                     openModal={props.toggleModal}
                                     isAuth={props.isAuth}
                                     isHome={false}
+                                    profilePicture={comment.profPicBytes}
                                 />
                             );
                         })}
