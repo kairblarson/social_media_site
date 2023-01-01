@@ -3,6 +3,7 @@ import {
     BsChatDotsFill,
     BsArrowRepeat,
     BsThreeDots,
+    BsEmojiFrown,
 } from "react-icons/bs";
 import { useState, useEffect } from "react";
 import { hover } from "@testing-library/user-event/dist/hover";
@@ -124,11 +125,13 @@ export default function Post(props) {
     //-----general post stuff-------
 
     function openPost() {
-        const handle =
-            state.author.username == "Me"
-                ? userDetails.name
-                : state.author.username;
-        window.location = `http://localhost:3000/${handle}/post/${state.id}?repost=${state.repostedBy}`;
+        if (!state.deleted) {
+            const handle =
+                state.author.username == "Me"
+                    ? userDetails.name
+                    : state.author.username;
+            window.location = `http://localhost:3000/${handle}/post/${state.id}?repost=${state.repostedBy}`;
+        }
     }
 
     function handlePostMouseOver() {
@@ -319,6 +322,8 @@ export default function Post(props) {
         setProfilePicture("data:image/png;base64," + state.profilePicture);
     }, [state]);
 
+    // console.log(state.deleted);
+
     return (
         <div
             className="post--wrapper"
@@ -336,125 +341,132 @@ export default function Post(props) {
                     id={state.id}
                 />
             )}
-            <div className="post">
-                <div className="post--left">
-                    <div className="post--pic-wrapper">
-                        <img src={profilePicture} className="post--pic" />
-                    </div>
-                    {state.isThread && state.comments.length > 0 && (
-                        <div className="post--thread"></div>
-                    )}
-                </div>
-                <div className="post--right">
-                    {state.repostedBy && (
-                        <small
-                            className="post--reposted-by"
-                            onMouseEnter={handleRepostedByMouseOver}
-                            onMouseLeave={handleRepostedByMouseOver}
-                            style={repostedByStyle}
-                            onClick={handleRepostUserClick}
-                        >
-                            <div className="post--top-icon">
-                                <BsArrowRepeat />
-                            </div>
-                            Reposted by{" "}
-                            {state.repostedBy == userDetails?.name
-                                ? "me"
-                                : state.repostedBy}
-                        </small>
-                    )}
-                    <div className="post--main">
-                        <div className="post--main-top">
-                            <div className="post--username-wrapper">
-                                <h1
-                                    className="post--username"
-                                    onClick={handleUsernameClick}
-                                    style={usernameStyle}
-                                    onMouseEnter={handleUsernameMouseOver}
-                                    onMouseLeave={handleUsernameMouseOver}
-                                >
-                                    {state.author.username}
-                                </h1>
-                            </div>
-                            <div
-                                className="post--menu-wrapper"
-                                style={menuStyle}
-                                onMouseEnter={handleMenuHover}
-                                onMouseLeave={handleMenuHover}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    props.handleMenuToggle(state.id);
-                                }}
-                            >
-                                <BsThreeDots />
-                            </div>
+            {!state.deleted ? (
+                <div className="post">
+                    <div className="post--left">
+                        <div className="post--pic-wrapper">
+                            <img src={profilePicture} className="post--pic" />
                         </div>
-                        {props.replyTo != null && (
-                            <p className="post--reply-to">
-                                Reply to {props.replyTo}
-                            </p>
+                        {state.isThread && state.comments.length > 0 && (
+                            <div className="post--thread"></div>
                         )}
-                        <p className="post--text">{state.content}</p>
                     </div>
-
-                    <footer className="post--footer">
-                        <div
-                            className="post--likes"
-                            onMouseEnter={handleLikeMouseOver}
-                            onMouseLeave={handleLikeMouseOver}
-                            style={likeTextStyles}
-                            onClick={toggleLike}
-                        >
-                            <div
-                                className="post--icon-wrapper"
-                                style={likeIconStyles}
-                                name="isLiked"
+                    <div className="post--right">
+                        {state.repostedBy && (
+                            <small
+                                className="post--reposted-by"
+                                onMouseEnter={handleRepostedByMouseOver}
+                                onMouseLeave={handleRepostedByMouseOver}
+                                style={repostedByStyle}
+                                onClick={handleRepostUserClick}
                             >
-                                <BsFillHandThumbsUpFill />
+                                <div className="post--top-icon">
+                                    <BsArrowRepeat />
+                                </div>
+                                Reposted by{" "}
+                                {state.repostedBy == userDetails?.name
+                                    ? "me"
+                                    : state.repostedBy}
+                            </small>
+                        )}
+                        <div className="post--main">
+                            <div className="post--main-top">
+                                <div className="post--username-wrapper">
+                                    <h1
+                                        className="post--username"
+                                        onClick={handleUsernameClick}
+                                        style={usernameStyle}
+                                        onMouseEnter={handleUsernameMouseOver}
+                                        onMouseLeave={handleUsernameMouseOver}
+                                    >
+                                        {state.author.username}
+                                    </h1>
+                                </div>
+                                <div
+                                    className="post--menu-wrapper"
+                                    style={menuStyle}
+                                    onMouseEnter={handleMenuHover}
+                                    onMouseLeave={handleMenuHover}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        props.handleMenuToggle(state.id);
+                                    }}
+                                >
+                                    <BsThreeDots />
+                                </div>
                             </div>
-                            <p name="like">{state.likes.length}</p>
+                            {props.replyTo != null && (
+                                <p className="post--reply-to">
+                                    Reply to {props.replyTo}
+                                </p>
+                            )}
+                            <p className="post--text">{state.content}</p>
                         </div>
 
-                        <div
-                            className="post--reposts"
-                            onMouseEnter={handleRepostMouseOver}
-                            onMouseLeave={handleRepostMouseOver}
-                            style={repostTextStyles}
-                            onClick={toggleRepost}
-                        >
+                        <footer className="post--footer">
                             <div
-                                className="post--icon-wrapper"
-                                style={repostIconStyles}
-                                name="isReposted"
+                                className="post--likes"
+                                onMouseEnter={handleLikeMouseOver}
+                                onMouseLeave={handleLikeMouseOver}
+                                style={likeTextStyles}
+                                onClick={toggleLike}
                             >
-                                <BsArrowRepeat />
+                                <div
+                                    className="post--icon-wrapper"
+                                    style={likeIconStyles}
+                                    name="isLiked"
+                                >
+                                    <BsFillHandThumbsUpFill />
+                                </div>
+                                <p name="like">{state.likes.length}</p>
                             </div>
-                            <p name="repost">{state.reposts}</p>
-                        </div>
 
-                        <div
-                            className="post--comments"
-                            onClick={handleCommentToggle}
-                            onMouseEnter={handleCommentMouseOver}
-                            onMouseLeave={handleCommentMouseOver}
-                            style={commentTextStyles}
-                        >
                             <div
-                                className="post--icon-wrapper"
-                                style={commentIconStyles}
-                                name="toggleComment"
+                                className="post--reposts"
+                                onMouseEnter={handleRepostMouseOver}
+                                onMouseLeave={handleRepostMouseOver}
+                                style={repostTextStyles}
+                                onClick={toggleRepost}
                             >
-                                <BsChatDotsFill />
+                                <div
+                                    className="post--icon-wrapper"
+                                    style={repostIconStyles}
+                                    name="isReposted"
+                                >
+                                    <BsArrowRepeat />
+                                </div>
+                                <p name="repost">{state.reposts}</p>
                             </div>
-                            <p name="comments" value={state.comment}>
-                                {state.comments != null
-                                    ? state.comments.length
-                                    : ""}
-                            </p>
-                        </div>
-                    </footer>
+
+                            <div
+                                className="post--comments"
+                                onClick={handleCommentToggle}
+                                onMouseEnter={handleCommentMouseOver}
+                                onMouseLeave={handleCommentMouseOver}
+                                style={commentTextStyles}
+                            >
+                                <div
+                                    className="post--icon-wrapper"
+                                    style={commentIconStyles}
+                                    name="toggleComment"
+                                >
+                                    <BsChatDotsFill />
+                                </div>
+                                <p name="comments" value={state.comment}>
+                                    {state.comments != null
+                                        ? state.comments.length
+                                        : ""}
+                                </p>
+                            </div>
+                        </footer>
+                    </div>
                 </div>
-            </div>
+            ) : (
+                <div className="deletedpost--thread">
+                    Sorry, this post has been deleted.
+                    <BsEmojiFrown />
+                </div>
+            )}
             {interactions.toggleComment && (
                 <div className="post--comment-area-wrapper">
                     <textarea
@@ -470,20 +482,22 @@ export default function Post(props) {
                     </div>
                 </div>
             )}
-            <div>
-                <p className="post--postdate">
-                    {props.isHome
-                        ? state.isReposted
-                            ? "Reposted "
-                            : state.repostedBy == null
-                            ? "Posted "
-                            : "Reposted "
-                        : postMessage()}
-                    {JSON.stringify(Number(postDate())) == "null"
-                        ? ["on ", postDate()]
-                        : [postDate(), " ", unit]}
-                </p>
-            </div>
+            {!state.deleted && (
+                <div>
+                    <p className="post--postdate">
+                        {props.isHome
+                            ? state.isReposted
+                                ? "Reposted "
+                                : state.repostedBy == null
+                                ? "Posted "
+                                : "Reposted "
+                            : postMessage()}
+                        {JSON.stringify(Number(postDate())) == "null"
+                            ? ["on ", postDate()]
+                            : [postDate(), " ", unit]}
+                    </p>
+                </div>
+            )}
         </div>
     );
 }

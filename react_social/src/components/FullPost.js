@@ -331,6 +331,12 @@ export default function FullPost(props) {
         }
     }
 
+    useEffect(() => {
+        window.addEventListener("scroll", handleMenuToggle);
+
+        return () => window.removeEventListener("scroll", handleMenuToggle);
+    }, []);
+
     return (
         <div className="fullpost">
             <Navbar />
@@ -365,6 +371,7 @@ export default function FullPost(props) {
                                     profilePicture={post.profPicBytes}
                                     menuState={post.menuState}
                                     handleMenuToggle={handleMenuToggle}
+                                    deleted={post.deleted}
                                 />
                             );
                         })}
@@ -372,164 +379,178 @@ export default function FullPost(props) {
                             className="fullpost--main-wrapper"
                             id="target-post"
                         >
-                            {post?.menuState && <PostMenu />}
-                            {!post.deleted ? <div className="fullpost--main">
-                                {repostedBy != "null" && (
-                                    <p
-                                        className="fullpost--repostedBy"
-                                        onClick={() => {
-                                            window.location = `http://localhost:3000/${
-                                                repostedBy == "me"
-                                                    ? currentUser?.name
-                                                    : repostedBy
-                                            }`;
-                                        }}
-                                        style={repostedByStyle}
-                                        onMouseEnter={handleRepostedByHover}
-                                        onMouseLeave={handleRepostedByHover}
-                                    >
-                                        <div className="fullpost--top-icon">
-                                            <BsArrowRepeat />
+                            {post?.menuState && (
+                                <PostMenu
+                                    currentUsername={post.author.username}
+                                    id={post.id}
+                                />
+                            )}
+                            {!post.deleted ? (
+                                <div className="fullpost--main">
+                                    {repostedBy != "null" && (
+                                        <p
+                                            className="fullpost--repostedBy"
+                                            onClick={() => {
+                                                window.location = `http://localhost:3000/${
+                                                    repostedBy == "me"
+                                                        ? currentUser?.name
+                                                        : repostedBy
+                                                }`;
+                                            }}
+                                            style={repostedByStyle}
+                                            onMouseEnter={handleRepostedByHover}
+                                            onMouseLeave={handleRepostedByHover}
+                                        >
+                                            <div className="fullpost--top-icon">
+                                                <BsArrowRepeat />
+                                            </div>
+                                            Reposted by{" "}
+                                            {repostedBy == currentUser?.name
+                                                ? "me"
+                                                : repostedBy}
+                                        </p>
+                                    )}
+                                    <div className="fullpost--top">
+                                        <div className="fullpost--image-wrapper">
+                                            <img
+                                                src={profilePicture}
+                                                className="fullpost--image"
+                                            />
                                         </div>
-                                        Reposted by{" "}
-                                        {repostedBy == currentUser?.name
-                                            ? "me"
-                                            : repostedBy}
-                                    </p>
-                                )}
-                                <div className="fullpost--top">
-                                    <div className="fullpost--image-wrapper">
-                                        <img
-                                            src={profilePicture}
-                                            className="fullpost--image"
-                                        />
-                                    </div>
-                                    {post.author != null && (
-                                        <div className="fullpost--author">
-                                            <h4
-                                                className="fullpost--username"
-                                                onClick={() =>
-                                                    (window.location = `http://localhost:3000/${handle}`)
-                                                }
-                                                style={usernameStyle}
-                                                onMouseEnter={
-                                                    handleUsernameHover
-                                                }
-                                                onMouseLeave={
-                                                    handleUsernameHover
-                                                }
+                                        {post.author != null && (
+                                            <div className="fullpost--author">
+                                                <h4
+                                                    className="fullpost--username"
+                                                    onClick={() =>
+                                                        (window.location = `http://localhost:3000/${handle}`)
+                                                    }
+                                                    style={usernameStyle}
+                                                    onMouseEnter={
+                                                        handleUsernameHover
+                                                    }
+                                                    onMouseLeave={
+                                                        handleUsernameHover
+                                                    }
+                                                >
+                                                    {post.author.username}
+                                                </h4>
+                                                <p className="fullpost--fullname">
+                                                    {post.author.fullName}
+                                                </p>
+                                            </div>
+                                        )}
+                                        <div className="fullpost--dots-wrapper">
+                                            <div
+                                                style={menuStyle}
+                                                onMouseEnter={handleMenuHover}
+                                                onMouseLeave={handleMenuHover}
+                                                className="fullpost--menu"
+                                                onClick={() => {
+                                                    handleMenuToggle(post.id);
+                                                }}
                                             >
-                                                {post.author.username}
-                                            </h4>
-                                            <p className="fullpost--fullname">
-                                                {post.author.fullName}
+                                                <BsThreeDots />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {post.replyTo != null && (
+                                        <div className="fullpost--replyTo">
+                                            <p>
+                                                Reply To{" "}
+                                                {post.replyTo.author.username}
                                             </p>
                                         </div>
                                     )}
-                                    <div className="fullpost--dots-wrapper">
+                                    <div className="fullpost--content-wrapper">
+                                        <p className="fullpost--content">
+                                            {post.content}
+                                        </p>
+                                    </div>
+                                    <div className="fullpost--postDate">
+                                        {convertDate()}
+                                    </div>
+                                    <div className="fullpost--interactions">
                                         <div
-                                            style={menuStyle}
-                                            onMouseEnter={handleMenuHover}
-                                            onMouseLeave={handleMenuHover}
-                                            className="fullpost--menu"
-                                            onClick={() => {
-                                                handleMenuToggle(post.id);
-                                            }}
+                                            className="fullpost--likes"
+                                            onClick={retrieveLikes}
+                                            style={likeInteractionStyle}
+                                            onMouseEnter={
+                                                handleLikeInteractionHover
+                                            }
+                                            onMouseLeave={
+                                                handleLikeInteractionHover
+                                            }
                                         >
-                                            <BsThreeDots />
+                                            <p className="fullpost--interaction-number">
+                                                {post.likes.length}
+                                            </p>
+                                            <p className="fullpost--interaction-text">
+                                                Likes
+                                            </p>
+                                        </div>
+                                        <div
+                                            className="fullpost--reposts"
+                                            onClick={retrieveReposts}
+                                            style={repostInteractionStyle}
+                                            onMouseEnter={
+                                                handleRepostInteractionHover
+                                            }
+                                            onMouseLeave={
+                                                handleRepostInteractionHover
+                                            }
+                                        >
+                                            <p className="fullpost--interaction-number">
+                                                {post.reposts}
+                                            </p>
+                                            <p className="fullpost--interaction-text">
+                                                Reposts
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="fullpost--footer">
+                                        <div
+                                            className="fullpost--bubble"
+                                            onClick={toggleLike}
+                                            style={likeWrapperStyle}
+                                            onMouseEnter={handleLikeMouseOver}
+                                            onMouseLeave={handleLikeMouseOver}
+                                        >
+                                            <BsFillHandThumbsUpFill
+                                                style={likeIconStyle}
+                                            />
+                                        </div>
+                                        <div
+                                            className="fullpost--bubble"
+                                            style={repostWrapperStyle}
+                                            onMouseEnter={handleRepostMouseOver}
+                                            onMouseLeave={handleRepostMouseOver}
+                                            onClick={toggleRepost}
+                                        >
+                                            <BsArrowRepeat
+                                                style={repostIconStyle}
+                                            />
+                                        </div>
+                                        <div
+                                            className="fullpost--bubble"
+                                            onMouseEnter={
+                                                handleCommentMouseOver
+                                            }
+                                            onMouseLeave={
+                                                handleCommentMouseOver
+                                            }
+                                            style={commentIconStyles}
+                                            onClick={handleCommentToggle}
+                                        >
+                                            <BsChatDotsFill />
                                         </div>
                                     </div>
                                 </div>
-                                {post.replyTo != null && (
-                                    <div className="fullpost--replyTo">
-                                        <p>
-                                            Reply To{" "}
-                                            {post.replyTo.author.username}
-                                        </p>
-                                    </div>
-                                )}
-                                <div className="fullpost--content-wrapper">
-                                    <p className="fullpost--content">
-                                        {post.content}
-                                    </p>
-                                </div>
-                                <div className="fullpost--postDate">
-                                    {convertDate()}
-                                </div>
-                                <div className="fullpost--interactions">
-                                    <div
-                                        className="fullpost--likes"
-                                        onClick={retrieveLikes}
-                                        style={likeInteractionStyle}
-                                        onMouseEnter={
-                                            handleLikeInteractionHover
-                                        }
-                                        onMouseLeave={
-                                            handleLikeInteractionHover
-                                        }
-                                    >
-                                        <p className="fullpost--interaction-number">
-                                            {post.likes.length}
-                                        </p>
-                                        <p className="fullpost--interaction-text">
-                                            Likes
-                                        </p>
-                                    </div>
-                                    <div
-                                        className="fullpost--reposts"
-                                        onClick={retrieveReposts}
-                                        style={repostInteractionStyle}
-                                        onMouseEnter={
-                                            handleRepostInteractionHover
-                                        }
-                                        onMouseLeave={
-                                            handleRepostInteractionHover
-                                        }
-                                    >
-                                        <p className="fullpost--interaction-number">
-                                            {post.reposts}
-                                        </p>
-                                        <p className="fullpost--interaction-text">
-                                            Reposts
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="fullpost--footer">
-                                    <div
-                                        className="fullpost--bubble"
-                                        onClick={toggleLike}
-                                        style={likeWrapperStyle}
-                                        onMouseEnter={handleLikeMouseOver}
-                                        onMouseLeave={handleLikeMouseOver}
-                                    >
-                                        <BsFillHandThumbsUpFill
-                                            style={likeIconStyle}
-                                        />
-                                    </div>
-                                    <div
-                                        className="fullpost--bubble"
-                                        style={repostWrapperStyle}
-                                        onMouseEnter={handleRepostMouseOver}
-                                        onMouseLeave={handleRepostMouseOver}
-                                        onClick={toggleRepost}
-                                    >
-                                        <BsArrowRepeat
-                                            style={repostIconStyle}
-                                        />
-                                    </div>
-                                    <div
-                                        className="fullpost--bubble"
-                                        onMouseEnter={handleCommentMouseOver}
-                                        onMouseLeave={handleCommentMouseOver}
-                                        style={commentIconStyles}
-                                        onClick={handleCommentToggle}
-                                    >
-                                        <BsChatDotsFill />
-                                    </div>
-                                </div>
-                            </div> : <DeletedPost />}
+                            ) : (
+                                <DeletedPost />
+                            )}
                         </div>
                         {post?.replies?.map((comment) => {
+                            console.log(comment.deleted);
                             return (
                                 <Post
                                     key={comment.id}
@@ -552,6 +573,7 @@ export default function FullPost(props) {
                                     profilePicture={comment.profPicBytes}
                                     menuState={comment.menuState}
                                     handleMenuToggle={handleMenuToggle}
+                                    deleted={comment.deleted}
                                 />
                             );
                         })}

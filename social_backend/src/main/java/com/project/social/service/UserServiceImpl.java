@@ -828,27 +828,30 @@ public class UserServiceImpl implements UserService {
             return null;
         }
         List<Notification> notifications = notificationRepo.findByTo(user);
+        System.out.println("CHECKPOINT 1");
 
         //might want to paginate this
         //this orders the notifs by most recent to least recent
         notifications.sort(Comparator.comparing(Notification::getNotificationDate,(notif1, notif2) -> {
             return notif2.compareTo(notif1);
         }));
-
+        System.out.println("CHECKPOINT 2");
         if(exact) {
             notifications.forEach(notification -> {
                 notification.setViewed(true);
                 notificationRepo.save(notification);
             });
+            System.out.println("CHECKPOINT 3: "+notifications);
             return notifications;
         }
-
         List<Notification> numOfNotifs = new ArrayList<>();
         notifications.forEach(notification -> {
             if(!notification.isViewed()) {
+                System.out.println("CHECKPOINT 4");
                 numOfNotifs.add(notification);
             }
         });
+        System.out.println("CHECKPOINT 5");
 
         return numOfNotifs;
     }
