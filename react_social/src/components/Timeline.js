@@ -9,6 +9,7 @@ export default function Timeline(props) {
     const [posts, setPosts] = useState([]);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
+    const [counter, setCounter] = useState(0);
 
     useEffect(() => {
         fetch(`http://localhost:8080/request-timeline?page=${page}`, {
@@ -23,7 +24,6 @@ export default function Timeline(props) {
                 return res.json();
             })
             .then((data) => {
-                console.log(data);
                 if (data.length <= 0 || data.length >= 200) {
                     setHasMore(false);
                 } else {
@@ -36,9 +36,19 @@ export default function Timeline(props) {
     }, [page]);
 
     function fetchMoreData() {
-        setTimeout(() => {
-            setPage((prev) => prev + 1);
-        }, 500);
+            setTimeout(() => {
+                setPage((prev) => prev + 1);
+            }, 500);
+    }
+
+    function handleMenuToggle(id) {
+        setPosts((prevState) => {
+            return prevState.map((post) => {
+                return id == post.id
+                    ? { ...post, menuState: true }
+                    : { ...post, menuState: false };
+            });
+        });
     }
 
     return (
@@ -66,7 +76,6 @@ export default function Timeline(props) {
                         ]}
                     />
                 }
-                endMessage={<p>You're all up to date!</p>}
             >
                 {posts.map((post) => {
                     const replyTo =
@@ -92,6 +101,8 @@ export default function Timeline(props) {
                             isAuth={props.isAuth}
                             isHome={true}
                             profilePicture={post.profPicBytes}
+                            menuState={post.menuState}
+                            handleMenuToggle={handleMenuToggle}
                         />
                     );
                 })}

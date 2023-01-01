@@ -20,8 +20,6 @@ export default function Notifications(props) {
         //maybe make this api call in the app component and pass it down through props
     }, []);
 
-    console.log(props);
-
     return (
         <div className="notifications">
             <Navbar />

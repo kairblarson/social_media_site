@@ -112,6 +112,12 @@ export default function Navbar() {
             return { ...button, isSelected: true };
         }
         if (
+            userDetails?.name+"/likes" == currentLocation.pathname.substring(1) &&
+            button.id == 3
+        ) {
+            return { ...button, isSelected: true };
+        }
+        if (
             `/${userDetails?.name}/` + button.name.toLowerCase() == currentLocation.pathname &&
             button.id == 1
         ) {

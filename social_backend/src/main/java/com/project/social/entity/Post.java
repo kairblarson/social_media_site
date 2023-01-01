@@ -41,6 +41,7 @@ public class Post {
     private String content;
     private Long postDate = new Date().getTime();
     private Boolean isFocus = false;
+    private boolean isDeleted = false;
 
     public Post(User author, String content) {
         this.author = author;
@@ -146,6 +147,14 @@ public class Post {
 
     public void setFocus(Boolean focus) {
         isFocus = focus;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
     }
 
     @Override

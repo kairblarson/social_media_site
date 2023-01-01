@@ -15,7 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,7 +22,6 @@ import java.nio.file.Paths;
 import java.util.*;
 
 //i know its bad practice to have one huge service class but i didnt realize how large this was going to be
-@Transactional
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -118,7 +116,12 @@ public class UserServiceImpl implements UserService {
         if(currentUser.isPresent()) {
             //this condition is checking if we are returning regular posts/reposts
             if(postType.equalsIgnoreCase("posts")) {
-                returnPosts = userProfile.getPosts();
+                returnPosts = new ArrayList<>();
+                userProfile.getPosts().forEach(post -> {
+                    if(!post.isDeleted()) {
+                        returnPosts.add(post);
+                    }
+                });
                 List<Followers> followers = currentUser.get().getFollowing();
                 for(Followers follower : followers) {
                     if(follower.getTo() == userProfile) {
@@ -138,13 +141,15 @@ public class UserServiceImpl implements UserService {
                     else {
                         post.setRepostedBy(userProfile.getUsername());
                     }
-                    returnPosts.add(post);
+                    if(!post.isDeleted()) {
+                        returnPosts.add(post);
+                    }
                 });
 
                 //checking if the current user has reposted any of the profiles posts
                 currentUser.get().getReposts().forEach(repost -> {
                     Post post = repost.getRePost();
-                    if(returnPosts.contains(post)) {
+                    if(returnPosts.contains(post) && !post.isDeleted()) {
                         returnPosts.remove(post);
                         post.setReposted(true);
                         returnPosts.add(post);
@@ -159,7 +164,12 @@ public class UserServiceImpl implements UserService {
                         isFollowed = true;
                     }
                 }
-                returnPosts = userProfile.getLikedPosts();
+                returnPosts = new ArrayList<>();
+                userProfile.getLikedPosts().forEach(post -> {
+                    if(!post.isDeleted()) {
+                        returnPosts.add(post);
+                    }
+                });
             }
 
             //checking if the current user has liked any posts
@@ -172,7 +182,11 @@ public class UserServiceImpl implements UserService {
             //checking if the current user has reposted any posts
             List<Repost> currentUsersReposts = currentUser.get().getReposts();
             List<Post> reposts = new ArrayList<>();
-            currentUsersReposts.forEach(repost -> reposts.add(repost.getRePost()));
+            currentUsersReposts.forEach(repost -> {
+                if(!repost.getRePost().isDeleted()) {
+                    reposts.add(repost.getRePost());
+                }
+            });
             returnPosts.forEach(post -> {
                 if(reposts.contains(post)) {
                     post.setReposted(true);
@@ -183,7 +197,12 @@ public class UserServiceImpl implements UserService {
         else {
             //if there is no current user then there obviously they havent reposted/liked anything
             if(postType.equalsIgnoreCase("posts")) {
-                returnPosts = userProfile.getPosts();
+                returnPosts = new ArrayList<>();
+                userProfile.getPosts().forEach(post -> {
+                    if(!post.isDeleted()) {
+                        returnPosts.add(post);
+                    }
+                });
 
                 userProfile.getReposts().forEach(repost -> {
                     Post post = repost.getRePost();
@@ -191,12 +210,19 @@ public class UserServiceImpl implements UserService {
                     post.setPostDate(repost.getRepostDate());
                     post.setRepostedBy(userProfile.getUsername());
                     post.setReposted(false);
-                    returnPosts.add(post);
+                    if(!post.isDeleted()) {
+                        returnPosts.add(post);
+                    }
                 });
             }
             else {
                 //add just the liked posts
-                returnPosts = userProfile.getLikedPosts();
+                returnPosts = new ArrayList<>();
+                userProfile.getLikedPosts().forEach(post -> {
+                    if(!post.isDeleted()) {
+                        returnPosts.add(post);
+                    }
+                });
             }
 
             returnPosts.forEach(post -> {
@@ -224,6 +250,7 @@ public class UserServiceImpl implements UserService {
             postDTO.setId(post.getId());
             postDTO.setComments(post.getComments());
             postDTO.setLikes(post.getLikes());
+            postDTO.setDeleted(post.isDeleted());
             File imagePath = new File(basePath+"\\"+post.getAuthor().getProfilePicture());
             try{
                 if(imagePath != null) {
@@ -243,7 +270,6 @@ public class UserServiceImpl implements UserService {
 
         if(userProfile.getProfilePicture() != null) {
             if(imgFile.exists()) {
-                System.out.println("IMG PATH FOUND");
                 return new ProfileDetails(username,
                         userProfile.getFullName(),
                         userProfile.getBio(),
@@ -255,7 +281,6 @@ public class UserServiceImpl implements UserService {
             }
         }
 
-        System.out.println("IMG PATH NOT FOUND");
         return new ProfileDetails(username,
                 userProfile.getFullName(),
                 userProfile.getBio(),
@@ -282,7 +307,7 @@ public class UserServiceImpl implements UserService {
             Post post = repost.getRePost();
             post.setRepostedBy(repost.getRePoster().getUsername());
             post.setPostDate(repost.getRepostDate());
-            if(!timeline.contains(post)) {
+            if(!timeline.contains(post) && !post.isDeleted()) {
                 timeline.add(post);
             }
         }));
@@ -290,7 +315,7 @@ public class UserServiceImpl implements UserService {
         //current user post/repost hydration logic
         List<Post> userPosts = postRepo.findByAuthor(user);
         userPosts.forEach(post -> {
-            if(!timeline.contains(post)) {
+            if(!timeline.contains(post) && !post.isDeleted()) {
                 timeline.add(post);
             }
         });
@@ -301,7 +326,7 @@ public class UserServiceImpl implements UserService {
             post.setPostDate(repost.getRepostDate());
             post.setRepostedBy(user.getUsername());
             post.setReposted(true);
-            if(!timeline.contains(repost.getRePost())) {
+            if(!timeline.contains(repost.getRePost()) && !post.isDeleted()) {
                 timeline.add(post);
             }
         });
@@ -336,6 +361,7 @@ public class UserServiceImpl implements UserService {
             postDTO.setId(post.getId());
             postDTO.setComments(post.getComments());
             postDTO.setLikes(post.getLikes());
+            postDTO.setDeleted(post.isDeleted());
             File imagePath = new File(basePath+"\\"+post.getAuthor().getProfilePicture());
             try{
                 if(imagePath != null) {
@@ -368,13 +394,15 @@ public class UserServiceImpl implements UserService {
         if(agent == null) {
             return "login";
         }
-        Notification notification = notificationRepo.findExact("follow", agent, null);
+        Notification notification = notificationRepo.findFollow("follow",recipient, agent);
+        System.out.println("RETRIEVE NOTIF: "+notification);
 
         //checks to see if you are following the current user and if you are, it unfollows
         List<Followers> followers = agent.getFollowing();
         for(Followers user : followers) {
             if(user.getTo() == recipient) {
                 if(notification != null) {
+                    System.out.println("NOTIF DELETED: ");
                     notificationRepo.delete(notification);
                 }
                 followerRepo.delete(user);
@@ -414,7 +442,7 @@ public class UserServiceImpl implements UserService {
         Post post = postRepo.getReferenceById(id);
         User currentUser = userRepo.findByEmail(email);
         User receiver = post.getAuthor();
-        Notification notification = notificationRepo.findExact("like",currentUser,post);
+        Notification notification = notificationRepo.findExact("like",post.getAuthor(), currentUser,post);
 
         //checking if the user has already liked the post
         if(currentUser.getLikedPosts().contains(post)) {
@@ -441,7 +469,7 @@ public class UserServiceImpl implements UserService {
         Post post = postRepo.getReferenceById(id);
         User user = userRepo.findByEmail(email); //currentUser
         User receiver = post.getAuthor();
-        Notification notification = notificationRepo.findExact("repost", user, post);
+        Notification notification = notificationRepo.findExact("repost", post.getAuthor(), user, post);
         //add notification logic
 
         //checking if user has already reposted the post
@@ -563,20 +591,22 @@ public class UserServiceImpl implements UserService {
                 postDTO.setLikes(post.getLikes());
                 postDTO.setFocus(post.getFocus());
                 postDTO.setComments(post.getComments());
+                postDTO.setDeleted(post.isDeleted());
                 postDTO.getComments().forEach(comment -> {
                     PostDTO commentDTO = new PostDTO();
-                    commentDTO.setContent(post.getContent());
-                    commentDTO.setPostDate(post.getPostDate());
-                    commentDTO.setReposted(post.getReposted());
-                    commentDTO.setLiked(post.getLiked());
-                    commentDTO.setRepostedBy(post.getRepostedBy());
-                    commentDTO.setReposts(post.getReposts());
-                    commentDTO.setReplyTo(post.getReplyTo());
-                    commentDTO.setAuthor(post.getAuthor());
-                    commentDTO.setId(post.getId());
-                    commentDTO.setLikes(post.getLikes());
-                    commentDTO.setFocus(post.getFocus());
-                    commentDTO.setComments(post.getComments());
+                    commentDTO.setContent(comment.getContent());
+                    commentDTO.setPostDate(comment.getPostDate());
+                    commentDTO.setReposted(comment.getReposted());
+                    commentDTO.setLiked(comment.getLiked());
+                    commentDTO.setRepostedBy(comment.getRepostedBy());
+                    commentDTO.setReposts(comment.getReposts());
+                    commentDTO.setReplyTo(comment.getReplyTo());
+                    commentDTO.setAuthor(comment.getAuthor());
+                    commentDTO.setId(comment.getId());
+                    commentDTO.setLikes(comment.getLikes());
+                    commentDTO.setFocus(comment.getFocus());
+                    commentDTO.setDeleted(comment.isDeleted());
+                    commentDTO.setComments(comment.getComments());
 
                     File imagePath = new File(basePath+"\\"+comment.getAuthor().getProfilePicture());
                     try{
@@ -588,7 +618,6 @@ public class UserServiceImpl implements UserService {
                     }catch (Exception e) {
                         System.out.println("CAUGHT!: "+e.getLocalizedMessage());
                     }
-
                     postDTO.addToReplies(commentDTO);
                 });
 
@@ -604,8 +633,6 @@ public class UserServiceImpl implements UserService {
                 }
                 returnPosts.add(postDTO);
             });
-            System.out.println("TREAD: "+thread);
-            System.out.println("RETURN: "+returnPosts);
             return returnPosts;
         }
 
@@ -673,21 +700,23 @@ public class UserServiceImpl implements UserService {
             postDTO.setId(post.getId());
             postDTO.setLikes(post.getLikes());
             postDTO.setFocus(post.getFocus());
+            postDTO.setDeleted(post.isDeleted());
             postDTO.setComments(post.getComments());
             postDTO.getComments().forEach(comment -> {
                 PostDTO commentDTO = new PostDTO();
-                commentDTO.setContent(post.getContent());
-                commentDTO.setPostDate(post.getPostDate());
-                commentDTO.setReposted(post.getReposted());
-                commentDTO.setLiked(post.getLiked());
-                commentDTO.setRepostedBy(post.getRepostedBy());
-                commentDTO.setReposts(post.getReposts());
-                commentDTO.setReplyTo(post.getReplyTo());
-                commentDTO.setAuthor(post.getAuthor());
-                commentDTO.setId(post.getId());
-                commentDTO.setLikes(post.getLikes());
-                commentDTO.setFocus(post.getFocus());
-                commentDTO.setComments(post.getComments());
+                commentDTO.setContent(comment.getContent());
+                commentDTO.setPostDate(comment.getPostDate());
+                commentDTO.setReposted(comment.getReposted());
+                commentDTO.setLiked(comment.getLiked());
+                commentDTO.setRepostedBy(comment.getRepostedBy());
+                commentDTO.setReposts(comment.getReposts());
+                commentDTO.setReplyTo(comment.getReplyTo());
+                commentDTO.setAuthor(comment.getAuthor());
+                commentDTO.setId(comment.getId());
+                commentDTO.setLikes(comment.getLikes());
+                commentDTO.setFocus(comment.getFocus());
+                commentDTO.setDeleted(comment.isDeleted());
+                commentDTO.setComments(comment.getComments());
 
                 File imagePath = new File(basePath+"\\"+comment.getAuthor().getProfilePicture());
                 try{
@@ -870,5 +899,24 @@ public class UserServiceImpl implements UserService {
         }
         userRepo.save(currentUser);
         return currentUser;
+    }
+
+    @Override
+    public String deletePost(Long postID, String email) {
+        User user = userRepo.findByEmail(email);
+        Optional<Post> optionalPost = postRepo.findById(postID);
+
+        if(optionalPost.isEmpty()) {
+            return "does not exist";
+        }
+
+        Post post = optionalPost.get();
+        if(optionalPost.get().getAuthor().equals(user)) {
+            System.out.println("MATCH");
+            post.setDeleted(true);
+            postRepo.save(post);
+            return "success";
+        }
+        return "failure";
     }
 }

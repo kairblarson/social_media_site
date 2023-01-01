@@ -9,10 +9,12 @@ import {
     BsChatDotsFill,
     BsArrowRepeat,
     BsArrowLeft,
-    BsThreeDots
+    BsThreeDots,
 } from "react-icons/bs";
 import Header from "./Header";
 import { ColorRing } from "react-loader-spinner";
+import PostMenu from "./PostMenu";
+import DeletedPost from "./DeletedPost";
 
 export default function FullPost(props) {
     const { handle, id, interaction } = useParams();
@@ -39,6 +41,7 @@ export default function FullPost(props) {
         repostedByHover: false,
         repostInteractionHover: false,
         likeInteractionHover: false,
+        menuHover: false,
     });
     const [targetPost, setTargetPost] = useState();
     const [fillerHeight, setFillerHeight] = useState(0);
@@ -118,6 +121,19 @@ export default function FullPost(props) {
         setHoverState((prevState) => ({
             ...prevState,
             usernameHover: !prevState.usernameHover,
+        }));
+    }
+
+    const menuStyle = {
+        background: hoverState.menuHover ? "#eae6ed" : "none",
+        cursor: hoverState.menuHover ? "pointer" : "none",
+        transition: "all .08s linear",
+    };
+
+    function handleMenuHover() {
+        setHoverState((prevState) => ({
+            ...prevState,
+            menuHover: !prevState.menuHover,
         }));
     }
 
@@ -284,8 +300,36 @@ export default function FullPost(props) {
 
     const [profilePicture, setProfilePicture] = useState();
     useEffect(() => {
-        setProfilePicture("data:image/png;base64,"+post.profPicBytes);
+        setProfilePicture("data:image/png;base64," + post.profPicBytes);
     }, [post]);
+
+    function handleMenuToggle(id) {
+        if (id == post.id) {
+            setPost((prevState) => {
+                return { ...prevState, menuState: true };
+            });
+        } else {
+            setPost((prevState) => {
+                const replies = prevState.comments.map((reply) => {
+                    return reply.id == id
+                        ? { ...reply, menuState: true }
+                        : { ...reply, menuState: false };
+                });
+                return {
+                    ...prevState,
+                    menuState: false,
+                    replies: [...replies],
+                };
+            });
+            setThread((prevState) => {
+                return prevState.map((post) => {
+                    return id == post.id
+                        ? { ...post, menuState: true }
+                        : { ...post, menuState: false };
+                });
+            });
+        }
+    }
 
     return (
         <div className="fullpost">
@@ -319,6 +363,8 @@ export default function FullPost(props) {
                                     isAuth={props.isAuth}
                                     isHome={false}
                                     profilePicture={post.profPicBytes}
+                                    menuState={post.menuState}
+                                    handleMenuToggle={handleMenuToggle}
                                 />
                             );
                         })}
@@ -326,7 +372,8 @@ export default function FullPost(props) {
                             className="fullpost--main-wrapper"
                             id="target-post"
                         >
-                            <div className="fullpost--main">
+                            {post?.menuState && <PostMenu />}
+                            {!post.deleted ? <div className="fullpost--main">
                                 {repostedBy != "null" && (
                                     <p
                                         className="fullpost--repostedBy"
@@ -380,7 +427,17 @@ export default function FullPost(props) {
                                         </div>
                                     )}
                                     <div className="fullpost--dots-wrapper">
-                                        <BsThreeDots />
+                                        <div
+                                            style={menuStyle}
+                                            onMouseEnter={handleMenuHover}
+                                            onMouseLeave={handleMenuHover}
+                                            className="fullpost--menu"
+                                            onClick={() => {
+                                                handleMenuToggle(post.id);
+                                            }}
+                                        >
+                                            <BsThreeDots />
+                                        </div>
                                     </div>
                                 </div>
                                 {post.replyTo != null && (
@@ -470,10 +527,9 @@ export default function FullPost(props) {
                                         <BsChatDotsFill />
                                     </div>
                                 </div>
-                            </div>
+                            </div> : <DeletedPost />}
                         </div>
                         {post?.replies?.map((comment) => {
-                            console.log(comment);
                             return (
                                 <Post
                                     key={comment.id}
@@ -494,6 +550,8 @@ export default function FullPost(props) {
                                     isAuth={props.isAuth}
                                     isHome={false}
                                     profilePicture={comment.profPicBytes}
+                                    menuState={comment.menuState}
+                                    handleMenuToggle={handleMenuToggle}
                                 />
                             );
                         })}

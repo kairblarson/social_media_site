@@ -15,10 +15,13 @@ export default function NavButton(props) {
             onClick={() => props.handleClick(props.id)}
         >
             <div className="navbar--icon">{props.icon}</div>
-            {props.name == "Notifications" &&  props.notifs > 0 && (
+            {props.name == "Notifications" && props.notifs > 0 && (
                 <div className="navbar--notifs">{props.notifs}</div>
             )}
             {props.name}
+            {props.isSelected && <div className="navbar--select-wrapper">
+                <div className="navbar--selected"></div>
+            </div>}
         </div>
     );
 }

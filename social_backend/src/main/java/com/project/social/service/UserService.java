@@ -32,5 +32,6 @@ public interface UserService {
     void viewNotifications(User to);
     List<Notification> getNotifications(String email, Boolean exact);
     User handleEditProfile(String username, String bio, MultipartFile file, String email) throws IOException;
+    String deletePost(Long postID, String email);
 
 }

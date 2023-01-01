@@ -17,7 +17,7 @@ import Notifications from "./Notifications";
 
 export default function App() {
     const [modalState, setModalState] = useState(false);
-    const [editModalState, setEditModalState] = useState(false); //change to false
+    const [editModalState, setEditModalState] = useState(false);
     const [isAuth, setIsAuth] = useState();
     const [targetPost, setTargetPost] = useState();
     const { handle, id, interaction } = useParams();
@@ -34,8 +34,8 @@ export default function App() {
     }
 
     useEffect(() => {
-        document.body.style.overflowY = modalState ? "hidden" : "auto";
-        document.body.style.overflowY = editModalState ? "hidden" : "auto";
+        console.log(modalState);
+        document.body.style.overflowY = modalState || editModalState ? "hidden" : "auto";
     }, [modalState, editModalState]);
 
     function handleSubmit(content) {

@@ -51,7 +51,7 @@ export default function Profile(props) {
                     return res.json();
                 })
                 .then((data) => {
-                    console.log(data);
+                    // console.log(data);
                     if (data.posts.length <= 0 || data.posts.length >= 200) {
                         setHasMore(false);
                     } else {
@@ -167,13 +167,13 @@ export default function Profile(props) {
     };
 
     const postsTabButtonStyle = {
-        background: hoverState.postsHover ? "#eae6ed" : "white",
+        background: hoverState.postsHover ? "#eae6ed" : "#f6f6f6",
         cursor: hoverState.postsHover ? "pointer" : "none",
         transition: "all .08s linear",
     };
 
     const likesTabButtonStyle = {
-        background: hoverState.likesHover ? "#eae6ed" : "white",
+        background: hoverState.likesHover ? "#eae6ed" : "#f6f6f6",
         cursor: hoverState.likesHover ? "pointer" : "none",
         transition: "all .08s linear",
     };
@@ -257,7 +257,7 @@ export default function Profile(props) {
         setProfilePicture(
             "data:image/png;base64," + profileDetails.profilePicture
         );
-        if (profileDetails != undefined) {
+        if (profileDetails.profilePicture != undefined) {
             setLoading(false);
         }
     }, [profileDetails]);
@@ -288,12 +288,24 @@ export default function Profile(props) {
                         isAuth={props.isAuth}
                         isHome={false}
                         profilePicture={post.profPicBytes}
+                        menuState={post.menuState}
+                        handleMenuToggle={handleMenuToggle}
                     />
                 );
             })
         );
-        console.log(posts);
+        // console.log(posts);
     }, [posts]);
+
+    function handleMenuToggle(id) {
+        setPosts((prevState) => {
+            return prevState.map((post) => {
+                return id == post.id
+                    ? { ...post, menuState: true }
+                    : { ...post, menuState: false };
+            });
+        });
+    }
 
     return (
         <div className="profile">

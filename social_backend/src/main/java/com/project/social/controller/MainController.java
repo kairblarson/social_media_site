@@ -185,6 +185,13 @@ public class MainController {
         }
     }
 
+    @DeleteMapping("/{id}/delete")
+    public ResponseEntity<String> deletePost(@PathVariable(value = "id") Long id,
+                                             Authentication authentication) {
+        String message = userService.deletePost(id, getEmailFromAuth(authentication));
+        return ResponseEntity.ok().body(message);
+    }
+
     public String getEmailFromAuth(Authentication authentication) {
         String email = null; //code to extract user from auth
         if(authentication == null) {

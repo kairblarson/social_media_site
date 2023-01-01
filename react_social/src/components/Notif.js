@@ -67,7 +67,7 @@ export default function Notif({ action, id, content, from, date }) {
     }
 
     function handleNotifClick() {
-        if(content == null) {
+        if (content == null) {
             window.location = `http://localhost:3000/${from.username}`;
         }
         window.location = `http://localhost:3000/${currentUser.name}/post/${
@@ -104,7 +104,11 @@ export default function Notif({ action, id, content, from, date }) {
                         : "followed you"}
                 </div>
                 {content != null && (
-                    <div className="notif--content">{content.content}</div>
+                    <div className="notif--content">
+                        {content.deleted
+                            ? "This post has been deleted..."
+                            : content.content}
+                    </div>
                 )}
             </div>
         </div>

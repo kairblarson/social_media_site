@@ -18,8 +18,14 @@ import static org.hibernate.loader.Loader.SELECT;
 public interface NotificationRepo extends JpaRepository<Notification, Long> {
 
     List<Notification> findByTo(User user);
-    @Query(value = "SELECT * FROM notifications n WHERE n.action = :action AND n.from_id = :from AND n.post_id = :post", nativeQuery = true)
+    @Query(value = "SELECT * FROM notifications n WHERE n.action = :action AND n.to_id = :to AND n.from_id = :from AND n.post_id = :post", nativeQuery = true)
     Notification findExact(@Param("action") String action,
+                                @Param("to") User to,
                                 @Param("from") User from,
                                 @Param("post") Post post);
+
+    @Query(value = "SELECT * FROM notifications n WHERE n.action = :action AND n.to_id = :to AND n.from_id = :from", nativeQuery = true)
+    Notification findFollow(@Param("action") String action,
+                           @Param("to") User to,
+                           @Param("from") User from);
 }

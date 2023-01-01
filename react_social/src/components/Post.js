@@ -7,6 +7,7 @@ import {
 import { useState, useEffect } from "react";
 import { hover } from "@testing-library/user-event/dist/hover";
 import { Link, useParams } from "react-router-dom";
+import PostMenu from "./PostMenu";
 
 export default function Post(props) {
     const [state, setState] = useState(props); //post state
@@ -28,6 +29,7 @@ export default function Post(props) {
     });
     const { handle } = useParams();
     const [profilePicture, setProfilePicture] = useState(null);
+    const [postHeight, setPostHeight] = useState(null);
 
     const date = new Date(); //raw
     date.setTime(state.postDate);
@@ -111,6 +113,14 @@ export default function Post(props) {
         the backend just for this little feature*/
     };
 
+    useEffect(() => {
+        window.addEventListener("scroll", handleScroll);
+
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+    //if i wanted to increase performance i would put the listener and
+    //the function in a higher component
+
     //-----general post stuff-------
 
     function openPost() {
@@ -166,6 +176,10 @@ export default function Post(props) {
             ...prevState,
             menuHover: !prevState.menuHover,
         }));
+    }
+
+    function handleScroll() {
+        props.handleMenuToggle();
     }
 
     const repostedByStyle = {
@@ -302,7 +316,7 @@ export default function Post(props) {
     //------------------------------
 
     useEffect(() => {
-        setProfilePicture("data:image/png;base64,"+state.profilePicture);
+        setProfilePicture("data:image/png;base64," + state.profilePicture);
     }, [state]);
 
     return (
@@ -313,14 +327,19 @@ export default function Post(props) {
             style={postStyles}
             name="mainHover"
             onClick={openPost}
+            id={state.id}
         >
+            {props.menuState && (
+                <PostMenu
+                    handleMenuToggle={props.handleMenuToggle}
+                    currentUsername={state.author.username}
+                    id={state.id}
+                />
+            )}
             <div className="post">
                 <div className="post--left">
                     <div className="post--pic-wrapper">
-                        <img
-                            src={profilePicture}
-                            className="post--pic"
-                        />
+                        <img src={profilePicture} className="post--pic" />
                     </div>
                     {state.isThread && state.comments.length > 0 && (
                         <div className="post--thread"></div>
@@ -362,6 +381,10 @@ export default function Post(props) {
                                 style={menuStyle}
                                 onMouseEnter={handleMenuHover}
                                 onMouseLeave={handleMenuHover}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    props.handleMenuToggle(state.id);
+                                }}
                             >
                                 <BsThreeDots />
                             </div>
