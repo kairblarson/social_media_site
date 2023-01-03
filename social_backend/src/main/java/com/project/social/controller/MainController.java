@@ -192,6 +192,19 @@ public class MainController {
         return ResponseEntity.ok().body(message);
     }
 
+    @GetMapping("/users/search")
+    public ResponseEntity<List<User>> queryUsers(@RequestParam(value = "keyword") String keyword,
+                                                 @RequestParam(value = "page") Integer page) {
+        return ResponseEntity.ok().body(userService.userSearchResults(keyword, page));
+    }
+
+    @GetMapping("/posts/search")
+    public ResponseEntity<List<PostDTO>> queryPosts(@RequestParam(value = "keyword") String keyword,
+                                                    @RequestParam(value = "page") Integer page,
+                                                    Authentication authentication) {
+        return ResponseEntity.ok().body(userService.postSearchResults(keyword, page, getEmailFromAuth(authentication)));
+    }
+
     public String getEmailFromAuth(Authentication authentication) {
         String email = null; //code to extract user from auth
         if(authentication == null) {

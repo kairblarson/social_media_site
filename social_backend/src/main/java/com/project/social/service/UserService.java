@@ -33,5 +33,7 @@ public interface UserService {
     List<Notification> getNotifications(String email, Boolean exact);
     User handleEditProfile(String username, String bio, MultipartFile file, String email) throws IOException;
     String deletePost(Long postID, String email);
-
+    List<String> searchSuggestions(String keyword);
+    List<User> userSearchResults(String keyword, Integer page);
+    List<PostDTO> postSearchResults(String keyword, Integer page, String email);
 }

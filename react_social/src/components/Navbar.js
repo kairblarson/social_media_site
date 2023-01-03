@@ -6,6 +6,11 @@ import {
     BsFillEnvelopeFill,
     BsFillPersonFill,
     BsBugFill,
+    BsSearch,
+    BsHouse,
+    BsBell,
+    BsEnvelope,
+    BsPerson,
 } from "react-icons/bs";
 import NavButton from "./NavButton";
 import { Link, useParams, useLocation } from "react-router-dom";
@@ -20,32 +25,39 @@ export default function Navbar() {
     const [buttonState, setButtonState] = useState([
         {
             id: 0,
-            icon: <BsHouseFill />,
+            icon: <BsHouse />,
             name: "Home",
             isHover: false,
             isSelected: false,
         },
         {
             id: 1,
-            icon: <BsFillBellFill />,
+            icon: <BsBell />,
             name: "Notifications",
             isHover: false,
             isSelected: false,
         },
         {
             id: 2,
-            icon: <BsFillEnvelopeFill />,
+            icon: <BsEnvelope />,
             name: "Messages",
             isHover: false,
             isSelected: false,
         },
         {
             id: 3,
-            icon: <BsFillPersonFill />,
+            icon: <BsPerson />,
             name: "Profile",
             isHover: false,
             isSelected: false,
         },
+        {
+            id: 4,
+            icon: <BsSearch />,
+            name: "Explore",
+            isHover: false,
+            isSelected: false,
+        }
     ]);
 
     useEffect(() => {
@@ -56,10 +68,11 @@ export default function Navbar() {
             .then((res) => res.json())
             .then((data) => {
                 setNotifications(data);
-                if(currentLocation.pathname == `/${handle}/notifications`) {
+                if (currentLocation.pathname == `/${handle}/notifications`) {
                     setNotifications(0);
                 }
-            }).catch((err) => setNotifications(0));
+            })
+            .catch((err) => setNotifications(0));
         //maybe make this api call in the app component and pass it down through props
     }, []);
 
@@ -90,6 +103,8 @@ export default function Navbar() {
                 }
                 window.location = `http://localhost:3000/${userDetails.name}`;
                 break;
+            case 4:
+                window.location = `http://localhost:3000/explore`;
             default:
                 fetch("http://localhost:8080/test", {
                     method: "GET",
@@ -112,13 +127,15 @@ export default function Navbar() {
             return { ...button, isSelected: true };
         }
         if (
-            userDetails?.name+"/likes" == currentLocation.pathname.substring(1) &&
+            userDetails?.name + "/likes" ==
+                currentLocation.pathname.substring(1) &&
             button.id == 3
         ) {
             return { ...button, isSelected: true };
         }
         if (
-            `/${userDetails?.name}/` + button.name.toLowerCase() == currentLocation.pathname &&
+            `/${userDetails?.name}/` + button.name.toLowerCase() ==
+                currentLocation.pathname &&
             button.id == 1
         ) {
             return { ...button, isSelected: true };

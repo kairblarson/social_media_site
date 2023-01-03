@@ -47,14 +47,14 @@ export default function Extra(props) {
                 img={userState.profile_img}
                 isAuth={props.isAuth}
             />
-            <input
+            {/* <input
                 type="text"
                 placeholder="Search..."
                 className="extra--search"
                 name="searchInput"
                 value={inputState.searchInput}
                 onChange={handleChange}
-            ></input>
+            ></input> */}
             {props.isAuth && <button
                 className="extra--post-button"
                 onMouseLeave={handleHover}

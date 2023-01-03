@@ -6,7 +6,6 @@ import {
     BsEmojiFrown,
 } from "react-icons/bs";
 import { useState, useEffect } from "react";
-import { hover } from "@testing-library/user-event/dist/hover";
 import { Link, useParams } from "react-router-dom";
 import PostMenu from "./PostMenu";
 

@@ -828,30 +828,26 @@ public class UserServiceImpl implements UserService {
             return null;
         }
         List<Notification> notifications = notificationRepo.findByTo(user);
-        System.out.println("CHECKPOINT 1");
 
         //might want to paginate this
         //this orders the notifs by most recent to least recent
         notifications.sort(Comparator.comparing(Notification::getNotificationDate,(notif1, notif2) -> {
             return notif2.compareTo(notif1);
         }));
-        System.out.println("CHECKPOINT 2");
+
         if(exact) {
             notifications.forEach(notification -> {
                 notification.setViewed(true);
                 notificationRepo.save(notification);
             });
-            System.out.println("CHECKPOINT 3: "+notifications);
             return notifications;
         }
         List<Notification> numOfNotifs = new ArrayList<>();
         notifications.forEach(notification -> {
             if(!notification.isViewed()) {
-                System.out.println("CHECKPOINT 4");
                 numOfNotifs.add(notification);
             }
         });
-        System.out.println("CHECKPOINT 5");
 
         return numOfNotifs;
     }
@@ -921,5 +917,99 @@ public class UserServiceImpl implements UserService {
             return "success";
         }
         return "failure";
+    }
+
+    @Override
+    public List<String> searchSuggestions(String keyword) {
+        return null;
+    }
+
+    @Override
+    public List<User> userSearchResults(String keyword, Integer page) {
+        if (keyword.trim().equalsIgnoreCase("")) {
+            return new ArrayList<>();
+        }
+        List<User> queryUsers = userRepo.queryUsers(keyword);
+        queryUsers.forEach(user -> {
+            File imagePath = new File(basePath+"\\"+user.getProfilePicture());
+            try{
+                if(imagePath != null) {
+                    if(imagePath.exists()) {
+                        user.setFullImage(FileUtil.readAsByteArray(imagePath));
+                    }
+                }
+            }catch (Exception e) {
+                System.out.println("CAUGHT!: "+e.getLocalizedMessage());
+            }
+        });
+        PaginatedList paginatedList = new PaginatedList(queryUsers);
+
+        return paginatedList.getPage(page);
+    }
+
+    @Override
+    public List<PostDTO> postSearchResults(String keyword, Integer page, String email) {
+        User currentUser = userRepo.findByEmail(email);
+
+        if (keyword.trim().equalsIgnoreCase("")) {
+            return new ArrayList<>();
+        }
+        List<Post> queryPosts = postRepo.queryPosts(keyword);
+        ArrayList<PostDTO> postDTOArray = new ArrayList<>();
+
+        if(currentUser != null) {
+            currentUser.getReposts().forEach(repost -> {
+                if(queryPosts.contains(repost.getRePost())) {
+                    repost.getRePost().setReposted(true);
+                }
+            });
+            currentUser.getLikedPosts().forEach(post -> {
+                if(queryPosts.contains(post)) {
+                    post.setLiked(true);
+                }
+            });
+        }
+        else {
+            queryPosts.forEach(post -> {
+                post.setLiked(false);
+                post.setReposted(false);
+            });
+        }
+
+        queryPosts.forEach(post -> {
+            PostDTO postDTO = new PostDTO();
+            postDTO.setContent(post.getContent());
+            postDTO.setPostDate(post.getPostDate());
+            postDTO.setReposted(post.getReposted());
+            postDTO.setLiked(post.getLiked());
+            postDTO.setRepostedBy(post.getRepostedBy());
+            postDTO.setReposts(post.getReposts());
+            postDTO.setReplyTo(post.getReplyTo());
+            postDTO.setAuthor(post.getAuthor());
+            postDTO.setId(post.getId());
+            postDTO.setComments(post.getComments());
+            postDTO.setLikes(post.getLikes());
+            postDTO.setDeleted(post.isDeleted());
+            File imagePath = new File(basePath+"\\"+post.getAuthor().getProfilePicture());
+            try{
+                if(imagePath != null) {
+                    if(imagePath.exists()) {
+                        postDTO.setProfPicBytes(FileUtil.readAsByteArray(imagePath));
+                    }
+                }
+            }catch (Exception e) {
+                System.out.println("CAUGHT!: "+e.getLocalizedMessage());
+            }
+            postDTOArray.add(postDTO);
+        });
+        //order the posts by newest on top
+        postDTOArray.sort(Comparator.comparing(Post::getPostDate,(post1, post2) -> {
+            return post2.compareTo(post1);
+        }));
+        PaginatedList paginatedList = new PaginatedList(postDTOArray);
+        //before returning the posts, check if the user has interacted with the post in any way AND return DTO instead
+        //paginate this as well
+        //arrange this from newest to oldest as well
+        return paginatedList.getPage(page);
     }
 }

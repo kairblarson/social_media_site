@@ -5,7 +5,7 @@ import {
     Route,
     Routes,
     BrowserRouter as Router,
-    useParams
+    useParams,
 } from "react-router-dom";
 import Profile from "../components/Profile";
 import ProtectedRoutes, { useAuth } from "./ProtectedRoutes";
@@ -14,6 +14,7 @@ import axios from "axios";
 import UserList from "../components/UserList";
 import FullPost from "./FullPost";
 import Notifications from "./Notifications";
+import Explore from "./Explore";
 
 export default function App() {
     const [modalState, setModalState] = useState(false);
@@ -35,7 +36,8 @@ export default function App() {
 
     useEffect(() => {
         console.log(modalState);
-        document.body.style.overflowY = modalState || editModalState ? "hidden" : "auto";
+        document.body.style.overflowY =
+            modalState || editModalState ? "hidden" : "auto";
     }, [modalState, editModalState]);
 
     function handleSubmit(content) {
@@ -67,14 +69,13 @@ export default function App() {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-            }
+            },
         })
             .then((res) => {
-                if(res.status === 200) {
+                if (res.status === 200) {
                     console.log("AUTH");
                     setIsAuth(true);
-                }
-                else {
+                } else {
                     console.log("NOT AUTH");
                     setIsAuth(false);
                     localStorage.setItem("userDetails", null);
@@ -137,6 +138,19 @@ export default function App() {
                             path=":handle/post/:id/:interaction"
                             element={
                                 <UserList
+                                    toggleModal={toggleModal}
+                                    modalState={modalState}
+                                    handleSubmit={handleSubmit}
+                                    isAuth={isAuth}
+                                    targetPost={targetPost}
+                                    interaction={interaction}
+                                />
+                            }
+                        />
+                        <Route
+                            path="/explore"
+                            element={
+                                <Explore
                                     toggleModal={toggleModal}
                                     modalState={modalState}
                                     handleSubmit={handleSubmit}

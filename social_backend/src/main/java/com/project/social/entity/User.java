@@ -11,7 +11,7 @@ import org.springframework.data.repository.cdi.Eager;
 
 import javax.persistence.*;
 
-@JsonIgnoreProperties({"hibernateLazyInitializer"}) //possible solution for any lazy serializing issues 
+@JsonIgnoreProperties({"hibernateLazyInitializer"}) //possible solution for any lazy serializing issues
 @Entity
 @NoArgsConstructor
 @Table(name = "users")
