@@ -164,11 +164,12 @@ public class MainController {
 
     @GetMapping("/get-notifications")
     public ResponseEntity<List<Notification>> getNotifications(Authentication authentication,
-                                                               @RequestParam(value = "exact") Boolean exact) {
+                                                               @RequestParam(value = "exact") Boolean exact,
+                                                               @RequestParam(value = "page", required = false) Integer page) {
         if(authentication == null){
             return ResponseEntity.ok().body(null);
         }
-        return ResponseEntity.ok().body(userService.getNotifications(getEmailFromAuth(authentication), exact)); //exact vs relative
+        return ResponseEntity.ok().body(userService.getNotifications(getEmailFromAuth(authentication), exact, page)); //exact vs relative
     }
 
     @PostMapping("/{username}/handle-edit")

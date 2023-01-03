@@ -30,7 +30,7 @@ public interface UserService {
     Set<User> getPostInteractions(Long postId, String interaction, User currentUser);
     Notification createNotification(User agent, String action, Post content, User userTo);
     void viewNotifications(User to);
-    List<Notification> getNotifications(String email, Boolean exact);
+    List<Notification> getNotifications(String email, Boolean exact, Integer page);
     User handleEditProfile(String username, String bio, MultipartFile file, String email) throws IOException;
     String deletePost(Long postID, String email);
     List<String> searchSuggestions(String keyword);

@@ -5,7 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3a82b9ce-f448-41bd-80bb-05876d1411cc" name="Changes" comment="&quot;Initial backend commit&quot;">
-      <change beforePath="$PROJECT_DIR$/../react_social/src/components/Post.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_social/src/components/Post.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../react_social/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/../react_social/src/index.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

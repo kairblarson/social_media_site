@@ -822,7 +822,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Notification> getNotifications(String email, Boolean exact) {
+    public List<Notification> getNotifications(String email, Boolean exact, Integer page) {
         User user = userRepo.findByEmail(email);
         if(user == null) {
             return null;
@@ -840,7 +840,22 @@ public class UserServiceImpl implements UserService {
                 notification.setViewed(true);
                 notificationRepo.save(notification);
             });
-            return notifications;
+
+            notifications.forEach(notification -> {
+                File imagePath = new File(basePath+"\\"+notification.getFrom().getProfilePicture());
+                try{
+                    if(imagePath != null) {
+                        if(imagePath.exists()) {
+                            notification.getFrom().setFullImage(FileUtil.readAsByteArray(imagePath));
+                        }
+                    }
+                }catch (Exception e) {
+                    System.out.println("CAUGHT!: "+e.getLocalizedMessage());
+                }
+            });
+            PaginatedList paginatedList = new PaginatedList(notifications);
+
+            return paginatedList.getPage(page);
         }
         List<Notification> numOfNotifs = new ArrayList<>();
         notifications.forEach(notification -> {

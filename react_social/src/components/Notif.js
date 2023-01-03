@@ -87,6 +87,9 @@ export default function Notif({ action, id, content, from, date }) {
                 {actionToIcon()}
             </div>
             <div className="notif--right">
+                <div>
+                    <img src={"data:image/png;base64," + from.fullImage} className="notif--img"/>
+                </div>
                 <div className="notif--header">
                     <h4
                         className="notif--username"
