@@ -22,12 +22,12 @@ public interface UserService {
     List<PostDTO> requestTimeline(String username, Integer page);
     String addFollower(String username, String email);
     Post addPost(PostModel postModel, User author, Long targetId);
-    Set<User> addPostToLikes(Long id, String email);
+    List<User> addPostToLikes(Long id, String email);
     Set<Repost> addPostToReposts(Long id, String email);
     List<User> getFollowers(String username, String email, Integer pageNum);
     List<User> getFollowing(String username, String email, Integer pageNum);
     List<PostDTO> getPost(Long id, User currentUser);
-    Set<User> getPostInteractions(Long postId, String interaction, User currentUser);
+    List<User> getPostInteractions(Long postId, String interaction, User currentUser, Integer page);
     Notification createNotification(User agent, String action, Post content, User userTo);
     void viewNotifications(User to);
     List<Notification> getNotifications(String email, Boolean exact, Integer page);

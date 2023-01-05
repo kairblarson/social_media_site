@@ -7,6 +7,7 @@ import {
     BsTriangle,
     BsTriangleFill,
 } from "react-icons/bs";
+import SignoutModal from "./SignoutModal";
 
 export default function Preview(props) {
     const [userDetails, setUserDetails] = useState(
@@ -14,28 +15,10 @@ export default function Preview(props) {
     );
     const [isHover, setHover] = useState(false);
 
-    function handleSignout() {
-        axios({
-            url: "http://localhost:8080/logout",
-            withCredentials: true,
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-            .then((res) => {
-                console.log(res);
-                localStorage.setItem("userDetails", null);
-                console.log("SIGNOUT");
-                window.location = "http://localhost:3000/login";
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    }
-
     const previewStyle = {
         cursor: isHover ? "pointer" : "none",
+        background: isHover ? "#f6f6f6" : "none",
+        transition: "all .08s linear",
     };
 
     function handleHover() {
@@ -45,17 +28,33 @@ export default function Preview(props) {
     return (
         <div
             className="preview"
-            onClick={handleSignout}
             onMouseEnter={handleHover}
             onMouseLeave={handleHover}
             style={previewStyle}
+            onClick={props.toggleSignout}
         >
-            <div className="preview--triangle">
-                <BsTriangleFill />
+            {props.isAuth && <img
+                src={
+                    "data:image/png;base64," +
+                    userDetails?.principal.profilePicture
+                }
+                className="preview--pic"
+            ></img>} {/*display a default img for pp if user not signed in*/}
+            <div className="preview--userdetails">
+                <h4 className="preview--username">
+                    {!props.isAuth
+                        ? "Sign in"
+                        : userDetails?.principal.username}
+                </h4>
+                <p className="preview--fullname">
+                    {!props.isAuth
+                        ? ""
+                        : userDetails?.principal.fullName}
+                </p>
             </div>
-            <h4 className="preview--username">
-                {!props.isAuth ? "Sign in" : userDetails?.principal.username}
-            </h4>
+            <div className="preview--menu">
+                <BsThreeDots />
+            </div>
         </div>
     );
     //limit usernames to like 15 characters

@@ -4,28 +4,31 @@ import PostModal from "./PostModal";
 import { BsSearch } from "react-icons/bs";
 import UserContext from "./UserContext";
 import NoteToSelf from "./NoteToSelf";
+import SignoutModal from "./SignoutModal";
 //you have to import your context component and the useContext hook 
 
 export default function Extra(props) {
-
     const [userState, setUserState] = useState({
         username: "",
         profile_img: "",
     });
-
     const [inputState, setInputState] = useState({
         searchInput: "",
     });
-
     const [buttonState, setButtoonState] = useState({
         isHover: false,
     });
+    const [showSignout, setShowSignout] = useState(false);
 
     function handleHover() {
         setButtoonState((prevState) => ({
             ...prevState,
             isHover: !prevState.isHover,
         }));
+    }
+
+    function toggleSignout() {
+        setShowSignout(prevState => !prevState);
     }
 
     function handleChange(event) {
@@ -38,15 +41,11 @@ export default function Extra(props) {
             ? "rgba(134, 63, 217, .7)"
             : "rgba(134, 63, 217, .9)",
         cursor: buttonState.isHover ? "pointer" : "none",
+        transition: "all .08s linear",
     };
 
     return (
         <div className="extra">
-            <Preview
-                username={userState.username}
-                img={userState.profile_img}
-                isAuth={props.isAuth}
-            />
             {/* <input
                 type="text"
                 placeholder="Search..."
@@ -62,9 +61,18 @@ export default function Extra(props) {
                 style={buttonStyle}
                 onClick={() => props.openModal()}
             >
-                Create Post
+                Post
             </button>}
             {props.isAuth && <NoteToSelf />}
+            <Preview
+                username={userState.username}
+                img={userState.profile_img}
+                isAuth={props.isAuth}
+                toggleSignout={toggleSignout}
+            />
+            {showSignout && <SignoutModal 
+                toggleSignout={toggleSignout}
+            />}
         </div>
     );
 }

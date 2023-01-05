@@ -307,6 +307,8 @@ export default function Profile(props) {
         });
     }
 
+    console.log(profileDetails);
+
     return (
         <div className="profile">
             <Navbar />
@@ -349,15 +351,20 @@ export default function Profile(props) {
                             className="profile--image"
                         ></img>
                         <div className="profile--details">
-                            <h3 className="profile--username">
-                                {profileDetails.username}
-                            </h3>
+                            <div className="profile--username-wrapper">
+                                <p className="profile--username">
+                                    {profileDetails.username}
+                                </p>
+                                {profileDetails?.followedBy && <div className="profile--followsyou-wrapper">
+                                    <p className="profile--followsyou">
+                                        Follows you
+                                    </p>
+                                </div>}
+                            </div>
                             <p className="profile--fullname">
                                 {profileDetails.fullName}
                             </p>
-                            <div className="profile--bio">
-                                {profileDetails.bio}
-                            </div>
+                            <p className="profile--bio">{profileDetails.bio}</p>
                         </div>
                         <div className="profile--follow-details">
                             <div

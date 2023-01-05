@@ -60,7 +60,7 @@ export default function PostModal({ open, closeModal, onSubmit, targetPost }) {
                 <div className="postmodal--left">
                     <div className="postmodal--pic-wrapper">
                         <img
-                            src={"/images/standard.jpg"}
+                            src={"data:image/png;base64," +userDetails.principal.profilePicture}
                             className="postmodal--pic"
                         />
                     </div>

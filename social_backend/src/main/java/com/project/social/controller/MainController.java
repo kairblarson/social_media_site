@@ -112,14 +112,14 @@ public class MainController {
     }
 
     @PostMapping("/handle-like")
-    public ResponseEntity<Set<User>> handleLike(@RequestParam(value = "id") Long id,
+    public ResponseEntity<List<User>> handleLike(@RequestParam(value = "id") Long id,
                                                 Authentication authentication,
                                                 HttpServletResponse response) {
         if(authentication == null) {
             System.out.println("RE DIRECT");
             return ResponseEntity.badRequest().body(null);
         }
-        Set<User> likes = userService.addPostToLikes(id, getEmailFromAuth(authentication));
+        List<User> likes = userService.addPostToLikes(id, getEmailFromAuth(authentication));
         return ResponseEntity.ok().body(likes);
     }
 
@@ -156,10 +156,12 @@ public class MainController {
     }
 
     @GetMapping("/{username}/post/{id}/{interaction}")
-    public ResponseEntity<Set<User>> getInteractionList(@PathVariable(value = "id") Long postId,
+    public ResponseEntity<List<User>> getInteractionList(@PathVariable(value = "id") Long postId,
                                                          @PathVariable(value = "interaction") String interaction,
+                                                         @RequestParam(value = "page", required = false) Integer page,
                                                          Authentication authentication) {
-        return ResponseEntity.ok().body(userService.getPostInteractions(postId, interaction, userService.findByEmail(getEmailFromAuth(authentication))));
+//        System.out.println("PAGE: "+page);
+        return ResponseEntity.ok().body(userService.getPostInteractions(postId, interaction, userService.findByEmail(getEmailFromAuth(authentication)), page));
     }
 
     @GetMapping("/get-notifications")

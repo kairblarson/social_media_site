@@ -104,6 +104,7 @@ public class UserServiceImpl implements UserService {
         User userProfile = userRepo.findByUsername(username); //details of whos profile we went to
         Optional<User> currentUser = Optional.ofNullable(userRepo.findByEmail(email)); //current user who went to profile
         boolean isFollowed = false;
+        boolean followedBy = false;
 
         if(userProfile == null) {
             throw new Exception("User does not exist");
@@ -126,6 +127,13 @@ public class UserServiceImpl implements UserService {
                 for(Followers follower : followers) {
                     if(follower.getTo() == userProfile) {
                         isFollowed = true;
+                    }
+                }
+
+                List<Followers> following = userProfile.getFollowing();
+                for(Followers follow : following) {
+                    if(follow.getTo().equals(currentUser.get())) {
+                        followedBy = true;
                     }
                 }
 
@@ -170,6 +178,13 @@ public class UserServiceImpl implements UserService {
                         returnPosts.add(post);
                     }
                 });
+
+                List<Followers> following = userProfile.getFollowing();
+                for(Followers follow : following) {
+                    if(follow.getTo().equals(currentUser.get())) {
+                        followedBy = true;
+                    }
+                }
             }
 
             //checking if the current user has liked any posts
@@ -277,7 +292,8 @@ public class UserServiceImpl implements UserService {
                         paginatedList.getPage(pageNum),
                         userProfile.getFollowers().size(),
                         userProfile.getFollowing().size(),
-                        FileUtil.readAsByteArray(imgFile)); //THIS IS WHERE YOU ADD PROF PIC WHEN GETTING PROFILE
+                        FileUtil.readAsByteArray(imgFile),
+                        followedBy);
             }
         }
 
@@ -288,7 +304,8 @@ public class UserServiceImpl implements UserService {
                 paginatedList.getPage(pageNum),
                 userProfile.getFollowers().size(),
                 userProfile.getFollowing().size(),
-                null); //THIS IS WHERE YOU ADD PROF PIC WHEN GETTING PROFILE
+                null,
+                followedBy); //add a followedBy prop
     } //moose
 
     @Override
@@ -438,7 +455,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Set<User> addPostToLikes(Long id, String email) {
+    public List<User> addPostToLikes(Long id, String email) {
         Post post = postRepo.getReferenceById(id);
         User currentUser = userRepo.findByEmail(email);
         User receiver = post.getAuthor();
@@ -520,6 +537,17 @@ public class UserServiceImpl implements UserService {
                 User user = follow.getTo();
                 followers.remove(user);
                 user.setFollowed(true);
+                File imagePath = new File(basePath+"\\"+user.getProfilePicture());
+                try{
+                    if(imagePath != null) {
+                        if(imagePath.exists()) {
+                            user.setFullImage(FileUtil.readAsByteArray(imagePath));
+                        }
+                    }
+                }catch (Exception e) {
+                    System.out.println("CAUGHT!: "+e.getLocalizedMessage());
+                }
+
                 followers.add(user);
             }
         });
@@ -546,6 +574,16 @@ public class UserServiceImpl implements UserService {
                 User user = follow.getTo();
                 following.remove(user);
                 user.setFollowed(true);
+                File imagePath = new File(basePath+"\\"+user.getProfilePicture());
+                try{
+                    if(imagePath != null) {
+                        if(imagePath.exists()) {
+                            user.setFullImage(FileUtil.readAsByteArray(imagePath));
+                        }
+                    }
+                }catch (Exception e) {
+                    System.out.println("CAUGHT!: "+e.getLocalizedMessage());
+                }
                 following.add(user);
             }
         });
@@ -749,21 +787,46 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Set<User> getPostInteractions(Long postId, String interaction, User currentUser) {
+    public List<User> getPostInteractions(Long postId, String interaction, User currentUser, Integer page) {
         Post post = postRepo.getReferenceById(postId);
-        Set<User> likers = post.getLikes();
-        Set<User> reposters = new HashSet<>();
-        Set<User> following = new HashSet<>();
+        List<User> likers = post.getLikes();
+        List<User> reposters = new ArrayList<>();
+        List<User> following = new ArrayList<>();
 
         repostRepo.findByRePost(post).forEach(repost -> {
-            reposters.add(repost.getRePoster());
+            User user = repost.getRePoster();
+            File imagePath = new File(basePath+"\\"+user.getProfilePicture());
+            try{
+                if(imagePath != null) {
+                    if(imagePath.exists()) {
+                        user.setFullImage(FileUtil.readAsByteArray(imagePath));
+                    }
+                }
+            }catch (Exception e) {
+                System.out.println("CAUGHT!: "+e.getLocalizedMessage());
+            }
+            reposters.add(user);
+        });
+        likers.forEach(user -> {
+            File imagePath = new File(basePath+"\\"+user.getProfilePicture());
+            try{
+                if(imagePath != null) {
+                    if(imagePath.exists()) {
+                        user.setFullImage(FileUtil.readAsByteArray(imagePath));
+                    }
+                }
+            }catch (Exception e) {
+                System.out.println("CAUGHT!: "+e.getLocalizedMessage());
+            }
         });
         if(currentUser == null) {
             if(interaction.equalsIgnoreCase("likes")) {
-                return likers;
+                PaginatedList paginatedList = new PaginatedList(likers);
+                return paginatedList.getPage(page);
             }
             else {
-                return reposters;
+                PaginatedList paginatedList = new PaginatedList(reposters);
+                return paginatedList.getPage(page);
             }
         }
 
@@ -779,7 +842,8 @@ public class UserServiceImpl implements UserService {
                     user.setFollowed(true);
                 }
             });
-            return likers;
+            PaginatedList paginatedList = new PaginatedList((List) likers);
+            return paginatedList.getPage(page);
         }
         //this block checks if we follow any of the people who repost the post
         else {
@@ -788,7 +852,8 @@ public class UserServiceImpl implements UserService {
                     user.setFollowed(true);
                 }
             });
-            return reposters;
+            PaginatedList paginatedList = new PaginatedList((List) reposters);
+            return paginatedList.getPage(page);
         }
     }
 

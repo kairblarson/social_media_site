@@ -36,7 +36,7 @@ export default function Explore(props) {
                 if (data.length <= 0 || data.length >= 200) {
                     setHasMore(false);
                 } else {
-                    // console.log(data);
+                    console.log(data);
                     setResults((prev) => {
                         return [...data];
                     });
@@ -51,7 +51,7 @@ export default function Explore(props) {
     }, [keyword]);
 
     useEffect(() => {
-        if(results?.length > 1) {
+        if(results?.length >= 1) {
             setLoading(false);
         }
     }, [results]);
@@ -97,7 +97,7 @@ export default function Explore(props) {
     const resultsStyle = {
         background: urlVariable == "posts" ? "none" : "white",
         boxShadow:
-            urlVariable == "posts" ? "none" : "0 0 5px rgba(41, 41, 41, .3)",
+            urlVariable == "posts" ? "none" : "0 0 5px rgba(77, 49, 102, 0.3)",
     };
 
     function handleUserButtonHover() {
@@ -205,6 +205,8 @@ export default function Explore(props) {
             setPage((prev) => prev + 1);
         }, 500);
     }
+
+    // console.log(results);
 
     return (
         <div className="explore--wrapper">

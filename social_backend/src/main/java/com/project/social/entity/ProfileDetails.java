@@ -18,11 +18,21 @@ public class ProfileDetails {
     private Integer followers;
     private Integer following;
     private byte[] profilePicture;
+    private boolean followedBy;
+    //add a followed by prop here
 
     public ProfileDetails() {
     }
 
-    public ProfileDetails(String username, String fullName, String bio, boolean isFollowed, List<PostDTO> posts, Integer followers, Integer following, byte[] profilePicture) {
+    public ProfileDetails(String username,
+                          String fullName,
+                          String bio,
+                          boolean isFollowed,
+                          List<PostDTO> posts,
+                          Integer followers,
+                          Integer following,
+                          byte[] profilePicture,
+                          boolean followedBy) {
         this.username = username;
         this.fullName = fullName;
         this.bio = bio;
@@ -31,6 +41,7 @@ public class ProfileDetails {
         this.followers = followers;
         this.following = following;
         this.profilePicture = profilePicture;
+        this.followedBy = followedBy;
     }
 
     public String getUsername() {
@@ -95,5 +106,13 @@ public class ProfileDetails {
 
     public void setProfilePicture(byte[] profilePicture) {
         this.profilePicture = profilePicture;
+    }
+
+    public boolean isFollowedBy() {
+        return followedBy;
+    }
+
+    public void setFollowedBy(boolean followedBy) {
+        this.followedBy = followedBy;
     }
 }

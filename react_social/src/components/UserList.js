@@ -7,6 +7,7 @@ import Simple from "./Simple";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { BsArrowLeft } from "react-icons/bs";
 import Header from "./Header";
+import { ColorRing } from "react-loader-spinner";
 
 export default function UserList(props) {
     const [userDetails, setUserDetails] = useState(
@@ -56,7 +57,7 @@ export default function UserList(props) {
                     return res.json();
                 })
                 .then((data) => {
-                    //console.log(data);
+                    console.log(data);
                     if (data.length <= 0 || data.length >= 200) {
                         setHasMore(false);
                     } else {
@@ -67,9 +68,9 @@ export default function UserList(props) {
                 })
                 .catch((err) => {});
         } else {
-            //add pagination to this
+            console.log("PAGE",page);
             setType("interactions");
-            fetch(`http://localhost:8080/${handle}/post/${id}/${interaction}`, {
+            fetch(`http://localhost:8080/${handle}/post/${id}/${interaction}?page=${page}`, {
                 method: "GET",
                 credentials: "include",
             })
@@ -143,6 +144,8 @@ export default function UserList(props) {
         }));
     }
 
+    console.log(page);
+
     return (
         <div className="userlist">
             <Navbar />
@@ -182,7 +185,23 @@ export default function UserList(props) {
                     style={{ overflow: "hidden" }}
                     next={fetchMoreData}
                     hasMore={hasMore}
-                    loader={<p>Loading...</p>}
+                    loader={
+                        <ColorRing
+                            visible={true}
+                            height="80"
+                            width="80"
+                            ariaLabel="blocks-loading"
+                            wrapperStyle={{}}
+                            wrapperClass="blocks-wrapper"
+                            colors={[
+                                "rgba(134, 63, 217, .9)",
+                                "rgba(134, 63, 217, .7)",
+                                "rgba(134, 63, 217, .5)",
+                                "rgba(134, 63, 217, .3)",
+                                "rgba(134, 63, 217, .1)",
+                            ]}
+                        />
+                    }
                 >
                     {users.map((user) => (
                         <Simple
@@ -191,6 +210,7 @@ export default function UserList(props) {
                             followed={user.followed}
                             fullName={user.fullName}
                             bio={user.bio}
+                            profilePicture={user.fullImage}
                         />
                     ))}
                 </InfiniteScroll>

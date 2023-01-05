@@ -23,7 +23,7 @@ public class Post {
     @JoinColumn(name="author_id", referencedColumnName = "id")
     private User author;
     @ManyToMany(mappedBy = "likedPosts")
-    private Set<User> likes;
+    private List<User> likes;
     @JsonIgnoreProperties("replyTo")
     @ManyToMany
     @JoinTable(name = "comments",
@@ -80,11 +80,11 @@ public class Post {
         this.postDate = postDate;
     }
 
-    public Set<User> getLikes() {
+    public List<User> getLikes() {
         return likes;
     }
 
-    public void setLikes(Set<User> likes) {
+    public void setLikes(List<User> likes) {
         this.likes = likes;
     }
 

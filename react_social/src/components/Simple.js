@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 
-export default function Simple({ username, fullName, bio, followed }) {
+export default function Simple({ username, fullName, bio, followed, profilePicture }) {
     const [isFollowed, setFollowed] = useState(followed);
     const [hoverState, setHoverState] = useState({
         postHover: false,
@@ -88,7 +88,7 @@ export default function Simple({ username, fullName, bio, followed }) {
             onClick={() => window.location = `http://localhost:3000/${username}`}
         >
             <div className="simple--left">
-                <img src={"/images/standard.jpg"} className="simple--pic" />
+                <img src={"data:image/png;base64,"+profilePicture} className="simple--pic" />
             </div>
             <div className="simple--middle">
                 <div className="simple--top">
