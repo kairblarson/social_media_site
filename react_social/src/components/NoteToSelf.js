@@ -18,7 +18,7 @@ export default function NoteToSelf(props) {
     const buttonStyle = {
         background: hoverState.saveHover
             ? "rgba(134, 63, 217, .7)"
-            : "rgba(134, 63, 217, .9)",
+            : "rgba(134, 63, 217, 1)",
         cursor: hoverState.saveHover ? "pointer" : "none",
         transition: "all .08s linear"
     };

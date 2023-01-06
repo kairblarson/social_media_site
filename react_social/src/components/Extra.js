@@ -5,7 +5,8 @@ import { BsSearch } from "react-icons/bs";
 import UserContext from "./UserContext";
 import NoteToSelf from "./NoteToSelf";
 import SignoutModal from "./SignoutModal";
-//you have to import your context component and the useContext hook 
+import { CPopover, CButton } from "@coreui/react";
+//you have to import your context component and the useContext hook
 
 export default function Extra(props) {
     const [userState, setUserState] = useState({
@@ -28,7 +29,7 @@ export default function Extra(props) {
     }
 
     function toggleSignout() {
-        setShowSignout(prevState => !prevState);
+        setShowSignout((prevState) => !prevState);
     }
 
     function handleChange(event) {
@@ -39,7 +40,7 @@ export default function Extra(props) {
     const buttonStyle = {
         background: buttonState.isHover
             ? "rgba(134, 63, 217, .7)"
-            : "rgba(134, 63, 217, .9)",
+            : "rgba(134, 63, 217, 1)",
         cursor: buttonState.isHover ? "pointer" : "none",
         transition: "all .08s linear",
     };
@@ -54,15 +55,17 @@ export default function Extra(props) {
                 value={inputState.searchInput}
                 onChange={handleChange}
             ></input> */}
-            {props.isAuth && <button
-                className="extra--post-button"
-                onMouseLeave={handleHover}
-                onMouseEnter={handleHover}
-                style={buttonStyle}
-                onClick={() => props.openModal()}
-            >
-                Post
-            </button>}
+            {props.isAuth && (
+                <button
+                    className="extra--post-button"
+                    onMouseLeave={handleHover}
+                    onMouseEnter={handleHover}
+                    style={buttonStyle}
+                    onClick={() => props.openModal()}
+                >
+                    Post
+                </button>
+            )}
             {props.isAuth && <NoteToSelf />}
             <Preview
                 username={userState.username}
@@ -70,9 +73,7 @@ export default function Extra(props) {
                 isAuth={props.isAuth}
                 toggleSignout={toggleSignout}
             />
-            {showSignout && <SignoutModal 
-                toggleSignout={toggleSignout}
-            />}
+            {showSignout && <SignoutModal />}
         </div>
     );
 }

@@ -30,14 +30,14 @@ export default function Login() {
 
     const emailInputStyle = {
         border: inputState.emailIsEmpty
-            ? "2px solid rgb(250, 15, 15)"
-            : "2px solid #9e9e9e",
+            ? "1px solid rgb(250, 15, 15)"
+            : "1px solid #9e9e9e",
     };
 
     const passwordInputStyle = {
         border: inputState.passwordIsEmpty
-            ? "2px solid rgb(250, 15, 15)"
-            : "2px solid #9e9e9e",
+            ? "1px solid rgb(250, 15, 15)"
+            : "1px solid #9e9e9e",
     };
 
     function handleLoginRequest() {
@@ -70,7 +70,7 @@ export default function Login() {
     useEffect(() => {
         fetch("http://localhost:8080/getSessionId", {
             credentials: "include",
-            method: "GET"
+            method: "GET",
         })
             .then((res) => res.text())
             .then((data) => {
@@ -84,17 +84,10 @@ export default function Login() {
     return (
         <div className="login">
             <div className="login--container">
-                <div className="login--left">
-                    <img
-                        src="./images/login.jpg"
-                        className="login--display"
-                    ></img>
-                </div>
-                <div className="login--right">
+                <div className="login--middle">
                     <h1 className="login--title">
                         <BsBugFill /> Termite
                     </h1>
-                    <br></br>
                     <input
                         type="email"
                         value={loginInfo.email}
@@ -104,7 +97,6 @@ export default function Login() {
                         className="login--email"
                         style={emailInputStyle}
                     ></input>
-                    <br></br>
                     <input
                         type="password"
                         value={loginInfo.password}
@@ -114,7 +106,6 @@ export default function Login() {
                         className="login--password"
                         style={passwordInputStyle}
                     ></input>
-                    <br></br>
                     <button
                         onClick={() => {
                             if (
@@ -157,13 +148,8 @@ export default function Login() {
                     >
                         Login
                     </button>
-                    <br></br>
-                    <br></br>
-                    {false && (
-                        <small className="login--error">
-                            Incorrect username/password
-                        </small>
-                    )}
+                    Or
+                    <button className="login--signup">Sign up</button>
                 </div>
             </div>
         </div>

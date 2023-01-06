@@ -3,16 +3,33 @@ import { BsTriangleFill } from "react-icons/bs";
 import axios from "axios";
 
 export default function SignoutModal(props) {
-    const [isHover, setHover] = useState(false);
+    const [hoverState, setHoverState] = useState({
+        logoutHover: false,
+        moreHover: false,
+    });
 
-    const buttonStyle = {
-        cursor: isHover ? "pointer" : "none",
-        background: isHover ? "#f6f6f6" : "none",
+    const logoutButtonStyle = {
+        cursor: hoverState.logoutHover ? "pointer" : "none",
+        background: hoverState.logoutHover? "#f6f6f6" : "white",
         transition: "all .08s linear",
     };
 
-    function handleHover() {
-        setHover((prevState) => !prevState);
+    const moreButtonStyle = {
+        cursor: hoverState.moreHover ? "pointer" : "none",
+        background: hoverState.moreHover? "#f6f6f6" : "white",
+        transition: "all .08s linear",
+    };
+
+    function handleLogoutHover() {
+        setHoverState((prevState) => {
+            return { ...prevState, logoutHover: !prevState.logoutHover };
+        });
+    }
+
+    function handleMoreHover() {
+        setHoverState((prevState) => {
+            return { ...prevState, moreHover: !prevState.moreHover };
+        });
     }
 
     function handleSignout() {
@@ -39,12 +56,20 @@ export default function SignoutModal(props) {
         <div className="signoutModal">
             <button
                 onClick={handleSignout}
-                style={buttonStyle}
+                style={logoutButtonStyle}
                 className="signoutModal--button"
-                onMouseEnter={handleHover}
-                onMouseLeave={handleHover}
+                onMouseEnter={handleLogoutHover}
+                onMouseLeave={handleLogoutHover}
             >
                 Logout
+            </button>
+            <button
+                style={moreButtonStyle}
+                className="signoutModal--button"
+                onMouseEnter={handleMoreHover}
+                onMouseLeave={handleMoreHover}
+            >
+                More...
             </button>
         </div>
     );

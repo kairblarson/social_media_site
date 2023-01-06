@@ -245,7 +245,7 @@ input:focus{
   background: #f6f6f6;
 }
 .extra--post-button{
-  background: rgba(134, 63, 217, .9);
+  background: rgba(134, 63, 217, 1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -257,6 +257,7 @@ input:focus{
   font-size: 20px;
   color: white;
   font-weight:700;
+  box-shadow: 0 0 5px rgba(77, 49, 102, 0.5);
 }
 .navbar--button-container{
   width: 100%;
@@ -311,7 +312,7 @@ input:focus{
   width: 10px;
   border-radius: 50%;
   background-color: rgba(134, 63, 217, 1);
-  box-shadow: 0 0 5px rgba(134, 63, 217, .9)
+  box-shadow: 0 0 5px rgba(134, 63, 217, .9);
 }
 .preview{
   width: 100%;
@@ -465,48 +466,51 @@ input:focus{
 .login{
   height: 100vh;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   background: rgba(134, 63, 217, 1);
 }
 .login--container{
-  margin-top: 200px;
   background: white;
   height: 50%;
   width: 90%;
-  max-width: 700px;
-  border-radius: 30px;
+  max-width: 400px;
+  border-radius: 10px;
   box-shadow: 0 0 20px rgb(41, 41, 41);
   padding: 0px;
   display: flex;
-}
-.login--left{
-  border-radius: 20px;
-  width: 50%;
-  margin-right: 5px;
-  padding: 10px;
+  justify-content: center;
+  margin-top: 200px;
 }
 .login--title{
-  font-size: 50px;
+  font-size: 60px;
   display: flex;
   align-items: center;
+  margin-bottom: 20px;
 }
-.login--right{
-  border-radius: 20px;
-  width: 50%;
-  margin-left: 5px;
+.login--message{
+  margin-block: 15px;
+}
+.login--middle{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 10px;
-  /* display: flex;
-  justify-content: center;
-  flex-direction: column; */
+  width: 70%;
+  gap: 20px;
 }
 .login--email, .login--password{
   padding: 8px;
   width: 100%;
   font-size: 20px;
-  margin-block: 15px;
   border-radius: 5px;
-  background-color: #ededed;
   font-size: 17px;
+}
+.login--email:focus{
+  background-color: #f6f6f6;
+}
+.login--password:focus{
+  background-color: #f6f6f6;
 }
 .login--submit{
   background: rgba(134, 63, 217, 1);
@@ -516,7 +520,16 @@ input:focus{
   font-weight: bold;
   color: white;
   width: 100%;
-  margin-top: 15px;
+  font-size: 17px;
+}
+.login--signup{
+  background: black;
+  border: none;
+  padding: 8px;
+  border-radius: 5px;
+  font-weight: bold;
+  color: white;
+  width: 100%;
   font-size: 17px;
 }
 .login--error{
@@ -1314,18 +1327,24 @@ input:focus{
 }
 .signoutModal{
   position: relative;
-  width: 100%;
+  width: 80%;
+  box-shadow: 0 0 5px rgba(77, 49, 102, 0.3);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background-color: #e8e8e8;
+  gap: 1px;
+  margin-top: 5px;
 }
 .signoutModal--button{
   border: none;
   width: 100%;
   height: 100%;
   background-color: white;
-  font-size: 16px;
-  font-weight: 600;
-  box-shadow: 0 0 5px rgba(77, 49, 102, 0.3);
+  font-size: 14px;
   padding: 10px;
-  border-radius: 10px;
-  margin-top: 15px;
 }
 /*i took away the borders for now, lets see if we like it*/

@@ -526,6 +526,17 @@ public class UserServiceImpl implements UserService {
         ArrayList<User> followers = new ArrayList<>();
 
         userProfile.getFollowers().forEach(follower -> {
+            File imagePath = new File(basePath+"\\"+follower.getFrom().getProfilePicture());
+            try{
+                if(imagePath != null) {
+                    if(imagePath.exists()) {
+                        follower.getFrom().setFullImage(FileUtil.readAsByteArray(imagePath));
+                    }
+                }
+            }catch (Exception e) {
+                System.out.println("CAUGHT!: "+e.getLocalizedMessage());
+            }
+            System.out.println("FOLLOWERS PIC EXISTS?: "+imagePath.exists());
             followers.add(follower.getFrom());
         });
         if(currentUser == null) {
@@ -537,17 +548,6 @@ public class UserServiceImpl implements UserService {
                 User user = follow.getTo();
                 followers.remove(user);
                 user.setFollowed(true);
-                File imagePath = new File(basePath+"\\"+user.getProfilePicture());
-                try{
-                    if(imagePath != null) {
-                        if(imagePath.exists()) {
-                            user.setFullImage(FileUtil.readAsByteArray(imagePath));
-                        }
-                    }
-                }catch (Exception e) {
-                    System.out.println("CAUGHT!: "+e.getLocalizedMessage());
-                }
-
                 followers.add(user);
             }
         });
@@ -563,6 +563,16 @@ public class UserServiceImpl implements UserService {
         ArrayList<User> following = new ArrayList<>();
 
         userProfile.getFollowing().forEach(follower -> {
+            File imagePath = new File(basePath+"\\"+follower.getTo().getProfilePicture());
+            try{
+                if(imagePath != null) {
+                    if(imagePath.exists()) {
+                        follower.getTo().setFullImage(FileUtil.readAsByteArray(imagePath));
+                    }
+                }
+            }catch (Exception e) {
+                System.out.println("CAUGHT!: "+e.getLocalizedMessage());
+            }
             following.add(follower.getTo());
         });
         if(currentUser == null) {
