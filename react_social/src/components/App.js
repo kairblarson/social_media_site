@@ -15,6 +15,7 @@ import UserList from "../components/UserList";
 import FullPost from "./FullPost";
 import Notifications from "./Notifications";
 import Explore from "./Explore";
+import ChatRoom from "./ChatRoom";
 
 export default function App() {
     const [modalState, setModalState] = useState(false);
@@ -213,6 +214,18 @@ export default function App() {
                                 path=":handle/notifications"
                                 element={
                                     <Notifications
+                                        toggleModal={toggleModal}
+                                        modalState={modalState}
+                                        handleSubmit={handleSubmit}
+                                        isAuth={isAuth}
+                                        targetPost={targetPost}
+                                    />
+                                }
+                            />
+                            <Route
+                                path="/messages/:session"
+                                element={
+                                    <ChatRoom
                                         toggleModal={toggleModal}
                                         modalState={modalState}
                                         handleSubmit={handleSubmit}

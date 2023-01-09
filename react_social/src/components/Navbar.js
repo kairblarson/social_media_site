@@ -95,7 +95,7 @@ export default function Navbar() {
                 window.location = `http://localhost:3000/${userDetails.name}/notifications`;
                 break;
             case 2:
-                //messages
+                window.location = `http://localhost:3000/messages/1`;
                 break;
             case 3:
                 if (userDetails == null) {

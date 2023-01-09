@@ -1,5 +1,6 @@
 package com.project.social.controller;
 
+import com.project.social.dto.FullResults;
 import com.project.social.dto.PostDTO;
 import com.project.social.entity.*;
 import com.project.social.model.PostModel;
@@ -160,7 +161,6 @@ public class MainController {
                                                          @PathVariable(value = "interaction") String interaction,
                                                          @RequestParam(value = "page", required = false) Integer page,
                                                          Authentication authentication) {
-//        System.out.println("PAGE: "+page);
         return ResponseEntity.ok().body(userService.getPostInteractions(postId, interaction, userService.findByEmail(getEmailFromAuth(authentication)), page));
     }
 
@@ -195,10 +195,18 @@ public class MainController {
         return ResponseEntity.ok().body(message);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<FullResults> getFullSearchResults(@RequestParam(value = "keyword") String keyword,
+                                                            @RequestParam(value = "page") Integer page,
+                                                            Authentication authentication) {
+        return ResponseEntity.ok().body(userService.getFullSearchResults(keyword, page, getEmailFromAuth(authentication)));
+    }
+
     @GetMapping("/users/search")
     public ResponseEntity<List<User>> queryUsers(@RequestParam(value = "keyword") String keyword,
-                                                 @RequestParam(value = "page") Integer page) {
-        return ResponseEntity.ok().body(userService.userSearchResults(keyword, page));
+                                                 @RequestParam(value = "page") Integer page,
+                                                 Authentication authentication) {
+        return ResponseEntity.ok().body(userService.userSearchResults(keyword, page, getEmailFromAuth(authentication)));
     }
 
     @GetMapping("/posts/search")

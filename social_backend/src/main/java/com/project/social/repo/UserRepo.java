@@ -13,6 +13,7 @@ public interface UserRepo extends JpaRepository<User, Long> {
 
     User findByUsername(String username);
     User findByEmail(String email);
-    @Query(value = "SELECT * FROM users u WHERE u.username LIKE %:keyword%", nativeQuery = true)
-    List<User> queryUsers(@Param("keyword") String keyword);
+    @Query(value = "SELECT * FROM users u WHERE u.username LIKE %:keyword% LIMIT :limit", nativeQuery = true)
+    List<User> queryUsers(@Param("keyword") String keyword,
+                          @Param("limit") Integer limit);
 }

@@ -1,10 +1,10 @@
 package com.project.social.service;
 
+import com.project.social.dto.FullResults;
 import com.project.social.dto.PostDTO;
 import com.project.social.entity.*;
 import com.project.social.model.PostModel;
 import com.project.social.model.UserModel;
-import com.project.social.util.NotificationType;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -33,7 +33,7 @@ public interface UserService {
     List<Notification> getNotifications(String email, Boolean exact, Integer page);
     User handleEditProfile(String username, String bio, MultipartFile file, String email) throws IOException;
     String deletePost(Long postID, String email);
-    List<String> searchSuggestions(String keyword);
-    List<User> userSearchResults(String keyword, Integer page);
+    FullResults getFullSearchResults(String keyword, Integer page, String email);
+    List<User> userSearchResults(String keyword, Integer page, String email);
     List<PostDTO> postSearchResults(String keyword, Integer page, String email);
 }

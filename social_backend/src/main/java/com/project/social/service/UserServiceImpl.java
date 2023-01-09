@@ -1,5 +1,6 @@
 package com.project.social.service;
 
+import com.project.social.dto.FullResults;
 import com.project.social.dto.PostDTO;
 import com.project.social.entity.*;
 import com.project.social.model.PostModel;
@@ -15,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -1010,16 +1012,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<String> searchSuggestions(String keyword) {
-        return null;
+    public FullResults getFullSearchResults(String keyword, Integer page, String email) {
+        FullResults fullResults = new FullResults();
+        if (keyword.trim().equalsIgnoreCase("")) {
+            return new FullResults();
+        }
+        List<User> queryUsers = userRepo.queryUsers(keyword, 5);
+        queryUsers.forEach(user -> {
+            File imagePath = new File(basePath+"\\"+user.getProfilePicture());
+            try{
+                if(imagePath != null) {
+                    if(imagePath.exists()) {
+                        user.setFullImage(FileUtil.readAsByteArray(imagePath));
+                    }
+                }
+            }catch (Exception e) {
+                System.out.println("CAUGHT!: "+e.getLocalizedMessage());
+            }
+        });
+        fullResults.setUserResults(queryUsers);
+        fullResults.setPostResults(postSearchResults(keyword, page, email));
+
+        return fullResults;
     }
 
     @Override
-    public List<User> userSearchResults(String keyword, Integer page) {
+    public List<User> userSearchResults(String keyword, Integer page, String email) {
         if (keyword.trim().equalsIgnoreCase("")) {
             return new ArrayList<>();
         }
-        List<User> queryUsers = userRepo.queryUsers(keyword);
+        List<User> queryUsers = userRepo.queryUsers(keyword, 100);
         queryUsers.forEach(user -> {
             File imagePath = new File(basePath+"\\"+user.getProfilePicture());
             try{
@@ -1067,30 +1089,32 @@ public class UserServiceImpl implements UserService {
         }
 
         queryPosts.forEach(post -> {
-            PostDTO postDTO = new PostDTO();
-            postDTO.setContent(post.getContent());
-            postDTO.setPostDate(post.getPostDate());
-            postDTO.setReposted(post.getReposted());
-            postDTO.setLiked(post.getLiked());
-            postDTO.setRepostedBy(post.getRepostedBy());
-            postDTO.setReposts(post.getReposts());
-            postDTO.setReplyTo(post.getReplyTo());
-            postDTO.setAuthor(post.getAuthor());
-            postDTO.setId(post.getId());
-            postDTO.setComments(post.getComments());
-            postDTO.setLikes(post.getLikes());
-            postDTO.setDeleted(post.isDeleted());
-            File imagePath = new File(basePath+"\\"+post.getAuthor().getProfilePicture());
-            try{
-                if(imagePath != null) {
-                    if(imagePath.exists()) {
-                        postDTO.setProfPicBytes(FileUtil.readAsByteArray(imagePath));
+            if(!post.isDeleted()) {
+                PostDTO postDTO = new PostDTO();
+                postDTO.setContent(post.getContent());
+                postDTO.setPostDate(post.getPostDate());
+                postDTO.setReposted(post.getReposted());
+                postDTO.setLiked(post.getLiked());
+                postDTO.setRepostedBy(post.getRepostedBy());
+                postDTO.setReposts(post.getReposts());
+                postDTO.setReplyTo(post.getReplyTo());
+                postDTO.setAuthor(post.getAuthor());
+                postDTO.setId(post.getId());
+                postDTO.setComments(post.getComments());
+                postDTO.setLikes(post.getLikes());
+                postDTO.setDeleted(post.isDeleted());
+                File imagePath = new File(basePath + "\\" + post.getAuthor().getProfilePicture());
+                try {
+                    if (imagePath != null) {
+                        if (imagePath.exists()) {
+                            postDTO.setProfPicBytes(FileUtil.readAsByteArray(imagePath));
+                        }
                     }
+                } catch (Exception e) {
+                    System.out.println("CAUGHT!: " + e.getLocalizedMessage());
                 }
-            }catch (Exception e) {
-                System.out.println("CAUGHT!: "+e.getLocalizedMessage());
+                postDTOArray.add(postDTO);
             }
-            postDTOArray.add(postDTO);
         });
         //order the posts by newest on top
         postDTOArray.sort(Comparator.comparing(Post::getPostDate,(post1, post2) -> {

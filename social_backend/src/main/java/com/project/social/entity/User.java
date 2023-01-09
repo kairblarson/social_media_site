@@ -53,6 +53,10 @@ public class User {
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "to")
     private List<Notification> notifications = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "receiver")
+    private List<Message> messages = new ArrayList<>();
     private boolean isFollowed = false;
     private String profilePicture;
     private byte[] fullImage;

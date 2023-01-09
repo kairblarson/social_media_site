@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { BsTriangleFill } from "react-icons/bs";
+import { BsChatDotsFill, BsColumnsGap, BsFile, BsFillReplyFill, BsTriangleFill } from "react-icons/bs";
 import axios from "axios";
 
 export default function SignoutModal(props) {
+    //this is really a popover ig
     const [hoverState, setHoverState] = useState({
         logoutHover: false,
         moreHover: false,
@@ -10,13 +11,13 @@ export default function SignoutModal(props) {
 
     const logoutButtonStyle = {
         cursor: hoverState.logoutHover ? "pointer" : "none",
-        background: hoverState.logoutHover? "#f6f6f6" : "white",
+        background: hoverState.logoutHover ? "#f6f6f6" : "white",
         transition: "all .08s linear",
     };
 
     const moreButtonStyle = {
         cursor: hoverState.moreHover ? "pointer" : "none",
-        background: hoverState.moreHover? "#f6f6f6" : "white",
+        background: hoverState.moreHover ? "#f6f6f6" : "white",
         transition: "all .08s linear",
     };
 
@@ -61,6 +62,9 @@ export default function SignoutModal(props) {
                 onMouseEnter={handleLogoutHover}
                 onMouseLeave={handleLogoutHover}
             >
+                <div className="signoutModal--logout-icon">
+                    <BsFillReplyFill />
+                </div>
                 Logout
             </button>
             <button
@@ -69,6 +73,9 @@ export default function SignoutModal(props) {
                 onMouseEnter={handleMoreHover}
                 onMouseLeave={handleMoreHover}
             >
+                <div>
+                    <BsColumnsGap />
+                </div>
                 More...
             </button>
         </div>

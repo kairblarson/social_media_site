@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { BsSearch } from "react-icons/bs";
 import Extra from "./Extra";
 import Navbar from "./Navbar";
@@ -7,54 +7,141 @@ import PostModal from "./PostModal";
 import SearchSuggestion from "./SearchSuggestion";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { ColorRing } from "react-loader-spinner";
+import Simple from "./Simple";
 
 export default function Explore(props) {
     const [focused, setFocused] = useState(false);
     const [keyword, setKeyword] = useState("");
-    const [results, setResults] = useState([]);
-    const [userButtonFocus, setUserButtonFocus] = useState(true);
+    const [suggestions, setSuggestions] = useState([]);
+    const [userResults, setUserResults] = useState([]);
+    const [postResults, setPostResults] = useState([]);
+    const [fullUserList, setFullUserList] = useState([]);
+    const [topButtonFocus, setTopButtonFocus] = useState(true);
+    const [userButtonFocus, setUserButtonFocus] = useState(false);
     const [postButtonFocus, setPostButtonFocus] = useState(false);
     const [hoverState, setHoverState] = useState({
         userButtonHover: false,
         postButtonHover: false,
+        topButtonHover: false,
+        searchButtonHover: false,
+        viewMoreHover: false,
     });
     const [urlVariable, setUrlVariable] = useState("users");
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const [loading, setLoading] = useState(true);
+    const [initialSearch, setInitialSearch] = useState(false);
+    const searchBar = useRef(null);
 
     useEffect(() => {
-        fetch(
-            `http://localhost:8080/${urlVariable}/search?keyword=${keyword}&page=${page}`,
-            {
-                method: "GET",
-                credentials: "include",
-            }
-        )
-            .then((res) => res.json())
-            .then((data) => {
-                if (data.length <= 0 || data.length >= 200) {
-                    setHasMore(false);
-                } else {
-                    console.log(data);
-                    setResults((prev) => {
-                        return [...data];
-                    });
+        if (!postButtonFocus) {
+            fetch(
+                `http://localhost:8080/${urlVariable}/search?keyword=${keyword}&page=${page}`,
+                {
+                    method: "GET",
+                    credentials: "include",
                 }
-            })
-            .catch((e) => {
-                console.log("CAUGHT:", e);
-            });
-        if(keyword.trim() == "") {
-            setResults([]);
+            )
+                .then((res) => res.json())
+                .then((data) => {
+                    // console.log(data);
+                    setSuggestions(data);
+                })
+                .catch((e) => {
+                    console.log("CAUGHT:", e);
+                });
+            if (keyword.trim() == "") {
+                setSuggestions([]);
+            }
         }
     }, [keyword]);
 
+    function fetchMoreData() {
+        setTimeout(() => {
+            setPage((prev) => prev + 1);
+        }, 500);
+    }
+
     useEffect(() => {
-        if(results?.length >= 1) {
+        if (postResults?.length >= 1) {
             setLoading(false);
         }
-    }, [results]);
+    }, [postResults]);
+
+    function submitSearch(e) {
+        if (e.keyCode === 13 || e.keyCode === undefined) {
+            searchBar.current.blur();
+            setInitialSearch(true);
+            if (topButtonFocus) {
+                fetch(
+                    `http://localhost:8080/search?keyword=${keyword}&page=${page}`,
+                    {
+                        method: "GET",
+                        credentials: "include",
+                    }
+                )
+                    .then((res) => res.json())
+                    .then((data) => {
+                        if (
+                            data.postResults?.length <= 0 ||
+                            data.postResults?.length >= 200
+                        ) {
+                            setPostResults([]);
+                            setUserResults([]);
+                            setHasMore(false);
+                        } else {
+                            setPostResults(data.postResults);
+                            setUserResults(data.userResults);
+                        }
+                        setLoading(false);
+                    })
+                    .catch((e) => {
+                        console.log("CAUGHT:", e);
+                    });
+            }
+            if (userButtonFocus) {
+                fetch(
+                    `http://localhost:8080/${urlVariable}/search?keyword=${keyword}&page=${page}`,
+                    {
+                        method: "GET",
+                        credentials: "include",
+                    }
+                )
+                    .then((res) => res.json())
+                    .then((data) => {
+                        // console.log(data);
+                        setPostResults([]);
+                        setUserResults([]);
+                        setFullUserList(data);
+                        setLoading(false);
+                    })
+                    .catch((e) => {
+                        console.log("CAUGHT:", e);
+                    });
+            }
+            if (postButtonFocus) {
+                setUrlVariable("posts");
+                fetch(
+                    `http://localhost:8080/posts/search?keyword=${keyword}&page=${page}`,
+                    {
+                        method: "GET",
+                        credentials: "include",
+                    }
+                )
+                    .then((res) => res.json())
+                    .then((data) => {
+                        // console.log(data);
+                        setPostResults(data);
+                        setUserResults([]);
+                        setFullUserList([]);
+                        setLoading(false);
+                    })
+                    .catch((e) => {
+                        console.log("CAUGHT:", e);
+                    });
+            }
+        }
+    }
 
     const inputStyle = {
         borderBlock: focused ? "1px solid rgba(134, 63, 217, .9)" : "none",
@@ -64,6 +151,24 @@ export default function Explore(props) {
     const iconStyle = {
         borderBlock: focused ? "1px solid rgba(134, 63, 217, .9)" : "none",
         borderLeft: focused ? "1px solid rgba(134, 63, 217, .9)" : "none",
+        color: hoverState.searchButtonHover
+            ? "rgba(134, 63, 217, 1)"
+            : "#8a8a8a",
+        cursor: hoverState.searchButtonHover ? "pointer" : "none",
+    };
+
+    const topButtonStyle = {
+        color: topButtonFocus ? "black" : "#8a8a8a",
+        borderBottom: topButtonFocus
+            ? "5px solid rgba(134, 63, 217, .9)"
+            : "none",
+        background: hoverState.topButtonHover ? "#eae6ed" : "white",
+        cursor: hoverState.topButtonHover ? "pointer" : "none",
+    };
+
+    const topButtonWrapperStyle = {
+        background: hoverState.topButtonHover ? "#eae6ed" : "white",
+        cursor: hoverState.topButtonHover ? "pointer" : "none",
     };
 
     const userButtonStyle = {
@@ -94,11 +199,19 @@ export default function Explore(props) {
         cursor: hoverState.postButtonHover ? "pointer" : "none",
     };
 
-    const resultsStyle = {
-        background: urlVariable == "posts" ? "none" : "white",
-        boxShadow:
-            urlVariable == "posts" ? "none" : "0 0 5px rgba(77, 49, 102, 0.3)",
+    const viewMoreStyle = {
+        textDecoration: hoverState.viewMoreHover ? "underline" : "none",
+        cursor: hoverState.viewMoreHover ? "pointer" : "none",
     };
+
+    function handleTopButtonHover() {
+        setHoverState((prevState) => {
+            return {
+                ...prevState,
+                topButtonHover: !prevState.topButtonHover,
+            };
+        });
+    }
 
     function handleUserButtonHover() {
         setHoverState((prevState) => {
@@ -118,20 +231,58 @@ export default function Explore(props) {
         });
     }
 
+    function handleSearchButtonHover() {
+        setHoverState((prevState) => {
+            return {
+                ...prevState,
+                searchButtonHover: !prevState.searchButtonHover,
+            };
+        });
+    }
+
+    function handleViewMoreHover() {
+        setHoverState((prevState) => {
+            return {
+                ...prevState,
+                viewMoreHover: !prevState.viewMoreHover,
+            };
+        });
+    }
+
+    function handleTopButtonClick() {
+        setTopButtonFocus(true);
+        setUserButtonFocus(false);
+        setPostButtonFocus(false);
+        setUrlVariable("users");
+        setSuggestions(null);
+        setPostResults([]);
+        setUserResults([]);
+        setFullUserList([]);
+        // setKeyword("");
+    }
+
     function handleUserButtonClick() {
+        setTopButtonFocus(false);
         setUserButtonFocus(true);
         setPostButtonFocus(false);
         setUrlVariable("users");
-        setResults(null);
-        setKeyword("");
+        setSuggestions(null);
+        setPostResults([]);
+        setUserResults([]);
+        setFullUserList([]);
+        // setKeyword("");
     }
 
     function handlePostButtonClick() {
+        setTopButtonFocus(false);
         setUserButtonFocus(false);
         setPostButtonFocus(true);
-        setUrlVariable("posts");
-        setResults(null);
-        setKeyword("");
+        setUrlVariable(null);
+        setSuggestions(null);
+        setPostResults([]);
+        setUserResults([]);
+        setFullUserList([]);
+        // setKeyword("");
     }
 
     function handleFocus() {
@@ -149,7 +300,17 @@ export default function Explore(props) {
         window.location = `http://localhost:3000/${username}`;
     }
 
-    const resElement = results?.map((res) => {
+    function handleMenuToggle(id) {
+        setSuggestions((prevState) => {
+            return prevState.map((post) => {
+                return id == post.id
+                    ? { ...post, menuState: true }
+                    : { ...post, menuState: false };
+            });
+        });
+    }
+
+    const sugElement = suggestions?.map((res) => {
         if (urlVariable == "users") {
             return (
                 <SearchSuggestion
@@ -161,73 +322,113 @@ export default function Explore(props) {
                     handleClick={handleClick}
                 ></SearchSuggestion>
             );
-        } else {
-            const replyTo =
-                res.replyTo == null ? null : res.replyTo.author.username;
-            return (
-                <Post
-                    key={res.id}
-                    id={res.id}
-                    content={res.content}
-                    author={res.author}
-                    postDate={res.postDate}
-                    likes={res.likes}
-                    isLiked={res.liked}
-                    reposts={res.reposts}
-                    isReposted={res.reposted}
-                    repostedBy={res.repostedBy}
-                    replyTo={replyTo}
-                    comments={res.comments}
-                    modalState={props.modalState}
-                    openModal={props.openModal}
-                    isAuth={props.isAuth}
-                    isHome={true}
-                    profilePicture={res.profPicBytes}
-                    menuState={res.menuState}
-                    handleMenuToggle={handleMenuToggle}
-                />
-            );
         }
     });
 
-    function handleMenuToggle(id) {
-        setResults((prevState) => {
-            return prevState.map((post) => {
-                return id == post.id
-                    ? { ...post, menuState: true }
-                    : { ...post, menuState: false };
-            });
-        });
-    }
+    const userResElement = userResults?.map((user) => {
+        return (
+            <Simple
+                key={user.id}
+                fullName={user.fullName}
+                username={user.username}
+                profilePicture={user.fullImage}
+                bio={user.bio}
+                followed={user.followed}
+            />
+        );
+    });
 
-    function fetchMoreData() {
-        setTimeout(() => {
-            setPage((prev) => prev + 1);
-        }, 500);
-    }
+    const fullUserListElement = fullUserList?.map((user) => {
+        return (
+            <Simple
+                key={user.id}
+                fullName={user.fullName}
+                username={user.username}
+                profilePicture={user.fullImage}
+                bio={user.bio}
+                followed={user.followed}
+            />
+        );
+    });
 
-    // console.log(results);
+    const postResElement = postResults?.map((res) => {
+        const replyTo =
+            res.replyTo == null ? null : res.replyTo.author.username;
+        return (
+            <Post
+                key={res.id}
+                id={res.id}
+                content={res.content}
+                author={res.author}
+                postDate={res.postDate}
+                likes={res.likes}
+                isLiked={res.liked}
+                reposts={res.reposts}
+                isReposted={res.reposted}
+                repostedBy={res.repostedBy}
+                replyTo={replyTo}
+                comments={res.comments}
+                modalState={props.modalState}
+                openModal={props.openModal}
+                isAuth={props.isAuth}
+                isHome={true}
+                profilePicture={res.profPicBytes}
+                menuState={res.menuState}
+                handleMenuToggle={handleMenuToggle}
+            />
+        );
+    });
 
     return (
         <div className="explore--wrapper">
             <Navbar />
             <div className="explore">
                 <div className="explore--top">
-                    <div className="explore--icon" style={iconStyle}>
-                        <BsSearch />
+                    <div className="explore--searchbar-wrapper">
+                        <div
+                            className="explore--icon"
+                            style={iconStyle}
+                            onClick={submitSearch}
+                            onMouseEnter={handleSearchButtonHover}
+                            onMouseLeave={handleSearchButtonHover}
+                        >
+                            <BsSearch />
+                        </div>
+                        <input
+                            type="text"
+                            className="explore--searchbar"
+                            placeholder="Search Termite"
+                            onFocus={handleFocus}
+                            onBlur={handleFocus}
+                            style={inputStyle}
+                            onChange={handleChange}
+                            value={keyword}
+                            onKeyDown={submitSearch}
+                            ref={searchBar}
+                        ></input>
                     </div>
-                    <input
-                        type="text"
-                        className="explore--searchbar"
-                        placeholder="Search Termite"
-                        onFocus={handleFocus}
-                        onBlur={handleFocus}
-                        style={inputStyle}
-                        onChange={handleChange}
-                        value={keyword}
-                    ></input>
+                    {focused && (
+                        <div className="searchsuggestion--wrapper">
+                            {sugElement}
+                        </div>
+                    )}
                 </div>
                 <div className="explore--options">
+                    <div
+                        className="explore--button-wrapper"
+                        onMouseEnter={handleTopButtonHover}
+                        onMouseLeave={handleTopButtonHover}
+                        style={topButtonWrapperStyle}
+                        onClick={handleTopButtonClick}
+                    >
+                        <button
+                            className="explore--button"
+                            style={topButtonStyle}
+                            onClick={handleTopButtonClick}
+                        >
+                            Top
+                        </button>
+                    </div>
                     <div
                         className="explore--button-wrapper"
                         onMouseEnter={handleUserButtonHover}
@@ -259,38 +460,52 @@ export default function Explore(props) {
                         </button>
                     </div>
                 </div>
-                {loading ? keyword != "" && (
-                    <ColorRing
-                        visible={true}
-                        height="80"
-                        width="80"
-                        ariaLabel="blocks-loading"
-                        wrapperStyle={{}}
-                        wrapperClass="blocks-wrapper"
-                        colors={[
-                            "rgba(134, 63, 217, .9)",
-                            "rgba(134, 63, 217, .7)",
-                            "rgba(134, 63, 217, .5)",
-                            "rgba(134, 63, 217, .3)",
-                            "rgba(134, 63, 217, .1)",
-                        ]}
-                    />
-                ) : (
-                    <div
-                        className="searchsuggestion--wrapper"
-                        style={resultsStyle}
-                    >
-                        <InfiniteScroll
-                            dataLength={results?.length}
-                            className=""
-                            style={{ overflow: "hidden" }}
-                            next={fetchMoreData}
-                            hasMore={hasMore}
-                            endMessage={null}
-                        >
-                            {resElement}
-                        </InfiniteScroll>
+                {!loading &&
+                    !postButtonFocus &&
+                    userResults?.length != 0 &&
+                    userResults?.length != undefined && (
+                        <div className="explore--userres">
+                            <h4 className="explore--userres-title">Users</h4>
+                            {userResElement}
+                            <div
+                                className="explore--userres-more"
+                                style={viewMoreStyle}
+                                onMouseEnter={handleViewMoreHover}
+                                onMouseLeave={handleViewMoreHover}
+                                onClick={() => {
+                                    handleUserButtonClick();
+                                    submitSearch();
+                                }}
+                            >
+                                View more
+                            </div>
+                        </div>
+                    )}
+                {!loading && !postButtonFocus && fullUserList.length != 0 && (
+                    <div className="explore--full-user-list">
+                        {fullUserListElement}
                     </div>
+                )}
+                {loading ? (
+                    initialSearch && (
+                        <ColorRing
+                            visible={true}
+                            height="80"
+                            width="80"
+                            ariaLabel="blocks-loading"
+                            wrapperStyle={{}}
+                            wrapperClass="blocks-wrapper"
+                            colors={[
+                                "rgba(134, 63, 217, .9)",
+                                "rgba(134, 63, 217, .7)",
+                                "rgba(134, 63, 217, .5)",
+                                "rgba(134, 63, 217, .3)",
+                                "rgba(134, 63, 217, .1)",
+                            ]}
+                        />
+                    )
+                ) : (
+                    <div className="explore--postres">{postResElement}</div>
                 )}
             </div>
             <Extra

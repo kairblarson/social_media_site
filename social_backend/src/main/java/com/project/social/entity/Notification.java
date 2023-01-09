@@ -27,6 +27,7 @@ public class Notification {
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn
     private User to;
+
     private boolean viewed;
     @OneToOne
     @JoinColumn(name = "post_id", referencedColumnName = "id")
