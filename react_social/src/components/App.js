@@ -6,6 +6,8 @@ import {
     Routes,
     BrowserRouter as Router,
     useParams,
+    Link,
+    NavLink,
 } from "react-router-dom";
 import Profile from "../components/Profile";
 import ProtectedRoutes, { useAuth } from "./ProtectedRoutes";
@@ -86,8 +88,6 @@ export default function App() {
                 console.log(err);
             });
     }, []);
-
-    //make api call on startup to check if logged in with every request
 
     return (
         <div className="app">
@@ -223,7 +223,19 @@ export default function App() {
                                 }
                             />
                             <Route
-                                path="/messages/:session"
+                                path="/messages/:handle"
+                                element={
+                                    <ChatRoom
+                                        toggleModal={toggleModal}
+                                        modalState={modalState}
+                                        handleSubmit={handleSubmit}
+                                        isAuth={isAuth}
+                                        targetPost={targetPost}
+                                    />
+                                }
+                            />
+                            <Route
+                                path="/messages"
                                 element={
                                     <ChatRoom
                                         toggleModal={toggleModal}
@@ -241,5 +253,3 @@ export default function App() {
         </div>
     );
 }
-
-//notice how you wrapped everything in the UserContextProvider component

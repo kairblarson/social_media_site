@@ -2,6 +2,7 @@ package com.project.social.service;
 
 import com.project.social.dto.MessageDTO;
 import com.project.social.entity.Message;
+import com.project.social.entity.Notification;
 import com.project.social.entity.User;
 import com.project.social.model.Status;
 import com.project.social.repo.MessageRepo;
@@ -9,6 +10,8 @@ import com.project.social.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -30,15 +33,37 @@ public class MessageServiceImpl implements MessageService{
     }
 
     @Override
-    public List<MessageDTO> getUserMessages(String email) {
+    public List<MessageDTO> getConversations(String email) {
         //this will be for the left-hand side to display the different users you have messaged or received a message from
         //a different method will be used to actually get the messages between you and another person
         List<Message> sentMessages = messageRepo.getAllSenderMessages(userRepo.findByEmail(email));
         List<Message> receivedMessages = messageRepo.getAllReceiverMessages(userRepo.findByEmail(email));
+        List<MessageDTO> conversations = new ArrayList<>();
+
         sentMessages.forEach(message -> {
-            System.out.println("SENT MESSAGE: "+message);
+            MessageDTO messageDTO = new MessageDTO();
+            messageDTO.setId(message.getId());
+            messageDTO.setMessage(message.getMessage());
+            messageDTO.setStatus(message.getStatus());
+            messageDTO.setMessageDate(message.getMessageDate());
+            messageDTO.setConversationWith(message.getReceiver().getUsername()); //people we have conversation with due to messaging them
+            conversations.add(messageDTO);
         });
-        return null;
+        receivedMessages.forEach(message -> {
+            MessageDTO messageDTO = new MessageDTO();
+            messageDTO.setId(message.getId());
+            messageDTO.setMessage(message.getMessage());
+            messageDTO.setStatus(message.getStatus());
+            messageDTO.setMessageDate(message.getMessageDate());
+            messageDTO.setConversationWith(message.getSender().getUsername()); //people we have conversation with due to them messaging us
+            conversations.add(messageDTO);
+        });
+
+        conversations.sort(Comparator.comparing(MessageDTO::getMessageDate,(msg1, msg2) -> {
+            return msg2.compareTo(msg1);
+        }));
+
+        return conversations;
     }
 
     @Override
@@ -47,10 +72,23 @@ public class MessageServiceImpl implements MessageService{
         User targetUser = userRepo.findByUsername(username);
 
         //cool this works you just have to paginate, reorder by date and add a profile pic and send over the dto 
-        List<Message> chat = messageRepo.getChatMessages(currentUser, targetUser);
-        chat.forEach(message -> {
-            System.out.println("MESSAGE: "+message);
+        List<Message> messages = messageRepo.getChatMessages(currentUser, targetUser);
+        List<MessageDTO> chat = new ArrayList<>();
+        messages.forEach(message -> {
+            MessageDTO messageDTO = new MessageDTO();
+            messageDTO.setMessage(message.getMessage());
+            messageDTO.setStatus(message.getStatus());
+            messageDTO.setReceiverName(message.getReceiver().getUsername());
+            messageDTO.setSenderName(message.getSender().getUsername());
+            messageDTO.setMessageDate(message.getMessageDate());
+            messageDTO.setId(message.getId());
+            chat.add(messageDTO);
         });
-        return null;
+
+        chat.sort(Comparator.comparing(MessageDTO::getMessageDate,(msg1, msg2) -> {
+            return msg1.compareTo(msg2);
+        }));
+
+        return chat;
     }
 }

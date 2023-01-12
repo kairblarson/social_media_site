@@ -1,34 +1,71 @@
 import { useState, useEffect } from "react";
+import { useParams, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 import PostModal from "./PostModal";
 import Extra from "./Extra";
 import { over } from "stompjs";
 import SockJS from "sockjs-client";
+import {
+    BsArrow90DegRight,
+    BsArrowLeftCircleFill,
+    BsArrowRightCircleFill,
+    BsBoxArrowInLeft,
+    BsCursor,
+} from "react-icons/bs";
+import Header from "./Header";
+import Avatar from "./Avatar";
 
 var stompClient = null;
 export default function ChatRoom(props) {
     const [currentUser, setCurrentUser] = useState(
         JSON.parse(localStorage.getItem("userDetails"))
     );
-    //this just holds the existing chat messages
-    const [publicChats, setPublicChats] = useState([]);
-    //holds {username} and {user messages} in a map
-    const [privateChats, setPrivateChats] = useState(new Map());
-    const [tab, setTab] = useState("CHATROOM");
+    const [isBlocked, setBlocked] = useState(true);
+    const { handle, interaction, id, user } = useParams();
+    const [tab, setTab] = useState(handle);
     const [previousMessage, setPreviousMessage] = useState();
-    const [currentMessages, setCurrentMessages] = useState();
+    const [currentChat, setCurrentChat] = useState([]);
+    const [conversations, setConversations] = useState([]);
     const [userData, setUserData] = useState({
         username: "",
         receivername: "",
         connected: false,
         message: "",
     });
+    const [hoverState, setHoverState] = useState({
+        sendButtonHover: false,
+    });
+
+    const sendButtonStyle = {
+        color: isBlocked ? "rgba(134, 63, 217, .5)" : "rgba(134, 63, 217, 1)",
+        cursor: hoverState.sendButtonHover
+            ? isBlocked
+                ? "default"
+                : "pointer"
+            : "default",
+    };
+
+    function handleSendButtonHover() {
+        setHoverState((prevState) => {
+            return {
+                ...prevState,
+                sendButtonHover: !prevState.sendButtonHover,
+            };
+        });
+    }
 
     function handleMessage(event) {
         const { value } = event.target;
         setUserData({ ...userData, message: value });
-        //this changes the value of the message data
     }
+
+    useEffect(() => {
+        if (userData.message.length > 0) {
+            setBlocked(false);
+        } else {
+            setBlocked(true);
+        }
+    }, [userData.message]);
 
     //creates an initial connection to server (registerUser func)
     useEffect(() => {
@@ -43,11 +80,24 @@ export default function ChatRoom(props) {
         }
     }, [currentUser]);
 
+    useEffect(() => {
+        //this gets all the current conversations
+        fetch(`http://localhost:8080/messages/${tab}`, {
+            method: "GET",
+            credentials: "include",
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                setCurrentChat(data);
+            })
+            .catch((e) => {
+                console.log("CAUGHT:", e);
+            });
+    }, [tab]);
+
     //function that connects user to the stomp endpoint
     function onConnected() {
         setUserData({ ...userData, connected: true });
-        //this is the public endpoint that we are listening to from the backend
-        stompClient.subscribe("/chatroom/public", onPublicMessageReceived);
         //this is the endpoint for our user that we are listening to for messages
         stompClient.subscribe(
             "/user/" + currentUser.name + "/private",
@@ -63,16 +113,22 @@ export default function ChatRoom(props) {
             senderName: currentUser.name,
             status: "JOIN",
         };
-        fetch(
-            `http://localhost:8080/messages/wallen7`,
-            {
-                method: "GET",
-                credentials: "include",
-            }
-        )
+        fetch(`http://localhost:8080/messages`, {
+            method: "GET",
+            credentials: "include",
+        })
             .then((res) => res.json())
             .then((data) => {
-                console.log(data);
+                let chat = [];
+                data.forEach((message) => {
+                    if (!chat.includes(message.conversationWith)) {
+                        chat.push(message.conversationWith);
+                        setConversations((prevState) => [
+                            ...prevState,
+                            message,
+                        ]);
+                    }
+                });
             })
             .catch((e) => {
                 console.log("CAUGHT:", e);
@@ -80,35 +136,21 @@ export default function ChatRoom(props) {
         stompClient.send("/app/message", {}, JSON.stringify(chatMessage));
     }
 
-    //function that handles public stomp messages that are received from server
-    //we wont have a public messaging service so this isnt important
-    function onPublicMessageReceived(payload) {
-        let payloadData = JSON.parse(payload.body);
-
-        //below is maybe not as important for our usecase because we are only
-        //going to track if a user has received a new message
-        switch (payloadData.status) {
-            case "JOIN":
-                //if someone joins and you dont have a previous chat with them
-                //thier username will pop and a blank session will be created
-                if (!privateChats.get(payloadData.senderName)) {
-                    privateChats.set(payloadData.senderName, []);
-                    setPrivateChats(new Map(privateChats));
-                }
-                break;
-            case "MESSAGE":
-                //this ques the previous messages and serves them up
-                //this will most likely be done on the backend tho
-                //this strategy does not persist data
-                setPublicChats((prevState) => {
-                    console.log(payloadData);
-                    return [...prevState, payloadData];
-                });
-                break;
-            case "LEAVE":
-                break;
+    useEffect(() => {
+        if (conversations.length > 0) {
+            if (
+                handle == null ||
+                conversations.some((convo) => convo.conversationWith === handle)
+            ) {
+            } else {
+                const startChat = {
+                    conversationWith: handle,
+                    profilePicture: null,
+                };
+                setConversations((prevState) => [...prevState, startChat]);
+            }
         }
-    }
+    }, [conversations]);
 
     //this is more important in our use case
     function onPrivateMessageReceived(payload) {
@@ -117,35 +159,22 @@ export default function ChatRoom(props) {
 
         //below just checks if there is already a chat with the users
         //if not one is created
-        if (privateChats.get(payloadData.senderName)) {
-            privateChats.get(payloadData.senderName).push(payloadData);
-            setPrivateChats(new Map(privateChats));
-        } else {
-            let list = [];
-            list.push(payloadData);
+        // if (conversations.includes(payloadData.senderName)) {
+        //     privateChats.get(payloadData.senderName).push(payloadData);
+        //     setPrivateChats(new Map(privateChats));
+        // } else {
+        //     let list = [];
+        //     list.push(payloadData);
 
-            privateChats.set(payloadData.senderName, list);
-            setPrivateChats(new Map(privateChats));
-        }
-    }
-
-    //obv this function deals with sending messages to the public endpoint
-    function sendPublicMessage() {
-        if (stompClient) {
-            let chatMessage = {
-                senderName: currentUser.name,
-                receiverName: "PUBLIC",
-                message: userData.message,
-                status: "MESSAGE",
-            };
-            stompClient.send("/app/message", {}, JSON.stringify(chatMessage));
-            setUserData((prevState) => ({ ...prevState, message: "" }));
-        }
+        //     privateChats.set(payloadData.senderName, list);
+        //     setPrivateChats(new Map(privateChats));
+        // }
+        setCurrentChat((prevState) => [...prevState, payloadData]);
     }
 
     //this function deals with sending messages to a specific person
     function sendPrivateMessage() {
-        if (stompClient) {
+        if (stompClient && !isBlocked) {
             let chatMessage = {
                 senderName: currentUser.name,
                 receiverName: tab,
@@ -153,9 +182,12 @@ export default function ChatRoom(props) {
                 status: "MESSAGE",
             };
 
+            //we wont need this if statement because we arent going to allow
+            //people to start conversations with themselves
             if (userData.username !== tab) {
-                privateChats.get(tab).push(chatMessage);
-                setPrivateChats(new Map(privateChats));
+                // privateChats.get(tab).push(chatMessage);
+                // setPrivateChats(new Map(privateChats));
+                setCurrentChat((prevState) => [...prevState, chatMessage]);
             }
             stompClient.send(
                 "/app/private-message",
@@ -174,118 +206,34 @@ export default function ChatRoom(props) {
     return (
         <div className="chatroom--wrapper">
             <Navbar />
-            <div className="chatroom">
-                {userData.connected ? (
-                    <div className="chatroom--main">
-                        <div>
-                            <div className="chatroom--users">
-                                <div
-                                    onClick={() => setTab("CHATROOM")}
-                                    className={`chatroom--member${
-                                        tab === "CHATROOM" ? "-active" : ""
-                                    }`}
-                                >
-                                    Chatroom
-                                </div>
-                                {[...privateChats.keys()].map(
-                                    (username, index) => (
-                                        <div
-                                            className={`chatroom--member${
-                                                tab === username
-                                                    ? "-active"
-                                                    : ""
-                                            }`}
-                                            key={index}
-                                            onClick={() => setTab(username)}
-                                        >
-                                            <img
-                                                src="../images/defualt_pic.png"
-                                                className="chatroom--member-pic"
-                                            ></img>
-                                            {username}
-                                        </div>
-                                    )
-                                )}
-                            </div>
-                        </div>
-                        {/*this is the public chatroom UI logic */}
-                        {tab === "CHATROOM" && (
-                            <div className="chatroom--content">
-                                <div className="chatroom--messages">
-                                    {publicChats.map((chat, index) => (
-                                        <div
-                                            className={`chatroom--message${
-                                                chat.senderName ===
-                                                currentUser.name
-                                                    ? "-self"
-                                                    : ""
-                                            }`}
-                                            key={index}
-                                        >
-                                            {chat.senderName !==
-                                                currentUser.name && (
-                                                <img
-                                                    src="../images/defualt_pic.png"
-                                                    className="chatroom--prof-pic"
-                                                ></img>
-                                            )}
-                                            <div
-                                                className={`chatroom--message-content-wrapper${
-                                                    chat.senderName ===
-                                                    currentUser.name
-                                                        ? "-self"
-                                                        : ""
-                                                }`}
-                                            >
-                                                <div
-                                                    className={`chatroom--message-content${
-                                                        chat.senderName ===
-                                                        currentUser.name
-                                                            ? "-self"
-                                                            : ""
-                                                    }`}
-                                                >
-                                                    {chat.message}
-                                                </div>
-                                                <div className="chatroom--username">
-                                                    {chat.senderName}
-                                                </div>
-                                            </div>
-                                            {chat.senderName ===
-                                                currentUser.name && (
-                                                <img
-                                                    src="../images/defualt_pic.png"
-                                                    className="chatroom--prof-pic"
-                                                ></img>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-
-                                {/*send public message UI */}
-                                <div className="chatroom--sender">
-                                    <input
-                                        type="text"
-                                        className="chatroom--input-message"
-                                        placeholder="Create new message"
-                                        value={userData.message}
-                                        onChange={handleMessage}
-                                    />
-                                    <button
-                                        className="chatroom--send-button"
-                                        onClick={sendPublicMessage}
-                                    >
-                                        Send
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-                        {/*this is the specific user chatroom UI logic */}
-                        {tab !== "CHATROOM" && (
-                            <div className="chatroom--content">
-                                <div className="chatroom--messages">
-                                    {[...privateChats.get(tab)].map(
-                                        (chat, index) => (
+            <div>
+                <Header />
+                <div className="chatroom--users">
+                    <div className="chatroom--arrow">
+                        <BsArrowLeftCircleFill />
+                    </div>
+                    {conversations?.map((chat) => {
+                        return (
+                            <Avatar
+                                conversationWith={chat.conversationWith}
+                                tab={tab}
+                                id={chat.id}
+                                key={chat.id}
+                            />
+                        );
+                    })}
+                    <div className="chatroom--arrow">
+                        <BsArrowRightCircleFill />
+                    </div>
+                </div>
+                <div className="chatroom">
+                    {userData.connected ? (
+                        <div className="chatroom--main">
+                            {/*this is the specific user chatroom UI logic */}
+                            {tab !== "CHATROOM" && (
+                                <div className="chatroom--content">
+                                    <div className="chatroom--messages">
+                                        {currentChat?.map((chat) => (
                                             <div
                                                 className={`chatroom--message${
                                                     chat.senderName ===
@@ -293,7 +241,7 @@ export default function ChatRoom(props) {
                                                         ? "-self"
                                                         : ""
                                                 }`}
-                                                key={index}
+                                                key={chat.id}
                                             >
                                                 {chat.senderName !==
                                                     currentUser.name && (
@@ -332,34 +280,37 @@ export default function ChatRoom(props) {
                                                     ></img>
                                                 )}
                                             </div>
-                                        )
-                                    )}
+                                        ))}
+                                    </div>
                                 </div>
-
-                                {/*send private message UI *IMPORTANT* */}
-                                <div className="chatroom--sender">
-                                    <input
-                                        type="text"
-                                        className="chatroom--input-message"
-                                        placeholder="Type here"
-                                        value={userData.message}
-                                        onChange={handleMessage}
-                                    />
-                                    <button
-                                        className="chatroom--send-button"
-                                        onClick={sendPrivateMessage}
-                                    >
-                                        Send
-                                    </button>
-                                </div>
-                            </div>
-                        )}
+                            )}
+                        </div>
+                    ) : (
+                        <div className="chatroom--register">
+                            {/*have a loading spinner here instead*/}
+                        </div>
+                    )}
+                </div>
+                {/*send private message UI *IMPORTANT* */}
+                <div className="chatroom--sender">
+                    <input
+                        type="text"
+                        className="chatroom--input-box"
+                        placeholder="Type here"
+                        value={userData.message}
+                        onChange={handleMessage}
+                        maxLength={200}
+                    />
+                    <div
+                        className="chatroom--send-button"
+                        onClick={sendPrivateMessage}
+                        style={sendButtonStyle}
+                        onMouseEnter={handleSendButtonHover}
+                        onMouseLeave={handleSendButtonHover}
+                    >
+                        <BsCursor />
                     </div>
-                ) : (
-                    <div className="chatroom--register">
-                        {/*have a loading spinner here instead*/}
-                    </div>
-                )}
+                </div>
             </div>
             <Extra
                 modalState={props.modalState}

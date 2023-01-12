@@ -27,7 +27,5 @@ public class Message {
     private String message;
     private Long messageDate = new Date().getTime();
     private Status status;
-    //add a user profile pic with this too
-
 
 }

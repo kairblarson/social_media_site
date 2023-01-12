@@ -49,7 +49,13 @@ export default function Header() {
             case `/${handle}/notifications`:
                 setTitle("Notifications");
                 break;
-            default: "Unknown location";
+            case "/messages":
+                setTitle("Messages");
+                break;
+            case `/messages/${handle}`:
+                setTitle("Messages");
+            default:
+                "Unknown location";
         }
     }, []);
 

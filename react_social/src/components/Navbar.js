@@ -57,7 +57,7 @@ export default function Navbar() {
             name: "Explore",
             isHover: false,
             isSelected: false,
-        }
+        },
     ]);
 
     useEffect(() => {
@@ -95,7 +95,7 @@ export default function Navbar() {
                 window.location = `http://localhost:3000/${userDetails.name}/notifications`;
                 break;
             case 2:
-                window.location = `http://localhost:3000/messages/1`;
+                window.location = `http://localhost:3000/messages`;
                 break;
             case 3:
                 if (userDetails == null) {
@@ -105,6 +105,7 @@ export default function Navbar() {
                 break;
             case 4:
                 window.location = `http://localhost:3000/explore`;
+                break;
             default:
                 fetch("http://localhost:8080/test", {
                     method: "GET",
@@ -138,6 +139,9 @@ export default function Navbar() {
                 currentLocation.pathname &&
             button.id == 1
         ) {
+            return { ...button, isSelected: true };
+        }
+        if (`/messages/${handle}` == currentLocation.pathname && button.id == 2) {
             return { ...button, isSelected: true };
         }
         return { ...button };

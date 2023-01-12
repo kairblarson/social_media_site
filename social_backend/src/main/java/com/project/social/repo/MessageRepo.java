@@ -11,9 +11,10 @@ import java.util.List;
 
 @Repository
 public interface MessageRepo extends JpaRepository<Message, Long> {
-    @Query(value = "SELECT * FROM messages m WHERE m.sender_id = :sender LIMIT 20", nativeQuery = true)
+    //these 2 queries are just for displaying who you already have a convo with on the left
+    @Query(value = "SELECT * FROM messages m WHERE m.sender_id = :sender ORDER BY m.id DESC LIMIT 20", nativeQuery = true)
     List<Message> getAllSenderMessages(@Param("sender") User sender);
-    @Query(value = "SELECT * FROM messages m WHERE m.receiver_id = :receiver LIMIT 20", nativeQuery = true)
+    @Query(value = "SELECT * FROM messages m WHERE m.receiver_id = :receiver ORDER BY m.id DESC LIMIT 20", nativeQuery = true)
     List<Message> getAllReceiverMessages(User receiver);
 
     //this query is for getting all the messages between 2 people only

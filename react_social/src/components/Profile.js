@@ -1,4 +1,11 @@
-import { Link, useParams, useLocation } from "react-router-dom";
+import {
+    Link,
+    useParams,
+    useLocation,
+    NavLink,
+    Router,
+    Route,
+} from "react-router-dom";
 import Navbar from "./Navbar";
 import Extra from "./Extra";
 import PostModal from "./PostModal";
@@ -8,6 +15,7 @@ import { useState, useEffect } from "react";
 import Header from "./Header";
 import { ColorRing } from "react-loader-spinner";
 import EditModal from "./EditModal";
+import { BsEnvelope } from "react-icons/bs";
 
 export default function Profile(props) {
     const [profileDetails, setProfileDetails] = useState({
@@ -307,7 +315,7 @@ export default function Profile(props) {
         });
     }
 
-    console.log(profileDetails);
+    // console.log(profileDetails);
 
     return (
         <div className="profile">
@@ -320,6 +328,16 @@ export default function Profile(props) {
                             className="profile--background"
                         ></img>
                         <div className="profile--edit-wrapper">
+                            {!isUserProfile && (
+                                <div
+                                    className="profile--message"
+                                    onClick={() =>
+                                        (window.location = `http://localhost:3000/messages/${profileDetails.username}`)
+                                    }
+                                >
+                                    <BsEnvelope />
+                                </div>
+                            )}
                             {isUserProfile && props.isAuth ? (
                                 <button
                                     className="profile--edit"
@@ -355,11 +373,13 @@ export default function Profile(props) {
                                 <p className="profile--username">
                                     {profileDetails.username}
                                 </p>
-                                {profileDetails?.followedBy && <div className="profile--followsyou-wrapper">
-                                    <p className="profile--followsyou">
-                                        Follows you
-                                    </p>
-                                </div>}
+                                {profileDetails?.followedBy && (
+                                    <div className="profile--followsyou-wrapper">
+                                        <p className="profile--followsyou">
+                                            Follows you
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                             <p className="profile--fullname">
                                 {profileDetails.fullName}

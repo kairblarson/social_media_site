@@ -16,7 +16,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -32,16 +31,16 @@ public class ChatController {
     @MessageMapping("/message")
     @SendTo("/chatroom/public")
     private MessageDTO receivePublicMessage(@Payload MessageDTO messageDTO) {
-        System.out.println("PUBLIC MESSAGE: "+messageDTO);
+//        System.out.println("PUBLIC MESSAGE: "+messageDTO);
         return messageDTO;
     }
 
-    //private rooms
+    //logic for sending messages to specific people
     @MessageMapping("/private-message")
     public MessageDTO receivePrivateMessage(@Payload MessageDTO messageDTO,
                                             Authentication authentication) {
 
-        System.out.println("PRIVATE MESSAGE: "+messageDTO);
+//        System.out.println("PRIVATE MESSAGE: "+messageDTO);
         messageService.handleMessage(messageDTO, getEmailFromAuth(authentication));
         //these are dynamic topics
         simpMessagingTemplate.convertAndSendToUser(messageDTO.getReceiverName(), "/private", messageDTO); // /user/{username}/private
@@ -49,9 +48,9 @@ public class ChatController {
     }
 
     @GetMapping("/messages")
-    public ResponseEntity<List<MessageDTO>> getPreviousMessages(Authentication authentication) {
+    public ResponseEntity<List<MessageDTO>> getConversations(Authentication authentication) {
 
-        return ResponseEntity.ok().body(messageService.getUserMessages(getEmailFromAuth(authentication)));
+        return ResponseEntity.ok().body(messageService.getConversations(getEmailFromAuth(authentication)));
     }
 
     @GetMapping("/messages/{username}")

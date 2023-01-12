@@ -302,7 +302,7 @@ export default function Explore(props) {
 
     function handleMenuToggle(id) {
         setSuggestions((prevState) => {
-            return prevState.map((post) => {
+            return prevState?.map((post) => {
                 return id == post.id
                     ? { ...post, menuState: true }
                     : { ...post, menuState: false };
