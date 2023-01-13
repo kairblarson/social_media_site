@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 export default function NoteToSelf(props) {
-    const [reminder, setReminder] = useState();
+    const [reminder, setReminder] = useState("");
     const [hoverState, setHoverState] = useState({
         saveHover: false,
     });
@@ -12,7 +12,7 @@ export default function NoteToSelf(props) {
     }
 
     useEffect(() => {
-        setReminder(localStorage.getItem("Reminder"));
+        // setReminder(localStorage.getItem("Reminder"));
     }, []);
 
     const buttonStyle = {

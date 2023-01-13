@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-export default function Avatar({ conversationWith, tab, id }) {
+export default function Avatar({ conversationWith, tab, id, profilePicture }) {
     const [hoverState, setHoverState] = useState({
         avatarHover: false,
     });
@@ -24,7 +24,7 @@ export default function Avatar({ conversationWith, tab, id }) {
     return (
         <div key={id} className="chatroom--member-wrapper">
             <img
-                src="../images/defualt_pic.png"
+                src={"data:image/png;base64,"+profilePicture}
                 className={`chatroom--member${
                     tab === conversationWith ? "-active" : ""
                 }`}

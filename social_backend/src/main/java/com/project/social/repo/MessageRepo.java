@@ -18,7 +18,7 @@ public interface MessageRepo extends JpaRepository<Message, Long> {
     List<Message> getAllReceiverMessages(User receiver);
 
     //this query is for getting all the messages between 2 people only
-    @Query(value = "SELECT * FROM messages m WHERE m.sender_id = :currentUser AND m.receiver_id = :targetUser OR  m.sender_id = :targetUser AND m.receiver_id = :currentUser LIMIT 20", nativeQuery = true)
+    @Query(value = "SELECT * FROM messages m WHERE m.sender_id = :currentUser AND m.receiver_id = :targetUser OR  m.sender_id = :targetUser AND m.receiver_id = :currentUser LIMIT 200", nativeQuery = true)
     List<Message> getChatMessages(@Param("currentUser") User currentUser,
                                   @Param("targetUser") User targetUser);
 }

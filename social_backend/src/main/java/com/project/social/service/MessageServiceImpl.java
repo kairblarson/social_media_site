@@ -7,9 +7,13 @@ import com.project.social.entity.User;
 import com.project.social.model.Status;
 import com.project.social.repo.MessageRepo;
 import com.project.social.repo.UserRepo;
+import com.project.social.wrapper.PaginatedList;
+import org.aspectj.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -21,6 +25,8 @@ public class MessageServiceImpl implements MessageService{
     private MessageRepo messageRepo;
     @Autowired
     private UserRepo userRepo;
+    @Value("${project.image}")
+    private String basePath;
 
     @Override
     public void handleMessage(MessageDTO messageDTO, String senderEmail) {
@@ -47,6 +53,16 @@ public class MessageServiceImpl implements MessageService{
             messageDTO.setStatus(message.getStatus());
             messageDTO.setMessageDate(message.getMessageDate());
             messageDTO.setConversationWith(message.getReceiver().getUsername()); //people we have conversation with due to messaging them
+            File imagePath = new File(basePath+"\\"+message.getReceiver().getProfilePicture());
+            try{
+                if(imagePath != null) {
+                    if(imagePath.exists()) {
+                        messageDTO.setProfilePicture(FileUtil.readAsByteArray(imagePath));
+                    }
+                }
+            }catch (Exception e) {
+                System.out.println("CAUGHT!: "+e.getLocalizedMessage());
+            }
             conversations.add(messageDTO);
         });
         receivedMessages.forEach(message -> {
@@ -56,6 +72,16 @@ public class MessageServiceImpl implements MessageService{
             messageDTO.setStatus(message.getStatus());
             messageDTO.setMessageDate(message.getMessageDate());
             messageDTO.setConversationWith(message.getSender().getUsername()); //people we have conversation with due to them messaging us
+            File imagePath = new File(basePath+"\\"+message.getSender().getProfilePicture());
+            try{
+                if(imagePath != null) {
+                    if(imagePath.exists()) {
+                        messageDTO.setProfilePicture(FileUtil.readAsByteArray(imagePath));
+                    }
+                }
+            }catch (Exception e) {
+                System.out.println("CAUGHT!: "+e.getLocalizedMessage());
+            }
             conversations.add(messageDTO);
         });
 
@@ -67,7 +93,7 @@ public class MessageServiceImpl implements MessageService{
     }
 
     @Override
-    public List<MessageDTO> getChatMessages(String email, String username) {
+    public List<MessageDTO> getChatMessages(String email, String username, Integer page) {
         User currentUser = userRepo.findByEmail(email);
         User targetUser = userRepo.findByUsername(username);
 
@@ -82,13 +108,25 @@ public class MessageServiceImpl implements MessageService{
             messageDTO.setSenderName(message.getSender().getUsername());
             messageDTO.setMessageDate(message.getMessageDate());
             messageDTO.setId(message.getId());
+            File imagePath = new File(basePath+"\\"+message.getSender().getProfilePicture());
+            try{
+                if(imagePath != null) {
+                    if(imagePath.exists()) {
+                        messageDTO.setProfilePicture(FileUtil.readAsByteArray(imagePath));
+                    }
+                }
+            }catch (Exception e) {
+                System.out.println("CAUGHT!: "+e.getLocalizedMessage());
+            }
             chat.add(messageDTO);
         });
 
         chat.sort(Comparator.comparing(MessageDTO::getMessageDate,(msg1, msg2) -> {
-            return msg1.compareTo(msg2);
+            return msg2.compareTo(msg1);
         }));
 
-        return chat;
+        PaginatedList<MessageDTO> paginatedChat = new PaginatedList<>(chat);
+
+        return paginatedChat.getPage(page);
     }
 }

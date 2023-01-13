@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 import PostModal from "./PostModal";
@@ -14,6 +14,11 @@ import {
 } from "react-icons/bs";
 import Header from "./Header";
 import Avatar from "./Avatar";
+import { ColorRing } from "react-loader-spinner";
+import Message from "./Message";
+import InfiniteScroll from "react-infinite-scroll-component";
+import InfiniteScrollReverse from "react-infinite-scroll-reverse/dist/InfiniteScrollReverse";
+import { BeatLoader } from "react-spinners";
 
 var stompClient = null;
 export default function ChatRoom(props) {
@@ -35,37 +40,10 @@ export default function ChatRoom(props) {
     const [hoverState, setHoverState] = useState({
         sendButtonHover: false,
     });
-
-    const sendButtonStyle = {
-        color: isBlocked ? "rgba(134, 63, 217, .5)" : "rgba(134, 63, 217, 1)",
-        cursor: hoverState.sendButtonHover
-            ? isBlocked
-                ? "default"
-                : "pointer"
-            : "default",
-    };
-
-    function handleSendButtonHover() {
-        setHoverState((prevState) => {
-            return {
-                ...prevState,
-                sendButtonHover: !prevState.sendButtonHover,
-            };
-        });
-    }
-
-    function handleMessage(event) {
-        const { value } = event.target;
-        setUserData({ ...userData, message: value });
-    }
-
-    useEffect(() => {
-        if (userData.message.length > 0) {
-            setBlocked(false);
-        } else {
-            setBlocked(true);
-        }
-    }, [userData.message]);
+    const [loading, setLoading] = useState(true);
+    const [hasMore, setHasMore] = useState(true);
+    const [page, setPage] = useState(1);
+    const chatRoomRef = useRef();
 
     //creates an initial connection to server (registerUser func)
     useEffect(() => {
@@ -82,18 +60,32 @@ export default function ChatRoom(props) {
 
     useEffect(() => {
         //this gets all the current conversations
-        fetch(`http://localhost:8080/messages/${tab}`, {
+        fetch(`http://localhost:8080/messages/${tab}?page=${page}`, {
             method: "GET",
             credentials: "include",
         })
             .then((res) => res.json())
             .then((data) => {
-                setCurrentChat(data);
+                if (data.length <= 0 || data.length >= 200) {
+                    setHasMore(false);
+                } else {
+                    setCurrentChat((prev) => {
+                        return [...prev, ...data];
+                    });
+                }
+                setLoading(false);
             })
             .catch((e) => {
                 console.log("CAUGHT:", e);
             });
-    }, [tab]);
+    }, [tab, page]);
+
+    function fetchMoreData() {
+        console.log("FETCH MORE");
+        setTimeout(() => {
+            setPage((prev) => prev + 1);
+        }, 500);
+    }
 
     //function that connects user to the stomp endpoint
     function onConnected() {
@@ -156,20 +148,7 @@ export default function ChatRoom(props) {
     function onPrivateMessageReceived(payload) {
         console.log("MESSAGE RECEIVED");
         let payloadData = JSON.parse(payload.body);
-
-        //below just checks if there is already a chat with the users
-        //if not one is created
-        // if (conversations.includes(payloadData.senderName)) {
-        //     privateChats.get(payloadData.senderName).push(payloadData);
-        //     setPrivateChats(new Map(privateChats));
-        // } else {
-        //     let list = [];
-        //     list.push(payloadData);
-
-        //     privateChats.set(payloadData.senderName, list);
-        //     setPrivateChats(new Map(privateChats));
-        // }
-        setCurrentChat((prevState) => [...prevState, payloadData]);
+        setCurrentChat((prevState) => [payloadData, ...prevState]);
     }
 
     //this function deals with sending messages to a specific person
@@ -179,21 +158,21 @@ export default function ChatRoom(props) {
                 senderName: currentUser.name,
                 receiverName: tab,
                 message: userData.message,
+                profilePicture: null,
                 status: "MESSAGE",
             };
 
-            //we wont need this if statement because we arent going to allow
-            //people to start conversations with themselves
-            if (userData.username !== tab) {
-                // privateChats.get(tab).push(chatMessage);
-                // setPrivateChats(new Map(privateChats));
-                setCurrentChat((prevState) => [...prevState, chatMessage]);
-            }
             stompClient.send(
                 "/app/private-message",
                 {},
                 JSON.stringify(chatMessage)
             );
+
+            chatMessage.profilePicture = currentUser.principal.profilePicture;
+
+            if (userData.username !== tab) {
+                setCurrentChat((prevState) => [chatMessage, ...prevState]);
+            }
             setUserData((prevState) => ({ ...prevState, message: "" }));
         }
     }
@@ -202,6 +181,46 @@ export default function ChatRoom(props) {
     function onError(err) {
         console.log(err);
     }
+
+    const sendButtonStyle = {
+        color: isBlocked ? "rgba(134, 63, 217, .5)" : "rgba(134, 63, 217, 1)",
+        cursor: hoverState.sendButtonHover
+            ? isBlocked
+                ? "default"
+                : "pointer"
+            : "default",
+    };
+
+    function handleSendButtonHover() {
+        setHoverState((prevState) => {
+            return {
+                ...prevState,
+                sendButtonHover: !prevState.sendButtonHover,
+            };
+        });
+    }
+
+    function handleMessage(event) {
+        const { value } = event.target;
+        setUserData({ ...userData, message: value });
+    }
+
+    useEffect(() => {
+        if (userData.message.length > 0) {
+            setBlocked(false);
+        } else {
+            setBlocked(true);
+        }
+    }, [userData.message]);
+
+    const [scrollHeight, setScrollHeight] = useState(null);
+
+    useEffect(() => {
+        setScrollHeight(window.innerHeight);
+        chatRoomRef?.current?.scrollTo(0, chatRoomRef.current.scrollHeight);
+    }, [currentChat, chatRoomRef?.current?.clientHeight]);
+
+    document.body.style.overflowY = "hidden";
 
     return (
         <div className="chatroom--wrapper">
@@ -219,6 +238,7 @@ export default function ChatRoom(props) {
                                 tab={tab}
                                 id={chat.id}
                                 key={chat.id}
+                                profilePicture={chat.profilePicture}
                             />
                         );
                     })}
@@ -231,57 +251,78 @@ export default function ChatRoom(props) {
                         <div className="chatroom--main">
                             {/*this is the specific user chatroom UI logic */}
                             {tab !== "CHATROOM" && (
-                                <div className="chatroom--content">
-                                    <div className="chatroom--messages">
-                                        {currentChat?.map((chat) => (
-                                            <div
-                                                className={`chatroom--message${
-                                                    chat.senderName ===
-                                                    currentUser.name
-                                                        ? "-self"
-                                                        : ""
-                                                }`}
-                                                key={chat.id}
-                                            >
-                                                {chat.senderName !==
-                                                    currentUser.name && (
-                                                    <img
-                                                        src="../images/defualt_pic.png"
-                                                        className="chatroom--prof-pic"
-                                                    ></img>
-                                                )}
-                                                <div
-                                                    className={`chatroom--message-content-wrapper${
-                                                        chat.senderName ===
-                                                        currentUser.name
-                                                            ? "-self"
-                                                            : ""
-                                                    }`}
-                                                >
+                                <div
+                                    className="chatroom--content"
+                                    ref={chatRoomRef}
+                                >
+                                    {!loading ? (
+                                        <div>
+                                            <InfiniteScroll
+                                                dataLength={currentChat.length}
+                                                next={fetchMoreData}
+                                                hasMore={hasMore}
+                                                style={{
+                                                    display: "flex",
+                                                    flexDirection:
+                                                        "column-reverse",
+                                                }}
+                                                inverse={true}
+                                                height={scrollHeight - 210}
+                                                loader={
                                                     <div
-                                                        className={`chatroom--message-content${
-                                                            chat.senderName ===
-                                                            currentUser.name
-                                                                ? "-self"
-                                                                : ""
-                                                        }`}
+                                                        style={{
+                                                            display: "flex",
+                                                            justifyContent:
+                                                                "center",
+                                                            marginTop: "10px",
+                                                        }}
                                                     >
-                                                        {chat.message}
+                                                        <BeatLoader
+                                                            color="rgba(134, 63, 217, 1)"
+                                                            size={10}
+                                                        ></BeatLoader>
                                                     </div>
-                                                    <div className="chatroom--username">
-                                                        {chat.senderName}
-                                                    </div>
-                                                </div>
-                                                {chat.senderName ===
-                                                    currentUser.name && (
-                                                    <img
-                                                        src="../images/defualt_pic.png"
-                                                        className="chatroom--prof-pic"
-                                                    ></img>
+                                                }
+                                            >
+                                                {currentChat?.map(
+                                                    (chat, index) => {
+                                                        return (
+                                                            <Message
+                                                                key={index}
+                                                                message={
+                                                                    chat.message
+                                                                }
+                                                                senderName={
+                                                                    chat.senderName
+                                                                }
+                                                                profilePicture={
+                                                                    chat.profilePicture
+                                                                }
+                                                            />
+                                                        );
+                                                    }
                                                 )}
-                                            </div>
-                                        ))}
-                                    </div>
+                                            </InfiniteScroll>
+                                        </div>
+                                    ) : (
+                                        <div className="chatroom--spinner">
+                                            <ColorRing
+                                                visible={true}
+                                                height="80"
+                                                width="80"
+                                                ariaLabel="blocks-loading"
+                                                wrapperStyle={{}}
+                                                wrapperClass="blocks-wrapper"
+                                                colors={[
+                                                    "rgba(134, 63, 217, .9)",
+                                                    "rgba(134, 63, 217, .7)",
+                                                    "rgba(134, 63, 217, .5)",
+                                                    "rgba(134, 63, 217, .3)",
+                                                    "rgba(134, 63, 217, .1)",
+                                                ]}
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -292,25 +333,27 @@ export default function ChatRoom(props) {
                     )}
                 </div>
                 {/*send private message UI *IMPORTANT* */}
-                <div className="chatroom--sender">
-                    <input
-                        type="text"
-                        className="chatroom--input-box"
-                        placeholder="Type here"
-                        value={userData.message}
-                        onChange={handleMessage}
-                        maxLength={200}
-                    />
-                    <div
-                        className="chatroom--send-button"
-                        onClick={sendPrivateMessage}
-                        style={sendButtonStyle}
-                        onMouseEnter={handleSendButtonHover}
-                        onMouseLeave={handleSendButtonHover}
-                    >
-                        <BsCursor />
+                {tab != null && (
+                    <div className="chatroom--sender">
+                        <input
+                            type="text"
+                            className="chatroom--input-box"
+                            placeholder="Type here"
+                            value={userData.message}
+                            onChange={handleMessage}
+                            maxLength={200}
+                        />
+                        <div
+                            className="chatroom--send-button"
+                            onClick={sendPrivateMessage}
+                            style={sendButtonStyle}
+                            onMouseEnter={handleSendButtonHover}
+                            onMouseLeave={handleSendButtonHover}
+                        >
+                            <BsCursor />
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
             <Extra
                 modalState={props.modalState}

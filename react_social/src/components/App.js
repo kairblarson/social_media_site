@@ -38,7 +38,6 @@ export default function App() {
     }
 
     useEffect(() => {
-        console.log(modalState);
         document.body.style.overflowY =
             modalState || editModalState ? "hidden" : "auto";
     }, [modalState, editModalState]);
