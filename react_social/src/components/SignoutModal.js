@@ -11,13 +11,13 @@ export default function SignoutModal(props) {
 
     const logoutButtonStyle = {
         cursor: hoverState.logoutHover ? "pointer" : "none",
-        background: hoverState.logoutHover ? "#f6f6f6" : "white",
+        background: hoverState.logoutHover ? "#eae6ed" : "white",
         transition: "all .08s linear",
     };
 
     const moreButtonStyle = {
         cursor: hoverState.moreHover ? "pointer" : "none",
-        background: hoverState.moreHover ? "#f6f6f6" : "white",
+        background: hoverState.moreHover ? "#eae6ed" : "white",
         transition: "all .08s linear",
     };
 

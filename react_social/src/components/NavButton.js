@@ -1,7 +1,7 @@
 export default function NavButton(props) {
     const buttonStyles = {
         fontWeight: props.isSelected ? "700" : "400",
-        background: props.isHover ? "#e8e8e8" : "white",
+        background: props.isHover ? "#eae6ed" : "white",
         cursor: props.isHover ? "pointer" : "none",
         transition: "all .08s linear",
     };
@@ -18,10 +18,15 @@ export default function NavButton(props) {
             {props.name == "Notifications" && props.notifs > 0 && (
                 <div className="navbar--notifs">{props.notifs}</div>
             )}
+            {props.name == "Messages" && props?.unreadMessages > 0 && (
+                <div className="navbar--messages">{props.unreadMessages}</div>
+            )}
             {props.name}
-            {props.isSelected && <div className="navbar--select-wrapper">
-                <div className="navbar--selected"></div>
-            </div>}
+            {props.isSelected && (
+                <div className="navbar--select-wrapper">
+                    <div className="navbar--selected"></div>
+                </div>
+            )}
         </div>
     );
 }

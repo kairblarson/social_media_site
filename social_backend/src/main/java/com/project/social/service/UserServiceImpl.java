@@ -891,9 +891,10 @@ public class UserServiceImpl implements UserService {
     public void viewNotifications(User to) {
         List<Notification> notifications = notificationRepo.findByTo(to);
         notifications.forEach(notification -> {
-            notificationRepo.delete(notification); //idk if i need to do this, test if this is necessary or not
-            notification.setViewed(true);
-            notificationRepo.save(notification);
+            if(!notification.getAction().equalsIgnoreCase("DM")) {
+                notification.setViewed(true);
+                notificationRepo.save(notification);
+            }
         });
         //maybe return back notifications?
     }
@@ -906,7 +907,6 @@ public class UserServiceImpl implements UserService {
         }
         List<Notification> notifications = notificationRepo.findByTo(user);
 
-        //might want to paginate this
         //this orders the notifs by most recent to least recent
         notifications.sort(Comparator.comparing(Notification::getNotificationDate,(notif1, notif2) -> {
             return notif2.compareTo(notif1);
@@ -914,8 +914,10 @@ public class UserServiceImpl implements UserService {
 
         if(exact) {
             notifications.forEach(notification -> {
-                notification.setViewed(true);
-                notificationRepo.save(notification);
+                if(!notification.getAction().equalsIgnoreCase("DM")) {
+                    notification.setViewed(true);
+                    notificationRepo.save(notification);
+                }
             });
 
             notifications.forEach(notification -> {

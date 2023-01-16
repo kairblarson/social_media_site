@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-export default function Avatar({ conversationWith, tab, id, profilePicture }) {
+export default function Avatar({ conversationWith, tab, id, profilePicture, viewed, senderName, currentUser }) {
     const [hoverState, setHoverState] = useState({
         avatarHover: false,
     });
@@ -23,6 +23,7 @@ export default function Avatar({ conversationWith, tab, id, profilePicture }) {
 
     return (
         <div key={id} className="chatroom--member-wrapper">
+            {!viewed && senderName != currentUser.name && <div className="chatroom--new">New!</div>}
             <img
                 src={"data:image/png;base64,"+profilePicture}
                 className={`chatroom--member${

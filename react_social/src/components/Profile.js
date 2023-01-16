@@ -41,6 +41,7 @@ export default function Profile(props) {
         followingHover: false,
         postsHover: false,
         likesHover: false,
+        messageHover: false,
     });
     const currentLocation = useLocation();
     const [loading, setLoading] = useState(true);
@@ -198,6 +199,19 @@ export default function Profile(props) {
         transition: "all .08s linear",
     };
 
+    const messageButtonStyle = {
+        background: hoverState.messageHover ? "#eae6ed" : "white",
+        cursor: hoverState.messageHover ? "pointer" : "default",
+        transition: "all .08s linear",
+    };
+
+    function handleMessageHover() {
+        setHoverState((prevState) => ({
+            ...prevState,
+            messageHover: !prevState.messageHover,
+        }));
+    }
+
     function handlePostsHover() {
         setHoverState((prevState) => ({
             ...prevState,
@@ -334,6 +348,9 @@ export default function Profile(props) {
                                     onClick={() =>
                                         (window.location = `http://localhost:3000/messages/${profileDetails.username}`)
                                     }
+                                    style={messageButtonStyle}
+                                    onMouseEnter={handleMessageHover}
+                                    onMouseLeave={handleMessageHover}
                                 >
                                     <BsEnvelope />
                                 </div>

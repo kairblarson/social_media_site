@@ -6,6 +6,7 @@ import com.project.social.entity.Notification;
 import com.project.social.entity.User;
 import com.project.social.model.Status;
 import com.project.social.repo.MessageRepo;
+import com.project.social.repo.NotificationRepo;
 import com.project.social.repo.UserRepo;
 import com.project.social.wrapper.PaginatedList;
 import org.aspectj.util.FileUtil;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -25,6 +27,10 @@ public class MessageServiceImpl implements MessageService{
     private MessageRepo messageRepo;
     @Autowired
     private UserRepo userRepo;
+
+    @Autowired
+    private NotificationRepo notificationRepo;
+
     @Value("${project.image}")
     private String basePath;
 
@@ -35,7 +41,14 @@ public class MessageServiceImpl implements MessageService{
         message.setReceiver(userRepo.findByUsername(messageDTO.getReceiverName()));
         message.setSender(userRepo.findByEmail(senderEmail));
         message.setStatus(Status.MESSAGE);
+        message.setViewed(false);
         messageRepo.save(message);
+
+//        Notification notification = new Notification();
+//        notification.setTo(userRepo.findByUsername(messageDTO.getReceiverName()));
+//        notification.setFrom(userRepo.findByEmail(senderEmail));
+//        notification.setAction("DM");
+//        notificationRepo.save(notification);
     }
 
     @Override
@@ -52,6 +65,7 @@ public class MessageServiceImpl implements MessageService{
             messageDTO.setMessage(message.getMessage());
             messageDTO.setStatus(message.getStatus());
             messageDTO.setMessageDate(message.getMessageDate());
+            messageDTO.setSenderName(message.getSender().getUsername());
             messageDTO.setConversationWith(message.getReceiver().getUsername()); //people we have conversation with due to messaging them
             File imagePath = new File(basePath+"\\"+message.getReceiver().getProfilePicture());
             try{
@@ -71,6 +85,8 @@ public class MessageServiceImpl implements MessageService{
             messageDTO.setMessage(message.getMessage());
             messageDTO.setStatus(message.getStatus());
             messageDTO.setMessageDate(message.getMessageDate());
+            messageDTO.setViewed(message.isViewed());
+            messageDTO.setSenderName(message.getSender().getUsername());
             messageDTO.setConversationWith(message.getSender().getUsername()); //people we have conversation with due to them messaging us
             File imagePath = new File(basePath+"\\"+message.getSender().getProfilePicture());
             try{
@@ -88,7 +104,6 @@ public class MessageServiceImpl implements MessageService{
         conversations.sort(Comparator.comparing(MessageDTO::getMessageDate,(msg1, msg2) -> {
             return msg2.compareTo(msg1);
         }));
-
         return conversations;
     }
 
@@ -96,6 +111,13 @@ public class MessageServiceImpl implements MessageService{
     public List<MessageDTO> getChatMessages(String email, String username, Integer page) {
         User currentUser = userRepo.findByEmail(email);
         User targetUser = userRepo.findByUsername(username);
+//        List<Notification> notifications = notificationRepo.findByTo(userRepo.findByEmail(email));
+//        notifications.forEach(notif -> {
+//            if(notif.getAction().equalsIgnoreCase("DM") && notif.getFrom().equals(targetUser)) {
+//                notif.setViewed(true);
+//                notificationRepo.save(notif);
+//            }
+//        });
 
         //cool this works you just have to paginate, reorder by date and add a profile pic and send over the dto 
         List<Message> messages = messageRepo.getChatMessages(currentUser, targetUser);
@@ -108,6 +130,11 @@ public class MessageServiceImpl implements MessageService{
             messageDTO.setSenderName(message.getSender().getUsername());
             messageDTO.setMessageDate(message.getMessageDate());
             messageDTO.setId(message.getId());
+            if(message.getReceiver().equals(currentUser)) {
+                message.setViewed(true);
+                messageRepo.save(message);
+                messageDTO.setViewed(true);
+            }
             File imagePath = new File(basePath+"\\"+message.getSender().getProfilePicture());
             try{
                 if(imagePath != null) {
@@ -128,5 +155,26 @@ public class MessageServiceImpl implements MessageService{
         PaginatedList<MessageDTO> paginatedChat = new PaginatedList<>(chat);
 
         return paginatedChat.getPage(page);
+    }
+
+    @Override
+    public HashMap<String, Integer> getUnreadMessages(String email) {
+        HashMap<String, Integer> unreadMessages = new HashMap<>();
+
+        List<Message> receivedMessages = messageRepo.getAllReceiverMessages(userRepo.findByEmail(email));
+
+        receivedMessages.forEach(message -> {
+            if(!message.isViewed()) {
+                if(unreadMessages.containsKey(message.getSender().getUsername())) {
+                    unreadMessages.put(message.getSender().getUsername(), unreadMessages.get(message.getSender().getUsername())+1);
+                }
+                else {
+                    unreadMessages.put(message.getSender().getUsername(), 1);
+                }
+            }
+        });
+        System.out.println(unreadMessages);
+        //THIS SHOULD WORK NOW TEST IT
+        return unreadMessages;
     }
 }

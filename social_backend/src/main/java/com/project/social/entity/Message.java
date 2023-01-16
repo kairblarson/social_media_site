@@ -27,5 +27,6 @@ public class Message {
     private String message;
     private Long messageDate = new Date().getTime();
     private Status status;
+    private boolean viewed;
 
 }

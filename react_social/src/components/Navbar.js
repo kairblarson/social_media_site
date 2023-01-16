@@ -21,7 +21,8 @@ export default function Navbar() {
     );
     const currentLocation = useLocation();
     const { handle } = useParams();
-    const [notifications, setNotifications] = useState();
+    const [notifications, setNotifications] = useState([]);
+    const [unreadMessages, setUnreadMessages] = useState();
     const [buttonState, setButtonState] = useState([
         {
             id: 0,
@@ -67,14 +68,45 @@ export default function Navbar() {
         })
             .then((res) => res.json())
             .then((data) => {
-                setNotifications(data);
+                let notifArray = [];
+                data.forEach((notif) => {
+                    notifArray.push(notif);
+                });
+                setNotifications(notifArray);
                 if (currentLocation.pathname == `/${handle}/notifications`) {
-                    setNotifications(0);
+                    setNotifications([]);
+                }
+
+                if (currentLocation.pathname == `/messages/${handle}`) {
                 }
             })
-            .catch((err) => setNotifications(0));
-        //maybe make this api call in the app component and pass it down through props
+            .catch((err) => {
+                setNotifications([]);
+            });
     }, []);
+
+    useEffect(() => {
+        fetch("http://localhost:8080/messages/unread", {
+            method: "GET",
+            credentials: "include",
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                let numOfMessages = 0;
+                const message_map = new Map(Object.entries(data));
+                message_map.forEach((value, username) => {
+                    if(username !== handle) {
+                        numOfMessages = numOfMessages+value;
+                    }
+                })
+                setUnreadMessages(numOfMessages);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }, []);
+
+    // console.log(unreadMessages);
 
     function handleButtonHover(id) {
         setButtonState((prevState) => {
@@ -141,7 +173,10 @@ export default function Navbar() {
         ) {
             return { ...button, isSelected: true };
         }
-        if (`/messages/${handle}` == currentLocation.pathname && button.id == 2) {
+        if (
+            `/messages/${handle}` == currentLocation.pathname &&
+            button.id == 2
+        ) {
             return { ...button, isSelected: true };
         }
         return { ...button };
@@ -166,6 +201,7 @@ export default function Navbar() {
                         handleClick={handleButtonclick}
                         isSelected={prevState.isSelected}
                         notifs={notifications?.length}
+                        unreadMessages={unreadMessages}
                     />
                 ))}
             </div>

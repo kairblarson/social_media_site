@@ -301,6 +301,22 @@ input:focus{
   top: 3px;
   left: 18px;
   color: white;
+  font-weight: 400;
+}
+.navbar--messages{
+  position: absolute;
+  background-color: #de4b4b;
+  font-size: 15px;
+  border-radius: 10px;
+  height: 18px;
+  width: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 3px;
+  left: 18px;
+  color: white;
+  font-weight: 400;
 }
 .navbar--select-wrapper{
   width: 100%;
@@ -1439,21 +1455,29 @@ input:focus{
   padding-block: 5px;
   /* border: 1px solid #e8e8e8; */
   padding-inline: 10px;
-  gap: 10px;
+  gap: 5px;
   background-color: white;
-  border-block: 1px solid #e4e4e4;
+  border-bottom: 1px solid #e4e4e4;
 }
 .chatroom--member-wrapper{
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  position: relative;
+  width: 100px;
+  padding-top: 5px;
 }
 .chatroom--member{
   width: 50px;
   height: 50px;
   object-fit: cover;
   border-radius: 50px;
+  overflow:hidden;
+  white-space:nowrap;
+  display:inline-block;
+  text-overflow:ellipsis;
+  /*hopefully if username is too long it will ...*/
 }
 .chatroom--member-active{
   width: 50px;
@@ -1461,6 +1485,17 @@ input:focus{
   object-fit: cover;
   border-radius: 50px;
   border: 2px solid rgba(134, 63, 217, 1);
+}
+.chatroom--new{
+  position: absolute;
+  background-color: #de4b4b;
+  color: white;
+  font-size: 12px;
+  padding: 2px;
+  top: 0px;
+  right: 10px;
+  border-radius: 5px;
+  opacity: 80%;
 }
 .chatroom--arrow{
   color: rgba(134, 63, 217, 1);
@@ -1494,7 +1529,6 @@ input:focus{
 .chatroom--filler{
   width: 100px;
   height: 210px;
-  background-color: orange;
 }
 .chatroom--spinner{
   min-height: 100vh;
@@ -1505,15 +1539,16 @@ input:focus{
 .chatroom--message{
   display: flex;
   width: 100%;
-  padding: 10px;
   gap: 10px;
+  margin-block: 2px;
+  height: fit-content;
 }
 .chatroom--message-self{
   display: flex;
   width: 100%;
   justify-content: flex-end;
-  padding: 10px;
   gap: 10px;
+  margin-block: 2px;
 }
 .chatroom--prof-pic{
   width: 50px;
@@ -1522,6 +1557,10 @@ input:focus{
   min-height: 50px;
   object-fit: cover;
   border-radius: 50px;
+}
+.chatroom--prof-pic-empty{
+  width: 50px;
+  min-width: 50px;
 }
 .chatroom--username{
   display: inherit;
@@ -1534,6 +1573,7 @@ input:focus{
   display: inherit;
   flex-direction: column;
   width: 100%;
+  height: fit-content;
 }
 .chatroom--message-content-wrapper-self{
   display: inherit;

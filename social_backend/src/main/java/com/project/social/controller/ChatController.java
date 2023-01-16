@@ -3,6 +3,7 @@ package com.project.social.controller;
 import com.project.social.dto.MessageDTO;
 import com.project.social.entity.CustomOAuth2User;
 import com.project.social.entity.CustomUserDetails;
+import com.project.social.entity.User;
 import com.project.social.repo.UserRepo;
 import com.project.social.service.MessageService;
 import org.aspectj.util.FileUtil;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 
 @Controller
@@ -80,6 +82,12 @@ public class ChatController {
                                                             Authentication authentication) {
 
         return ResponseEntity.ok().body(messageService.getChatMessages(getEmailFromAuth(authentication), username, page));
+    }
+
+    @GetMapping("/messages/unread")
+    public ResponseEntity<HashMap<String,Integer>> getUnreadMessages(Authentication authentication) {
+
+        return ResponseEntity.ok().body(messageService.getUnreadMessages(getEmailFromAuth(authentication)));
     }
     public String getEmailFromAuth(Authentication authentication) {
         String email = null; //code to extract user from auth

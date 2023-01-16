@@ -5,8 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3a82b9ce-f448-41bd-80bb-05876d1411cc" name="Changes" comment="&quot;Initial backend commit&quot;">
-      <change beforePath="$PROJECT_DIR$/../react_social/src/components/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_social/src/components/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../react_social/src/components/Avatar.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_social/src/components/Avatar.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../react_social/src/components/ChatRoom.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_social/src/components/ChatRoom.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../react_social/src/components/Message.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_social/src/components/Message.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../react_social/src/components/NavButton.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_social/src/components/NavButton.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../react_social/src/components/Navbar.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_social/src/components/Navbar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../react_social/src/components/Notif.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_social/src/components/Notif.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../react_social/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/../react_social/src/index.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

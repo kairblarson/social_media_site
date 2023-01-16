@@ -20,4 +20,5 @@ public class MessageDTO {
     private Status status;
     private byte[] profilePicture;
     private String conversationWith;
+    private boolean viewed;
 }

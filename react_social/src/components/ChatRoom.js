@@ -19,16 +19,16 @@ import Message from "./Message";
 import InfiniteScroll from "react-infinite-scroll-component";
 import InfiniteScrollReverse from "react-infinite-scroll-reverse/dist/InfiniteScrollReverse";
 import { BeatLoader } from "react-spinners";
+import Sender from "./Sender";
 
 var stompClient = null;
 export default function ChatRoom(props) {
     const [currentUser, setCurrentUser] = useState(
         JSON.parse(localStorage.getItem("userDetails"))
     );
-    const [isBlocked, setBlocked] = useState(true);
+    const currentLocation = useLocation();
     const { handle, interaction, id, user } = useParams();
     const [tab, setTab] = useState(handle);
-    const [previousMessage, setPreviousMessage] = useState();
     const [currentChat, setCurrentChat] = useState([]);
     const [conversations, setConversations] = useState([]);
     const [userData, setUserData] = useState({
@@ -38,12 +38,14 @@ export default function ChatRoom(props) {
         message: "",
     });
     const [hoverState, setHoverState] = useState({
-        sendButtonHover: false,
+        backHover: false,
+        frontHover: false,
     });
     const [loading, setLoading] = useState(true);
     const [hasMore, setHasMore] = useState(true);
     const [page, setPage] = useState(1);
     const chatRoomRef = useRef();
+    let previousMessage = {};
 
     //creates an initial connection to server (registerUser func)
     useEffect(() => {
@@ -60,24 +62,26 @@ export default function ChatRoom(props) {
 
     useEffect(() => {
         //this gets all the current conversations
-        fetch(`http://localhost:8080/messages/${tab}?page=${page}`, {
-            method: "GET",
-            credentials: "include",
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                if (data.length <= 0 || data.length >= 200) {
-                    setHasMore(false);
-                } else {
-                    setCurrentChat((prev) => {
-                        return [...prev, ...data];
-                    });
-                }
-                setLoading(false);
+        if (tab !== undefined) {
+            fetch(`http://localhost:8080/messages/${tab}?page=${page}`, {
+                method: "GET",
+                credentials: "include",
             })
-            .catch((e) => {
-                console.log("CAUGHT:", e);
-            });
+                .then((res) => res.json())
+                .then((data) => {
+                    if (data.length <= 0 || data.length >= 200) {
+                        setHasMore(false);
+                    } else {
+                        setCurrentChat((prev) => {
+                            return [...prev, ...data];
+                        });
+                    }
+                    setLoading(false);
+                })
+                .catch((e) => {
+                    console.log("CAUGHT:", e);
+                });
+        }
     }, [tab, page]);
 
     function fetchMoreData() {
@@ -88,6 +92,7 @@ export default function ChatRoom(props) {
     }
 
     //function that connects user to the stomp endpoint
+    //prop
     function onConnected() {
         setUserData({ ...userData, connected: true });
         //this is the endpoint for our user that we are listening to for messages
@@ -111,6 +116,7 @@ export default function ChatRoom(props) {
         })
             .then((res) => res.json())
             .then((data) => {
+                // console.log(data);
                 let chat = [];
                 data.forEach((message) => {
                     if (!chat.includes(message.conversationWith)) {
@@ -121,6 +127,7 @@ export default function ChatRoom(props) {
                         ]);
                     }
                 });
+                setLoading(false);
             })
             .catch((e) => {
                 console.log("CAUGHT:", e);
@@ -146,18 +153,19 @@ export default function ChatRoom(props) {
 
     //this is more important in our use case
     function onPrivateMessageReceived(payload) {
-        console.log("MESSAGE RECEIVED");
         let payloadData = JSON.parse(payload.body);
-        setCurrentChat((prevState) => [payloadData, ...prevState]);
+        if (currentLocation.pathname != "/messages") {
+            setCurrentChat((prevState) => [payloadData, ...prevState]);
+        }
     }
 
-    //this function deals with sending messages to a specific person
-    function sendPrivateMessage() {
+    function sendPrivateMessage(content, isBlocked) {
         if (stompClient && !isBlocked) {
             let chatMessage = {
                 senderName: currentUser.name,
                 receiverName: tab,
-                message: userData.message,
+                message: content,
+                messageDate: new Date().getTime(),
                 profilePicture: null,
                 status: "MESSAGE",
             };
@@ -173,7 +181,6 @@ export default function ChatRoom(props) {
             if (userData.username !== tab) {
                 setCurrentChat((prevState) => [chatMessage, ...prevState]);
             }
-            setUserData((prevState) => ({ ...prevState, message: "" }));
         }
     }
 
@@ -181,37 +188,6 @@ export default function ChatRoom(props) {
     function onError(err) {
         console.log(err);
     }
-
-    const sendButtonStyle = {
-        color: isBlocked ? "rgba(134, 63, 217, .5)" : "rgba(134, 63, 217, 1)",
-        cursor: hoverState.sendButtonHover
-            ? isBlocked
-                ? "default"
-                : "pointer"
-            : "default",
-    };
-
-    function handleSendButtonHover() {
-        setHoverState((prevState) => {
-            return {
-                ...prevState,
-                sendButtonHover: !prevState.sendButtonHover,
-            };
-        });
-    }
-
-    function handleMessage(event) {
-        const { value } = event.target;
-        setUserData({ ...userData, message: value });
-    }
-
-    useEffect(() => {
-        if (userData.message.length > 0) {
-            setBlocked(false);
-        } else {
-            setBlocked(true);
-        }
-    }, [userData.message]);
 
     const [scrollHeight, setScrollHeight] = useState(null);
 
@@ -227,25 +203,34 @@ export default function ChatRoom(props) {
             <Navbar />
             <div>
                 <Header />
-                <div className="chatroom--users">
-                    <div className="chatroom--arrow">
-                        <BsArrowLeftCircleFill />
+                {!loading && (
+                    <div className="chatroom--users">
+                        <div className="chatroom--arrow">
+                            <BsArrowLeftCircleFill />
+                        </div>
+                        {conversations?.map((chat) => {
+                            let viewed = chat.viewed;
+                            if(handle === chat.senderName) {
+                                viewed = true;
+                            }
+                            return (
+                                <Avatar
+                                    conversationWith={chat.conversationWith}
+                                    tab={tab}
+                                    id={chat.id}
+                                    key={chat.id}
+                                    profilePicture={chat.profilePicture}
+                                    viewed={viewed}
+                                    senderName={chat.senderName}
+                                    currentUser={currentUser}
+                                />
+                            );
+                        })}
+                        <div className="chatroom--arrow">
+                            <BsArrowRightCircleFill />
+                        </div>
                     </div>
-                    {conversations?.map((chat) => {
-                        return (
-                            <Avatar
-                                conversationWith={chat.conversationWith}
-                                tab={tab}
-                                id={chat.id}
-                                key={chat.id}
-                                profilePicture={chat.profilePicture}
-                            />
-                        );
-                    })}
-                    <div className="chatroom--arrow">
-                        <BsArrowRightCircleFill />
-                    </div>
-                </div>
+                )}
                 <div className="chatroom">
                     {userData.connected ? (
                         <div className="chatroom--main">
@@ -255,7 +240,7 @@ export default function ChatRoom(props) {
                                     className="chatroom--content"
                                     ref={chatRoomRef}
                                 >
-                                    {!loading ? (
+                                    {!loading ? tab != undefined && (
                                         <div>
                                             <InfiniteScroll
                                                 dataLength={currentChat.length}
@@ -286,6 +271,20 @@ export default function ChatRoom(props) {
                                             >
                                                 {currentChat?.map(
                                                     (chat, index) => {
+                                                        let backToBack = false;
+                                                        if (
+                                                            chat.senderName ===
+                                                            previousMessage?.senderName
+                                                        ) {
+                                                            if (
+                                                                chat.messageDate +
+                                                                    300000 >
+                                                                previousMessage.messageDate
+                                                            ) {
+                                                                backToBack = true;
+                                                            }
+                                                        }
+                                                        previousMessage = chat;
                                                         return (
                                                             <Message
                                                                 key={index}
@@ -298,6 +297,13 @@ export default function ChatRoom(props) {
                                                                 profilePicture={
                                                                     chat.profilePicture
                                                                 }
+                                                                backToBack={
+                                                                    backToBack
+                                                                }
+                                                                date={
+                                                                    chat.messageDate
+                                                                }
+                                                                viewed={chat.viewed}
                                                             />
                                                         );
                                                     }
@@ -334,25 +340,7 @@ export default function ChatRoom(props) {
                 </div>
                 {/*send private message UI *IMPORTANT* */}
                 {tab != null && (
-                    <div className="chatroom--sender">
-                        <input
-                            type="text"
-                            className="chatroom--input-box"
-                            placeholder="Type here"
-                            value={userData.message}
-                            onChange={handleMessage}
-                            maxLength={200}
-                        />
-                        <div
-                            className="chatroom--send-button"
-                            onClick={sendPrivateMessage}
-                            style={sendButtonStyle}
-                            onMouseEnter={handleSendButtonHover}
-                            onMouseLeave={handleSendButtonHover}
-                        >
-                            <BsCursor />
-                        </div>
-                    </div>
+                    <Sender sendPrivateMessage={sendPrivateMessage} />
                 )}
             </div>
             <Extra

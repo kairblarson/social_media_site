@@ -7,6 +7,8 @@ import {
 } from "react-icons/bs";
 
 export default function Notif({ action, id, content, from, date }) {
+    if(action === "DM") return null;
+
     const [hoverState, setHoverState] = useState({
         mainHover: false,
         usernameHover: false,
