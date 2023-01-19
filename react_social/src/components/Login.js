@@ -80,7 +80,6 @@ export default function Login() {
                         if (data === "bad credentials") {
                             console.log("FAILURE");
                             setErrorMessage("invalid email and password");
-                            setInvalidLogin(true);
                         } else {
                             console.log("SUCCESS");
                             localStorage.setItem(

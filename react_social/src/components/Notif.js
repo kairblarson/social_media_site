@@ -8,8 +8,6 @@ import {
 import { motion } from "framer-motion";
 
 export default function Notif({ action, id, content, from, date }) {
-    if (action === "DM") return null;
-
     const [hoverState, setHoverState] = useState({
         mainHover: false,
         usernameHover: false,
@@ -17,6 +15,7 @@ export default function Notif({ action, id, content, from, date }) {
     const [currentUser, setCurrentUser] = useState(
         JSON.parse(localStorage.getItem("userDetails"))
     );
+    if (action === "DM") return null;
     const actionToIcon = () => {
         let component;
         switch (action) {

@@ -2,11 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 
 export default function EditModal({ open, toggleEdit, oldImg }) {
-    if (!open) return null;
-
-    const [currentUser, setCurrentUser] = useState(
-        JSON.parse(localStorage.getItem("userDetails"))
-    );
+    const [currentUser, setCurrentUser] = useState();
     const [userModel, setUserModel] = useState({
         username: currentUser.name,
         bio: currentUser.principal.bio,
@@ -16,6 +12,12 @@ export default function EditModal({ open, toggleEdit, oldImg }) {
     const [changePicHover, setChangePicHover] = useState(false);
     const [saveHover, setSaveHover] = useState(false);
     const [imagePreview, setImagePreview] = useState(oldImg);
+
+    useEffect(() => {
+        localStorage.setItem("userDetails", JSON.stringify(currentUser));
+    }, [currentUser]);
+    
+    if (!open) return null;
 
     const exitStyle = {
         background: exitHover ? "#e8e8e8" : "rgba(134, 63, 217, 1)",
@@ -76,10 +78,6 @@ export default function EditModal({ open, toggleEdit, oldImg }) {
         });
         window.location = `http://localhost:3000/${currentUser.name}`;
     }
-
-    useEffect(() => {
-        localStorage.setItem("userDetails", JSON.stringify(currentUser));
-    }, [currentUser]);
 
     return (
         <div className="editModal--wrapper" onClick={() => toggleEdit()}>

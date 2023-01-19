@@ -263,7 +263,7 @@ export default function FullPost(props) {
                     };
                 });
             })
-            .catch(() => {
+            .catch((err) => {
                 console.log(err);
                 window.location = "http://localhost:3000/login";
             });

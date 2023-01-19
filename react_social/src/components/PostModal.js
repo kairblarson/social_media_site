@@ -3,24 +3,21 @@ import axios from "axios";
 import { useEffect } from "react";
 
 export default function PostModal({ open, closeModal, onSubmit, targetPost }) {
-    if (!open) return null;
-
     const [userDetails, setUserDetails] = useState(
         JSON.parse(localStorage.getItem("userDetails"))
     );
-
-    function handleClick(e) {
-        e.stopPropagation();
-    }
-
     const [hoverState, setHoverState] = useState({
         exitHover: false,
         submitHover: false,
     });
-
     const [inputState, setInputState] = useState({
         postInput: "",
     });
+    if (!open) return null;
+
+    function handleClick(e) {
+        e.stopPropagation();
+    }
 
     function handleChange(event) {
         const { name, value } = event.target;
@@ -97,9 +94,9 @@ export default function PostModal({ open, closeModal, onSubmit, targetPost }) {
                             onChange={handleChange}
                             maxLength={250}
                             onKeyDown={(e) => {
-                                if(e.key === "Enter") {
+                                if (e.key === "Enter") {
                                     console.log("ENTER");
-                                    onSubmit(inputState.postInput)
+                                    onSubmit(inputState.postInput);
                                 }
                             }}
                         ></textarea>

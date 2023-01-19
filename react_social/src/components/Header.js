@@ -54,8 +54,9 @@ export default function Header() {
                 break;
             case `/messages/${handle}`:
                 setTitle("Messages");
+                break;
             default:
-                "Unknown location";
+                setTitle("Unknown location");
         }
     }, []);
 

@@ -85,7 +85,7 @@ export default function PostMenu(props) {
 
     function handleToProfileClick(e) {
         e.stopPropagation();
-        window.location = `http://localhost:3000/${props.currentUsername}`;
+        // window.location = `http://localhost:3000/${props.currentUsername}`;
     }
 
     return (
@@ -113,17 +113,19 @@ export default function PostMenu(props) {
                     <BsFlagFill />
                     Report
                 </div>
-                <div
-                    className="postmenu--option"
-                    name="toProfileHover"
-                    onMouseEnter={handleToProfileHover}
-                    onMouseLeave={handleToProfileHover}
-                    style={toProfileStyle}
-                    onClick={handleToProfileClick}
-                >
-                    <BsPersonFill />
-                    Go to profile
-                </div>
+                <Link to={`/${props.currentUsername}`}>
+                    <div
+                        className="postmenu--option"
+                        name="toProfileHover"
+                        onMouseEnter={handleToProfileHover}
+                        onMouseLeave={handleToProfileHover}
+                        style={toProfileStyle}
+                        onClick={handleToProfileClick}
+                    >
+                        <BsPersonFill />
+                        Go to profile
+                    </div>
+                </Link>
                 {/* <div
                     className="postmenu--option"
                     onClick={(e) => {
