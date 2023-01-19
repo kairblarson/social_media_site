@@ -78,7 +78,6 @@ public class MessageServiceImpl implements MessageService{
         });
 
         receivedMessages.forEach(message -> {
-            System.out.println(message.getMessage());
             if (!usernames.contains(message.getSender().getUsername()) || !message.isViewed()) {
                 MessageDTO messageDTO = new MessageDTO();
                 messageDTO.setId(message.getId());

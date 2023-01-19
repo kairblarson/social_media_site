@@ -83,6 +83,11 @@ export default function PostMenu(props) {
             });
     }
 
+    function handleToProfileClick(e) {
+        e.stopPropagation();
+        window.location = `http://localhost:3000/${props.currentUsername}`;
+    }
+
     return (
         <div className="postmenu--wrapper">
             <div className="postmenu">
@@ -114,6 +119,7 @@ export default function PostMenu(props) {
                     onMouseEnter={handleToProfileHover}
                     onMouseLeave={handleToProfileHover}
                     style={toProfileStyle}
+                    onClick={handleToProfileClick}
                 >
                     <BsPersonFill />
                     Go to profile

@@ -44,7 +44,7 @@ export default function Preview(props) {
             )}
             {!props.isAuth && (
                 <img
-                    src="../images/standard.jpg"
+                    src="/images/standard.jpg"
                     className="preview--pic"
                 ></img>
             )}

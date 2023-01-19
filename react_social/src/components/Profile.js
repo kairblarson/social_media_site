@@ -339,6 +339,7 @@ export default function Profile(props) {
                 <div className="profile--middle">
                     <div className="profile--content">
                         <img
+                        style={{objectFit: "cover"}}
                             src={"../images/background.jpg"}
                             className="profile--background"
                         ></img>
