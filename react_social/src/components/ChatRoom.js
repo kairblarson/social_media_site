@@ -39,13 +39,15 @@ export default function ChatRoom(props) {
     });
     const [hoverState, setHoverState] = useState({
         backHover: false,
-        frontHover: false,
+        forwardHover: false,
     });
     const [loading, setLoading] = useState(true);
     const [hasMore, setHasMore] = useState(true);
     const [page, setPage] = useState(1);
     const chatRoomRef = useRef();
     let previousMessage = {};
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [isNewChat, setIsNewChat] = useState(false);
 
     //creates an initial connection to server (registerUser func)
     useEffect(() => {
@@ -69,6 +71,7 @@ export default function ChatRoom(props) {
             })
                 .then((res) => res.json())
                 .then((data) => {
+                    console.log(data);
                     if (data.length <= 0 || data.length >= 200) {
                         setHasMore(false);
                     } else {
@@ -110,13 +113,18 @@ export default function ChatRoom(props) {
             senderName: currentUser.name,
             status: "JOIN",
         };
-        fetch(`http://localhost:8080/messages`, {
-            method: "GET",
-            credentials: "include",
-        })
+        fetch(
+            `http://localhost:8080/messages?target=${
+                handle === undefined ? "" : handle
+            }`,
+            {
+                method: "GET",
+                credentials: "include",
+            }
+        )
             .then((res) => res.json())
             .then((data) => {
-                // console.log(data);
+                console.log(data);
                 let chat = [];
                 data.forEach((message) => {
                     if (!chat.includes(message.conversationWith)) {
@@ -134,6 +142,8 @@ export default function ChatRoom(props) {
             });
         stompClient.send("/app/message", {}, JSON.stringify(chatMessage));
     }
+
+    console.log(conversations);
 
     useEffect(() => {
         if (conversations.length > 0) {
@@ -189,6 +199,22 @@ export default function ChatRoom(props) {
         console.log(err);
     }
 
+    //new
+    function carouselInfiniteScroll(direction) {
+        if (currentIndex < 0) {
+            console.log("HERE??");
+            return setCurrentIndex(0);
+        }
+        if (direction === "L" && currentIndex > 0) {
+            return setCurrentIndex(currentIndex - 1);
+        }
+        if (direction === "R" && currentIndex < conversations.length - 1) {
+            console.log("IS IT GOING HERE?");
+            return setCurrentIndex(currentIndex + 1);
+        }
+        return setCurrentIndex(currentIndex);
+    }
+
     const [scrollHeight, setScrollHeight] = useState(null);
 
     useEffect(() => {
@@ -198,36 +224,72 @@ export default function ChatRoom(props) {
 
     document.body.style.overflowY = "hidden";
 
+    const forwardButtonStyle = {
+        color: hoverState.forwardHover ? "rgba(0,0,0,0.8)" : "black",
+        cursor: hoverState.forwardHover ? "pointer" : "default",
+    };
+
+    const backButtonStyle = {
+        color: hoverState.backHover ? "rgba(0,0,0,0.8)" : "black",
+        cursor: hoverState.backHover ? "pointer" : "default",
+    };
+
+    function handleForwardHover() {
+        setHoverState((prevState) => {
+            return { ...prevState, forwardHover: !prevState.forwardHover };
+        });
+    }
+
+    function handleBackHover() {
+        setHoverState((prevState) => {
+            return { ...prevState, backHover: !prevState.backHover };
+        });
+    }
+
     return (
         <div className="chatroom--wrapper">
             <Navbar />
             <div>
                 <Header />
                 {!loading && (
-                    <div className="chatroom--users">
+                    <div className="chatroom--carousel-wrapper">
                         <div className="chatroom--arrow">
-                            <BsArrowLeftCircleFill />
+                            <BsArrowLeftCircleFill
+                                onClick={() => carouselInfiniteScroll("L")}
+                                style={backButtonStyle}
+                                onMouseEnter={handleBackHover}
+                                onMouseLeave={handleBackHover}
+                            />
                         </div>
-                        {conversations?.map((chat) => {
-                            let viewed = chat.viewed;
-                            if(handle === chat.senderName) {
-                                viewed = true;
-                            }
-                            return (
-                                <Avatar
-                                    conversationWith={chat.conversationWith}
-                                    tab={tab}
-                                    id={chat.id}
-                                    key={chat.id}
-                                    profilePicture={chat.profilePicture}
-                                    viewed={viewed}
-                                    senderName={chat.senderName}
-                                    currentUser={currentUser}
-                                />
-                            );
-                        })}
+                        <div className="chatroom--carousel">
+                            {conversations?.map((chat, index) => {
+                                let viewed = chat.viewed;
+                                if (handle === chat.senderName) {
+                                    viewed = true;
+                                }
+                                return (
+                                    <Avatar
+                                        conversationWith={chat.conversationWith}
+                                        tab={tab}
+                                        id={chat.id}
+                                        key={chat.id}
+                                        profilePicture={chat.profilePicture}
+                                        viewed={viewed}
+                                        senderName={chat.senderName}
+                                        currentUser={currentUser}
+                                        index={index}
+                                        currentIndex={currentIndex}
+                                    />
+                                );
+                            })}
+                        </div>
                         <div className="chatroom--arrow">
-                            <BsArrowRightCircleFill />
+                            <BsArrowRightCircleFill
+                                onClick={() => carouselInfiniteScroll("R")}
+                                style={forwardButtonStyle}
+                                onMouseEnter={handleForwardHover}
+                                onMouseLeave={handleForwardHover}
+                            />
                         </div>
                     </div>
                 )}
@@ -240,76 +302,84 @@ export default function ChatRoom(props) {
                                     className="chatroom--content"
                                     ref={chatRoomRef}
                                 >
-                                    {!loading ? tab != undefined && (
-                                        <div>
-                                            <InfiniteScroll
-                                                dataLength={currentChat.length}
-                                                next={fetchMoreData}
-                                                hasMore={hasMore}
-                                                style={{
-                                                    display: "flex",
-                                                    flexDirection:
-                                                        "column-reverse",
-                                                }}
-                                                inverse={true}
-                                                height={scrollHeight - 210}
-                                                loader={
-                                                    <div
-                                                        style={{
-                                                            display: "flex",
-                                                            justifyContent:
-                                                                "center",
-                                                            marginTop: "10px",
-                                                        }}
-                                                    >
-                                                        <BeatLoader
-                                                            color="rgba(134, 63, 217, 1)"
-                                                            size={10}
-                                                        ></BeatLoader>
-                                                    </div>
-                                                }
-                                            >
-                                                {currentChat?.map(
-                                                    (chat, index) => {
-                                                        let backToBack = false;
-                                                        if (
-                                                            chat.senderName ===
-                                                            previousMessage?.senderName
-                                                        ) {
-                                                            if (
-                                                                chat.messageDate +
-                                                                    300000 >
-                                                                previousMessage.messageDate
-                                                            ) {
-                                                                backToBack = true;
-                                                            }
-                                                        }
-                                                        previousMessage = chat;
-                                                        return (
-                                                            <Message
-                                                                key={index}
-                                                                message={
-                                                                    chat.message
-                                                                }
-                                                                senderName={
-                                                                    chat.senderName
-                                                                }
-                                                                profilePicture={
-                                                                    chat.profilePicture
-                                                                }
-                                                                backToBack={
-                                                                    backToBack
-                                                                }
-                                                                date={
-                                                                    chat.messageDate
-                                                                }
-                                                                viewed={chat.viewed}
-                                                            />
-                                                        );
+                                    {!loading ? (
+                                        tab != undefined && (
+                                            <div>
+                                                <InfiniteScroll
+                                                    dataLength={
+                                                        currentChat.length
                                                     }
-                                                )}
-                                            </InfiniteScroll>
-                                        </div>
+                                                    next={fetchMoreData}
+                                                    hasMore={hasMore}
+                                                    style={{
+                                                        display: "flex",
+                                                        flexDirection:
+                                                            "column-reverse",
+                                                    }}
+                                                    inverse={true}
+                                                    height={scrollHeight - 210}
+                                                    loader={
+                                                        <div
+                                                            style={{
+                                                                display: "flex",
+                                                                justifyContent:
+                                                                    "center",
+                                                                marginBottom:
+                                                                    "400px",
+                                                            }}
+                                                        >
+                                                            <BeatLoader
+                                                                color="rgba(134, 63, 217, 1)"
+                                                                size={10}
+                                                            ></BeatLoader>
+                                                        </div>
+                                                    }
+                                                >
+                                                    {currentChat?.map(
+                                                        (chat, index) => {
+                                                            let backToBack = false;
+                                                            if (
+                                                                chat.senderName ===
+                                                                previousMessage?.senderName
+                                                            ) {
+                                                                if (
+                                                                    chat.messageDate +
+                                                                        300000 >
+                                                                    previousMessage.messageDate
+                                                                ) {
+                                                                    backToBack = true;
+                                                                }
+                                                            }
+                                                            previousMessage =
+                                                                chat;
+                                                            return (
+                                                                <Message
+                                                                    key={index}
+                                                                    message={
+                                                                        chat.message
+                                                                    }
+                                                                    senderName={
+                                                                        chat.senderName
+                                                                    }
+                                                                    profilePicture={
+                                                                        chat.profilePicture
+                                                                    }
+                                                                    backToBack={
+                                                                        backToBack
+                                                                    }
+                                                                    date={
+                                                                        chat.messageDate
+                                                                    }
+                                                                    viewed={
+                                                                        chat.viewed
+                                                                    }
+                                                                />
+                                                            );
+                                                        }
+                                                    )}
+                                                </InfiniteScroll>
+                                            </div>
+                                        )
                                     ) : (
                                         <div className="chatroom--spinner">
                                             <ColorRing

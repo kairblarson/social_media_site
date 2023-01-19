@@ -71,6 +71,7 @@ public class SecurityConfig {
                             @Override
                             public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
                                 System.out.println("Failed Login attempt");
+                                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                                 //do better than this
                             }
                         })

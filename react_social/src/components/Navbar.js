@@ -95,10 +95,10 @@ export default function Navbar() {
                 let numOfMessages = 0;
                 const message_map = new Map(Object.entries(data));
                 message_map.forEach((value, username) => {
-                    if(username !== handle) {
-                        numOfMessages = numOfMessages+value;
+                    if (username !== handle) {
+                        numOfMessages = numOfMessages + value;
                     }
-                })
+                });
                 setUnreadMessages(numOfMessages);
             })
             .catch((err) => {
@@ -124,6 +124,9 @@ export default function Navbar() {
                 window.location = "http://localhost:3000/home";
                 break;
             case 1:
+                if (userDetails == null) {
+                    window.location = `http://localhost:3000/login`;
+                }
                 window.location = `http://localhost:3000/${userDetails.name}/notifications`;
                 break;
             case 2:

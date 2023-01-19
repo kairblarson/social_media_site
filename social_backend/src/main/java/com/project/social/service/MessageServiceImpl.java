@@ -2,7 +2,6 @@ package com.project.social.service;
 
 import com.project.social.dto.MessageDTO;
 import com.project.social.entity.Message;
-import com.project.social.entity.Notification;
 import com.project.social.entity.User;
 import com.project.social.model.Status;
 import com.project.social.repo.MessageRepo;
@@ -15,10 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class MessageServiceImpl implements MessageService{
@@ -44,51 +41,76 @@ public class MessageServiceImpl implements MessageService{
         message.setViewed(false);
         messageRepo.save(message);
 
-//        Notification notification = new Notification();
-//        notification.setTo(userRepo.findByUsername(messageDTO.getReceiverName()));
-//        notification.setFrom(userRepo.findByEmail(senderEmail));
-//        notification.setAction("DM");
-//        notificationRepo.save(notification);
     }
 
     @Override
-    public List<MessageDTO> getConversations(String email) {
-        //this will be for the left-hand side to display the different users you have messaged or received a message from
-        //a different method will be used to actually get the messages between you and another person
+    public List<MessageDTO> getConversations(String email, String targetUser) {
+        List<String> usernames = new ArrayList<>();
         List<Message> sentMessages = messageRepo.getAllSenderMessages(userRepo.findByEmail(email));
         List<Message> receivedMessages = messageRepo.getAllReceiverMessages(userRepo.findByEmail(email));
         List<MessageDTO> conversations = new ArrayList<>();
 
         sentMessages.forEach(message -> {
-            MessageDTO messageDTO = new MessageDTO();
-            messageDTO.setId(message.getId());
-            messageDTO.setMessage(message.getMessage());
-            messageDTO.setStatus(message.getStatus());
-            messageDTO.setMessageDate(message.getMessageDate());
-            messageDTO.setSenderName(message.getSender().getUsername());
-            messageDTO.setConversationWith(message.getReceiver().getUsername()); //people we have conversation with due to messaging them
-            File imagePath = new File(basePath+"\\"+message.getReceiver().getProfilePicture());
-            try{
-                if(imagePath != null) {
-                    if(imagePath.exists()) {
-                        messageDTO.setProfilePicture(FileUtil.readAsByteArray(imagePath));
+            if(!usernames.contains(message.getReceiver().getUsername())) {
+                MessageDTO messageDTO = new MessageDTO();
+                messageDTO.setId(message.getId());
+                messageDTO.setMessage(message.getMessage());
+                messageDTO.setStatus(message.getStatus());
+                messageDTO.setMessageDate(message.getMessageDate());
+                messageDTO.setSenderName(message.getSender().getUsername());
+                messageDTO.setConversationWith(message.getReceiver().getUsername()); //people we have conversation with due to messaging them
+                File imagePath = new File(basePath + "\\" + message.getReceiver().getProfilePicture());
+                try {
+                    if (imagePath != null) {
+                        if (imagePath.exists()) {
+                            messageDTO.setProfilePicture(FileUtil.readAsByteArray(imagePath));
+                        }
                     }
+                } catch (Exception e) {
+                    System.out.println("CAUGHT!: " + e.getLocalizedMessage());
                 }
-            }catch (Exception e) {
-                System.out.println("CAUGHT!: "+e.getLocalizedMessage());
+                usernames.add(message.getReceiver().getUsername());
+                conversations.add(messageDTO);
             }
-            conversations.add(messageDTO);
+            else {
+                //do nothing
+            }
         });
+
         receivedMessages.forEach(message -> {
+            System.out.println(message.getMessage());
+            if (!usernames.contains(message.getSender().getUsername()) || !message.isViewed()) {
+                MessageDTO messageDTO = new MessageDTO();
+                messageDTO.setId(message.getId());
+                messageDTO.setMessage(message.getMessage());
+                messageDTO.setStatus(message.getStatus());
+                messageDTO.setMessageDate(message.getMessageDate());
+                messageDTO.setViewed(message.isViewed());
+                messageDTO.setSenderName(message.getSender().getUsername());
+                messageDTO.setConversationWith(message.getSender().getUsername()); //people we have conversation with due to them messaging us
+                File imagePath = new File(basePath + "\\" + message.getSender().getProfilePicture());
+                try {
+                    if (imagePath != null) {
+                        if (imagePath.exists()) {
+                            messageDTO.setProfilePicture(FileUtil.readAsByteArray(imagePath));
+                        }
+                    }
+                } catch (Exception e) {
+                    System.out.println("CAUGHT!: " + e.getLocalizedMessage());
+                }
+                usernames.add(message.getSender().getUsername());
+                conversations.add(messageDTO);
+            }
+            else {
+                //do nothing
+            }
+        });
+
+        if(!usernames.contains(targetUser) && userRepo.findByUsername(targetUser) != null) {
             MessageDTO messageDTO = new MessageDTO();
-            messageDTO.setId(message.getId());
-            messageDTO.setMessage(message.getMessage());
-            messageDTO.setStatus(message.getStatus());
-            messageDTO.setMessageDate(message.getMessageDate());
-            messageDTO.setViewed(message.isViewed());
-            messageDTO.setSenderName(message.getSender().getUsername());
-            messageDTO.setConversationWith(message.getSender().getUsername()); //people we have conversation with due to them messaging us
-            File imagePath = new File(basePath+"\\"+message.getSender().getProfilePicture());
+            messageDTO.setMessageDate(new Date().getTime());
+            messageDTO.setConversationWith(targetUser);
+            File imagePath = new File(basePath+"\\"+userRepo.findByUsername(targetUser).getProfilePicture());
             try{
                 if(imagePath != null) {
                     if(imagePath.exists()) {
@@ -99,7 +121,7 @@ public class MessageServiceImpl implements MessageService{
                 System.out.println("CAUGHT!: "+e.getLocalizedMessage());
             }
             conversations.add(messageDTO);
-        });
+        }
 
         conversations.sort(Comparator.comparing(MessageDTO::getMessageDate,(msg1, msg2) -> {
             return msg2.compareTo(msg1);
@@ -109,17 +131,10 @@ public class MessageServiceImpl implements MessageService{
 
     @Override
     public List<MessageDTO> getChatMessages(String email, String username, Integer page) {
+        boolean newChat = false;
         User currentUser = userRepo.findByEmail(email);
         User targetUser = userRepo.findByUsername(username);
-//        List<Notification> notifications = notificationRepo.findByTo(userRepo.findByEmail(email));
-//        notifications.forEach(notif -> {
-//            if(notif.getAction().equalsIgnoreCase("DM") && notif.getFrom().equals(targetUser)) {
-//                notif.setViewed(true);
-//                notificationRepo.save(notif);
-//            }
-//        });
 
-        //cool this works you just have to paginate, reorder by date and add a profile pic and send over the dto 
         List<Message> messages = messageRepo.getChatMessages(currentUser, targetUser);
         List<MessageDTO> chat = new ArrayList<>();
         messages.forEach(message -> {
@@ -173,8 +188,7 @@ public class MessageServiceImpl implements MessageService{
                 }
             }
         });
-        System.out.println(unreadMessages);
-        //THIS SHOULD WORK NOW TEST IT
+
         return unreadMessages;
     }
 }

@@ -109,7 +109,7 @@ public class UserServiceImpl implements UserService {
         boolean followedBy = false;
 
         if(userProfile == null) {
-            throw new Exception("User does not exist");
+            return new ProfileDetails();
         }
 
         //reposts and posts are included in this
@@ -414,14 +414,12 @@ public class UserServiceImpl implements UserService {
             return "login";
         }
         Notification notification = notificationRepo.findFollow("follow",recipient, agent);
-        System.out.println("RETRIEVE NOTIF: "+notification);
 
         //checks to see if you are following the current user and if you are, it unfollows
         List<Followers> followers = agent.getFollowing();
         for(Followers user : followers) {
             if(user.getTo() == recipient) {
                 if(notification != null) {
-                    System.out.println("NOTIF DELETED: ");
                     notificationRepo.delete(notification);
                 }
                 followerRepo.delete(user);
@@ -538,7 +536,6 @@ public class UserServiceImpl implements UserService {
             }catch (Exception e) {
                 System.out.println("CAUGHT!: "+e.getLocalizedMessage());
             }
-            System.out.println("FOLLOWERS PIC EXISTS?: "+imagePath.exists());
             followers.add(follower.getFrom());
         });
         if(currentUser == null) {
@@ -977,16 +974,13 @@ public class UserServiceImpl implements UserService {
                 File f = new File(basePath);
                 if(!f.exists()) {
                     f.mkdir();
-                    System.out.println("DIR CREATED AT: "+basePath);
                 }
 
                 //this sets the file into the file path
                 Files.copy(file.getInputStream(), Paths.get(filePath));
-                System.out.println("FILE STREAM PLACED HERE: "+Paths.get(filePath));
 
                 //sets the profile picture path for the user
                 currentUser.setProfilePicture(newFileName);
-                System.out.println("FILE NAME SAVED TO USER: "+filePath);
                 //moose
             }
         }
@@ -1005,7 +999,6 @@ public class UserServiceImpl implements UserService {
 
         Post post = optionalPost.get();
         if(optionalPost.get().getAuthor().equals(user)) {
-            System.out.println("MATCH");
             post.setDeleted(true);
             postRepo.save(post);
             return "success";
@@ -1019,20 +1012,7 @@ public class UserServiceImpl implements UserService {
         if (keyword.trim().equalsIgnoreCase("")) {
             return new FullResults();
         }
-        List<User> queryUsers = userRepo.queryUsers(keyword, 5);
-        queryUsers.forEach(user -> {
-            File imagePath = new File(basePath+"\\"+user.getProfilePicture());
-            try{
-                if(imagePath != null) {
-                    if(imagePath.exists()) {
-                        user.setFullImage(FileUtil.readAsByteArray(imagePath));
-                    }
-                }
-            }catch (Exception e) {
-                System.out.println("CAUGHT!: "+e.getLocalizedMessage());
-            }
-        });
-        fullResults.setUserResults(queryUsers);
+        fullResults.setUserResults(userSearchResults(keyword, page, email));
         fullResults.setPostResults(postSearchResults(keyword, page, email));
 
         return fullResults;
@@ -1040,11 +1020,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> userSearchResults(String keyword, Integer page, String email) {
+        User currentUser = userRepo.findByEmail(email);
+        List<User> following = new ArrayList<>();
+
         if (keyword.trim().equalsIgnoreCase("")) {
             return new ArrayList<>();
         }
         List<User> queryUsers = userRepo.queryUsers(keyword, 100);
+
+        if(currentUser != null) {
+            currentUser.getFollowing().forEach(follow -> {
+                following.add(follow.getTo());
+            });
+        }
+
         queryUsers.forEach(user -> {
+            if(following.contains(user)) {
+                user.setFollowed(true);
+            }
             File imagePath = new File(basePath+"\\"+user.getProfilePicture());
             try{
                 if(imagePath != null) {
@@ -1123,9 +1116,8 @@ public class UserServiceImpl implements UserService {
             return post2.compareTo(post1);
         }));
         PaginatedList paginatedList = new PaginatedList(postDTOArray);
-        //before returning the posts, check if the user has interacted with the post in any way AND return DTO instead
+
         //paginate this as well
-        //arrange this from newest to oldest as well
         return paginatedList.getPage(page);
     }
 }

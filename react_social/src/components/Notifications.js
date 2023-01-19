@@ -30,8 +30,8 @@ export default function Notifications(props) {
                     setNotifications((prev) => {
                         return [...prev, ...data];
                     });
-                    setLoading(false);
                 }
+                setLoading(false);
             });
     }, [page]);
 

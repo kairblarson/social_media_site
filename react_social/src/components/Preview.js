@@ -33,13 +33,21 @@ export default function Preview(props) {
             style={previewStyle}
             onClick={props.toggleSignout}
         >
-            {props.isAuth && <img
-                src={
-                    "data:image/png;base64," +
-                    userDetails?.principal.profilePicture
-                }
-                className="preview--pic"
-            ></img>} {/*display a default img for pp if user not signed in*/}
+            {props.isAuth && (
+                <img
+                    src={
+                        "data:image/png;base64," +
+                        userDetails?.principal.profilePicture
+                    }
+                    className="preview--pic"
+                ></img>
+            )}
+            {!props.isAuth && (
+                <img
+                    src="../images/standard.jpg"
+                    className="preview--pic"
+                ></img>
+            )}
             <div className="preview--userdetails">
                 <h4 className="preview--username">
                     {!props.isAuth
@@ -47,9 +55,7 @@ export default function Preview(props) {
                         : userDetails?.principal.username}
                 </h4>
                 <p className="preview--fullname">
-                    {!props.isAuth
-                        ? ""
-                        : userDetails?.principal.fullName}
+                    {!props.isAuth ? "" : userDetails?.principal.fullName}
                 </p>
             </div>
             <div className="preview--menu">

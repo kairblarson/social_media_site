@@ -3,6 +3,7 @@ package com.project.social;
 import com.project.social.entity.Post;
 import com.project.social.entity.Repost;
 import com.project.social.entity.User;
+import com.project.social.provider.Provider;
 import com.project.social.repo.PostRepo;
 import com.project.social.repo.RepostRepo;
 import com.project.social.repo.UserRepo;
@@ -34,8 +35,15 @@ public class SocialApplication {
 //	@Bean
 //	CommandLineRunner commandLineRunner(UserRepo userRepo) {
 //		return args -> {
-//			User user = userRepo.findByEmail("kairblarson@gmail.com");
-//			user.setBio("ISU t&f class of 22");
+//			User user = new User();
+//			user.setBio("admin");
+//			user.setEnabled(true);
+//			user.setProvider(Provider.LOCAL);
+//			user.setEmail("admin@gmail.com");
+//			user.setFullName("admin");
+//			user.setUsername("admin");
+//			user.setPassword(passwordEncoder.encode("password"));
+//			user.setRole("ROLE_ADMIN");
 //			userRepo.save(user);
 //		};
 //	}

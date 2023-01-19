@@ -60,7 +60,10 @@ export default function PostModal({ open, closeModal, onSubmit, targetPost }) {
                 <div className="postmodal--left">
                     <div className="postmodal--pic-wrapper">
                         <img
-                            src={"data:image/png;base64," +userDetails.principal.profilePicture}
+                            src={
+                                "data:image/png;base64," +
+                                userDetails.principal.profilePicture
+                            }
                             className="postmodal--pic"
                         />
                     </div>
@@ -93,10 +96,18 @@ export default function PostModal({ open, closeModal, onSubmit, targetPost }) {
                             value={inputState.postInput}
                             onChange={handleChange}
                             maxLength={250}
+                            onKeyDown={(e) => {
+                                if(e.key === "Enter") {
+                                    console.log("ENTER");
+                                    onSubmit(inputState.postInput)
+                                }
+                            }}
                         ></textarea>
                     </div>
                     <div className="postmodal--bottom">
-                        <div className="postmodal--char">Chars left: {250-inputState.postInput?.length}</div>
+                        <div className="postmodal--char">
+                            Chars left: {250 - inputState.postInput?.length}
+                        </div>
                         <button
                             className="postmodal--post-button"
                             onClick={() => onSubmit(inputState.postInput)}

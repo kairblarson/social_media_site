@@ -73,7 +73,7 @@ export default function Extra(props) {
                 isAuth={props.isAuth}
                 toggleSignout={toggleSignout}
             />
-            {showSignout && <SignoutModal />}
+            {showSignout && <SignoutModal isAuth={props.isAuth} />}
         </div>
     );
 }

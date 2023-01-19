@@ -53,6 +53,15 @@ export default function Sender({ sendPrivateMessage, tab }) {
                 value={userData.message}
                 onChange={handleMessage}
                 maxLength={200}
+                onKeyDown={(e) => {
+                    if (e.key == "Enter") {
+                        sendPrivateMessage(userData.message, isBlocked);
+                        setUserData((prevState) => ({
+                            ...prevState,
+                            message: "",
+                        }));
+                    }
+                }}
             />
             <div
                 className="chatroom--send-button"

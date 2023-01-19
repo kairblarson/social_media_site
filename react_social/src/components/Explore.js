@@ -5,9 +5,9 @@ import Navbar from "./Navbar";
 import Post from "./Post";
 import PostModal from "./PostModal";
 import SearchSuggestion from "./SearchSuggestion";
-import InfiniteScroll from "react-infinite-scroll-component";
 import { ColorRing } from "react-loader-spinner";
 import Simple from "./Simple";
+import { AnimatePresence } from "framer-motion";
 
 export default function Explore(props) {
     const [focused, setFocused] = useState(false);
@@ -87,7 +87,7 @@ export default function Explore(props) {
                             data.postResults?.length >= 200
                         ) {
                             setPostResults([]);
-                            setUserResults([]);
+                            setUserResults(data.userResults);
                             setHasMore(false);
                         } else {
                             setPostResults(data.postResults);
@@ -483,7 +483,9 @@ export default function Explore(props) {
                     )}
                 {!loading && !postButtonFocus && fullUserList.length != 0 && (
                     <div className="explore--full-user-list">
-                        {fullUserListElement}
+                        <AnimatePresence initial={false}>
+                            {fullUserListElement}
+                        </AnimatePresence>
                     </div>
                 )}
                 {loading ? (
@@ -505,7 +507,11 @@ export default function Explore(props) {
                         />
                     )
                 ) : (
-                    <div className="explore--postres">{postResElement}</div>
+                    <div className="explore--postres">
+                        <AnimatePresence initial={false}>
+                            {postResElement}
+                        </AnimatePresence>
+                    </div>
                 )}
             </div>
             <Extra

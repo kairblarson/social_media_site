@@ -5,9 +5,10 @@ import {
     BsArrowRepeat,
     BsPersonFill,
 } from "react-icons/bs";
+import { motion } from "framer-motion";
 
 export default function Notif({ action, id, content, from, date }) {
-    if(action === "DM") return null;
+    if (action === "DM") return null;
 
     const [hoverState, setHoverState] = useState({
         mainHover: false,
@@ -78,7 +79,15 @@ export default function Notif({ action, id, content, from, date }) {
     }
 
     return (
-        <div
+        <motion.div
+            variants={{
+                visible: { scale: 1, opacity: 1 },
+                exit: { scale: 0.8, opacity: 0 },
+            }}
+            initial="exit"
+            animate="visible"
+            exit="exit"
+            layout
             className="notif"
             style={mainStyle}
             onMouseEnter={handleMainHover}
@@ -90,7 +99,10 @@ export default function Notif({ action, id, content, from, date }) {
             </div>
             <div className="notif--right">
                 <div>
-                    <img src={"data:image/png;base64," + from.fullImage} className="notif--img"/>
+                    <img
+                        src={"data:image/png;base64," + from.fullImage}
+                        className="notif--img"
+                    />
                 </div>
                 <div className="notif--header">
                     <h4
@@ -116,6 +128,6 @@ export default function Notif({ action, id, content, from, date }) {
                     </div>
                 )}
             </div>
-        </div>
+        </motion.div>
     );
 }

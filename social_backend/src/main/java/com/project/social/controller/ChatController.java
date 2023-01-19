@@ -71,9 +71,10 @@ public class ChatController {
     }
 
     @GetMapping("/messages")
-    public ResponseEntity<List<MessageDTO>> getConversations(Authentication authentication) {
+    public ResponseEntity<List<MessageDTO>> getConversations(@RequestParam(value = "target") String targetUser,
+                                                             Authentication authentication) {
 
-        return ResponseEntity.ok().body(messageService.getConversations(getEmailFromAuth(authentication)));
+        return ResponseEntity.ok().body(messageService.getConversations(getEmailFromAuth(authentication), targetUser));
     }
 
     @GetMapping("/messages/{username}")

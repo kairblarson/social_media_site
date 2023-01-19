@@ -42,7 +42,6 @@ textarea{
   /* background-color: #fafafa; */
   min-width: 600px;
   height: 100%;
-  overflow: hidden;
 }
 .post--wrapper{
   position: relative;
@@ -374,10 +373,10 @@ input:focus{
   color: rgba(134, 63, 217, 1);
 }
 .preview--menu{
-  width: 100%;
   display: flex;
   justify-content: flex-end;
   font-size: 18px;
+  width: 100%;
 }
 .notetoself--textarea:focus{
   outline: none !important;
@@ -598,6 +597,15 @@ input:focus{
   margin-left: 10px;
   background-color: #e8e8e8;
 }
+.profile--image-empty{
+  border-radius: 100px;
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  /* border: 1px solid #e8e8e8; */
+  margin-left: 10px;
+  background-color: #e8e8e8;
+}
 .profile--edit-wrapper{
   display: flex;
   align-items: center;
@@ -787,6 +795,7 @@ input:focus{
   /* border: 1px solid #e8e8e8; */
   margin-block: 2px;
   border-radius: 20px;
+  z-index: 0;
 }
 .simple--left{
   margin-right: 5px;
@@ -892,6 +901,12 @@ input:focus{
 .fullpost--image{
   width: 50px;
   height: 50px;
+  object-fit: cover;
+}
+.fullpost--image-pre{
+  width: 50px;
+  height: 50px;
+  background-color: #e4e4e4;
   object-fit: cover;
 }
 .fullpost--content-wrapper{
@@ -1358,6 +1373,7 @@ input:focus{
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 0 5px rgba(77, 49, 102, 0.3);
+  z-index: 100;
 }
 .searchsuggestion{
   display: flex;
@@ -1445,19 +1461,25 @@ input:focus{
   display: flex;
   width: 100%;
 }
-.chatroom--users{
+.chatroom--carousel-wrapper{
+  display: flex;
+  align-items: center;
+}
+.chatroom--carousel{
   top: 50px;
   z-index: 100;
   position: sticky;
   display: flex;
   align-items: center;
-  width: 100%;
+  width: 500px;
   padding-block: 5px;
   /* border: 1px solid #e8e8e8; */
-  padding-inline: 10px;
   gap: 5px;
   background-color: white;
   border-bottom: 1px solid #e4e4e4;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  min-height: 60px;
 }
 .chatroom--member-wrapper{
   display: flex;
@@ -1467,6 +1489,7 @@ input:focus{
   position: relative;
   width: 100px;
   padding-top: 5px;
+  transition: .25s cubic-bezier(0.39, 0.575, 0.565, 1);
 }
 .chatroom--member{
   width: 50px;
@@ -1498,7 +1521,7 @@ input:focus{
   opacity: 80%;
 }
 .chatroom--arrow{
-  color: rgba(134, 63, 217, 1);
+  color: black;
   font-size: 30px;
 }
 .chatroom--preview-username{

@@ -8,6 +8,7 @@ import {
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import PostMenu from "./PostMenu";
+import { motion } from "framer-motion";
 
 export default function Post(props) {
     const [state, setState] = useState(props); //post state
@@ -324,7 +325,15 @@ export default function Post(props) {
     // console.log(state.deleted);
 
     return (
-        <div
+        <motion.div
+            variants={{
+                visible: { scale: 1, opacity: 1 },
+                exit: { scale: 0.8, opacity: 0 },
+            }}
+            initial="exit"
+            animate="visible"
+            exit="exit"
+            layout
             className="post--wrapper"
             onMouseEnter={handlePostMouseOver}
             onMouseLeave={handlePostMouseOver}
@@ -497,7 +506,7 @@ export default function Post(props) {
                     </p>
                 </div>
             )}
-        </div>
+        </motion.div>
     );
 }
 //350 char limit per post

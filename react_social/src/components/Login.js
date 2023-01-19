@@ -6,15 +6,20 @@ export default function Login() {
         email: "",
         password: "",
     });
-
-    function handleChange(event) {
-        const { name, value } = event.target;
-        setLoginInfo((prevState) => ({ ...prevState, [name]: value }));
-    }
-
+    const [errorMessage, setErrorMessage] = useState("");
+    const [inputState, setInputState] = useState({
+        emailIsEmpty: false,
+        passwordIsEmpty: false,
+    });
     const [loginButtonState, setLoginButtonState] = useState({
         isHover: false,
     });
+
+    function handleChange(event) {
+        setInputState({ emailIsEmpty: false, passwordIsEmpty: false });
+        const { name, value } = event.target;
+        setLoginInfo((prevState) => ({ ...prevState, [name]: value }));
+    }
 
     const loginButtonStyle = {
         background: loginButtonState.isHover
@@ -23,48 +28,73 @@ export default function Login() {
         cursor: loginButtonState.isHover ? "pointer" : "none",
     };
 
-    const [inputState, setInputState] = useState({
-        emailIsEmpty: false,
-        passwordIsEmpty: false,
-    });
-
     const emailInputStyle = {
         border: inputState.emailIsEmpty
-            ? "1px solid rgb(250, 15, 15)"
-            : "1px solid #9e9e9e",
+            ? "1px solid #de4b4b"
+            : "1px solid #8a8a8a",
+        boxShadow: inputState.emailIsEmpty
+            ? "0 0 5px #de4b4b"
+            : "none",
     };
 
     const passwordInputStyle = {
         border: inputState.passwordIsEmpty
-            ? "1px solid rgb(250, 15, 15)"
-            : "1px solid #9e9e9e",
+            ? "1px solid #de4b4b"
+            : "1px solid #8a8a8a",
+        boxShadow: inputState.passwordIsEmpty
+            ? "0 0 5px #de4b4b"
+            : "none",
     };
 
-    function handleLoginRequest() {
-        console.log("REQUEST SENT", JSON.stringify(loginInfo));
-
-        fetch("http://localhost:8080/process", {
-            credentials: "include",
-            method: "POST",
-            body: new URLSearchParams({
-                email: loginInfo.email,
-                password: loginInfo.password,
-                grant_type: "ROLE_USER",
-            }),
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                if (data.exception === "Bad credentials") {
-                    console.log("DISPLAY INVALID TO DOM");
-                } else {
-                    console.log(data);
-                    localStorage.setItem("userDetails", JSON.stringify(data));
-                    window.location = "http://localhost:3000/home";
-                }
-            })
-            .catch((error) => {
-                console.log("ERROR:", error);
-            });
+    function handleLoginRequest(e) {
+        if (e.keyCode === 13 || e.keyCode === undefined) {
+            if (
+                loginInfo.password.trim() == "" &&
+                loginInfo.email.trim() == ""
+            ) {
+                setErrorMessage("please fill out all required fields");
+                setInputState({ emailIsEmpty: true, passwordIsEmpty: true });
+            } else if (loginInfo.password.trim() == "") {
+                setErrorMessage("please enter a password");
+                setInputState({ emailIsEmpty: false, passwordIsEmpty: true });
+            } else if (loginInfo.email.trim() == "") {
+                setErrorMessage("please enter an email");
+                setInputState({ emailIsEmpty: true, passwordIsEmpty: false });
+            } else {
+                fetch("http://localhost:8080/process", {
+                    credentials: "include",
+                    method: "POST",
+                    body: new URLSearchParams({
+                        email: loginInfo.email,
+                        password: loginInfo.password,
+                        grant_type: "ROLE_USER",
+                    }),
+                })
+                    .then((res) => {
+                        if (res.status === 400) {
+                            return "bad credentials";
+                        }
+                        return res.json();
+                    })
+                    .then((data) => {
+                        if (data === "bad credentials") {
+                            console.log("FAILURE");
+                            setErrorMessage("invalid email and password");
+                            setInvalidLogin(true);
+                        } else {
+                            console.log("SUCCESS");
+                            localStorage.setItem(
+                                "userDetails",
+                                JSON.stringify(data)
+                            );
+                            window.location = "http://localhost:3000/home";
+                        }
+                    })
+                    .catch((error) => {
+                        console.log("ERROR:", error);
+                    });
+            }
+        }
     }
 
     useEffect(() => {
@@ -96,6 +126,7 @@ export default function Login() {
                         placeholder="Email"
                         className="login--email"
                         style={emailInputStyle}
+                        onKeyDown={handleLoginRequest}
                     ></input>
                     <input
                         type="password"
@@ -105,32 +136,10 @@ export default function Login() {
                         placeholder="Password"
                         className="login--password"
                         style={passwordInputStyle}
+                        onKeyDown={handleLoginRequest}
                     ></input>
                     <button
-                        onClick={() => {
-                            if (
-                                loginInfo.email.trim() === "" &&
-                                loginInfo.password.trim() === ""
-                            ) {
-                                setInputState(() => ({
-                                    emailIsEmpty: true,
-                                    passwordIsEmpty: true,
-                                }));
-                                console.log("Both fields empty");
-                            } else if (loginInfo.email.trim() === "") {
-                                setInputState(() => ({
-                                    emailIsEmpty: true,
-                                    passwordIsEmpty: false,
-                                }));
-                            } else if (loginInfo.password.trim() === "") {
-                                setInputState(() => ({
-                                    emailIsEmpty: false,
-                                    passwordIsEmpty: true,
-                                }));
-                            } else {
-                                handleLoginRequest();
-                            }
-                        }}
+                        onClick={handleLoginRequest}
                         className="login--submit"
                         style={loginButtonStyle}
                         onMouseEnter={() =>
@@ -150,6 +159,11 @@ export default function Login() {
                     </button>
                     Or
                     <button className="login--signup">Sign up</button>
+                    {errorMessage !== "" && (
+                        <small style={{ color: "#de4b4b" }}>
+                            {errorMessage}
+                        </small>
+                    )}
                 </div>
             </div>
         </div>

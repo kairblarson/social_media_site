@@ -1,7 +1,14 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
+import { motion } from "framer-motion";
 
-export default function Simple({ username, fullName, bio, followed, profilePicture }) {
+export default function Simple({
+    username,
+    fullName,
+    bio,
+    followed,
+    profilePicture,
+}) {
     const [isFollowed, setFollowed] = useState(followed);
     const [hoverState, setHoverState] = useState({
         postHover: false,
@@ -80,15 +87,28 @@ export default function Simple({ username, fullName, bio, followed, profilePictu
     }
 
     return (
-        <div
+        <motion.div
+            variants={{
+                visible: { scale: 1, opacity: 1 },
+                exit: { scale: 0.8, opacity: 0 },
+            }}
+            initial="exit"
+            animate="visible"
+            exit="exit"
+            layout
             className="simple"
             style={postStyle}
             onMouseEnter={handlePostHover}
             onMouseLeave={handlePostHover}
-            onClick={() => window.location = `http://localhost:3000/${username}`}
+            onClick={() =>
+                (window.location = `http://localhost:3000/${username}`)
+            }
         >
             <div className="simple--left">
-                <img src={"data:image/png;base64,"+profilePicture} className="simple--pic" />
+                <img
+                    src={"data:image/png;base64," + profilePicture}
+                    className="simple--pic"
+                />
             </div>
             <div className="simple--middle">
                 <div className="simple--top">
@@ -116,7 +136,7 @@ export default function Simple({ username, fullName, bio, followed, profilePictu
                     </button>
                 )}
             </div>
-        </div>
+        </motion.div>
     );
 }
 //simple user display for showing a list of users ex: follwers/following list

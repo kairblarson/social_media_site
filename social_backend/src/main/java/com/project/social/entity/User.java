@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.project.social.provider.Provider;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.repository.cdi.Eager;
 
 import javax.persistence.*;
@@ -240,6 +241,9 @@ public class User {
     }
 
     public String getProfilePicture() {
+        if(profilePicture == null) {
+            return "default.jpg";
+        }
         return profilePicture;
     }
 

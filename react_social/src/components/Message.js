@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 
 export default function Message({
     senderName,
@@ -7,7 +8,7 @@ export default function Message({
     id,
     backToBack,
     date,
-    viewed
+    viewed,
 }) {
     const [currentUser, setCurrentUser] = useState(
         JSON.parse(localStorage.getItem("userDetails"))
@@ -20,14 +21,22 @@ export default function Message({
     const fulldate = new Date(date);
 
     return (
-        <div
+        <motion.div
+            variants={{
+                visible: { scale: 1, opacity: 1 },
+                exit: { scale: 0.8, opacity: 0 },
+            }}
+            initial="exit"
+            animate="visible"
+            exit="exit"
+            layout
             className={`chatroom--message${
                 senderName === currentUser.name ? "-self" : ""
             }`}
             onClick={() =>
                 (window.location = `http://localhost:3000/${senderName}`)
             }
-            style={{marginBottom: backToBack ? "2px" : "30px"}}
+            style={{ marginBottom: backToBack ? "2px" : "30px" }}
         >
             {!backToBack ? (
                 senderName !== currentUser.name && (
@@ -55,7 +64,9 @@ export default function Message({
                     {message}
                 </div>
                 {!backToBack && (
-                    <div className="chatroom--username">{senderName+" • "+fulldate.toLocaleTimeString()}</div>
+                    <div className="chatroom--username">
+                        {senderName + " • " + fulldate.toLocaleTimeString()}
+                    </div>
                 )}
             </div>
             {!backToBack ? (
@@ -71,6 +82,6 @@ export default function Message({
             ) : (
                 <div className="chatroom--prof-pic-empty"></div>
             )}
-        </div>
+        </motion.div>
     );
 }

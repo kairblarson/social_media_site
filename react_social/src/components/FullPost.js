@@ -15,6 +15,7 @@ import Header from "./Header";
 import { ColorRing } from "react-loader-spinner";
 import PostMenu from "./PostMenu";
 import DeletedPost from "./DeletedPost";
+import { AnimatePresence } from "framer-motion";
 
 export default function FullPost(props) {
     const { handle, id, interaction } = useParams();
@@ -48,6 +49,7 @@ export default function FullPost(props) {
     const search = useLocation().search;
     const repostedBy = new URLSearchParams(search).get("repost");
     const [loading, setLoading] = useState(true);
+    //*BUG* the target post gets set too early
 
     useEffect(() => {
         fetch(`http://localhost:8080/${handle}/post/${id}`, {
@@ -62,7 +64,7 @@ export default function FullPost(props) {
                 return res.json();
             })
             .then((data) => {
-                console.log(data);
+                // console.log(data);
                 data.forEach((post) => {
                     if (post.focus == true) {
                         setPost(post);
@@ -70,10 +72,10 @@ export default function FullPost(props) {
                         setThread((prevState) => [...prevState, post]);
                     }
                 });
+                setLoading(true);
             })
             .catch((err) => (window.location = "http://localhost:3000/login"));
         setTargetPost(document.getElementById("target-post"));
-        setLoading(true);
     }, []);
 
     useEffect(() => {
@@ -298,11 +300,6 @@ export default function FullPost(props) {
     }
     //----------------------
 
-    const [profilePicture, setProfilePicture] = useState();
-    useEffect(() => {
-        setProfilePicture("data:image/png;base64," + post.profPicBytes);
-    }, [post]);
-
     function handleMenuToggle(id) {
         if (id == post.id) {
             setPost((prevState) => {
@@ -344,37 +341,40 @@ export default function FullPost(props) {
                 <Header />
                 {loading ? (
                     <div className="fullpost--middle">
-                        {thread.map((post) => {
-                            let prevAuthor = null;
-                            if (post.replyTo != null) {
-                                prevAuthor = post.replyTo.author.username;
-                            }
-                            return (
-                                <Post
-                                    key={post.id}
-                                    id={post.id}
-                                    content={post.content}
-                                    author={post.author}
-                                    postDate={post.postDate}
-                                    likes={post.likes}
-                                    isLiked={post.liked}
-                                    reposts={post.reposts}
-                                    isReposted={post.reposted}
-                                    repostedBy={post.repostedBy}
-                                    replyTo={prevAuthor}
-                                    comments={post.comments}
-                                    isThread={true}
-                                    modalState={props.modalState}
-                                    openModal={props.toggleModal}
-                                    isAuth={props.isAuth}
-                                    isHome={false}
-                                    profilePicture={post.profPicBytes}
-                                    menuState={post.menuState}
-                                    handleMenuToggle={handleMenuToggle}
-                                    deleted={post.deleted}
-                                />
-                            );
-                        })}
+                        <AnimatePresence initial={false}>
+                            {thread.map((post) => {
+                                let prevAuthor = null;
+                                if (post.replyTo != null) {
+                                    prevAuthor = post.replyTo.author.username;
+                                }
+                                return (
+                                    <Post
+                                        key={post.id}
+                                        id={post.id}
+                                        content={post.content}
+                                        author={post.author}
+                                        postDate={post.postDate}
+                                        likes={post.likes}
+                                        isLiked={post.liked}
+                                        reposts={post.reposts}
+                                        isReposted={post.reposted}
+                                        repostedBy={post.repostedBy}
+                                        replyTo={prevAuthor}
+                                        comments={post.comments}
+                                        isThread={true}
+                                        modalState={props.modalState}
+                                        openModal={props.toggleModal}
+                                        isAuth={props.isAuth}
+                                        isHome={false}
+                                        profilePicture={post.profPicBytes}
+                                        menuState={post.menuState}
+                                        handleMenuToggle={handleMenuToggle}
+                                        deleted={post.deleted}
+                                    />
+                                );
+                            })}
+                        </AnimatePresence>
+
                         <div
                             className="fullpost--main-wrapper"
                             id="target-post"
@@ -412,10 +412,17 @@ export default function FullPost(props) {
                                     )}
                                     <div className="fullpost--top">
                                         <div className="fullpost--image-wrapper">
-                                            <img
-                                                src={profilePicture}
-                                                className="fullpost--image"
-                                            />
+                                            {post.author ? (
+                                                <img
+                                                    src={
+                                                        "data:image/png;base64," +
+                                                        post.profPicBytes
+                                                    }
+                                                    className="fullpost--image"
+                                                />
+                                            ) : (
+                                                <div className="fullpost--image-pre"></div>
+                                            )}
                                         </div>
                                         {post.author != null && (
                                             <div className="fullpost--author">
@@ -463,11 +470,12 @@ export default function FullPost(props) {
                                     )}
                                     <div className="fullpost--content-wrapper">
                                         <p className="fullpost--content">
-                                            {post.content}
+                                            {post.content != null &&
+                                                post.content}
                                         </p>
                                     </div>
                                     <div className="fullpost--postDate">
-                                        {convertDate()}
+                                        {post.author && convertDate()}
                                     </div>
                                     <div className="fullpost--interactions">
                                         <div
@@ -482,7 +490,7 @@ export default function FullPost(props) {
                                             }
                                         >
                                             <p className="fullpost--interaction-number">
-                                                {post.likes.length}
+                                                {post.author && post.likes.length}
                                             </p>
                                             <p className="fullpost--interaction-text">
                                                 Likes
@@ -500,7 +508,7 @@ export default function FullPost(props) {
                                             }
                                         >
                                             <p className="fullpost--interaction-number">
-                                                {post.reposts}
+                                                {post.author && post.reposts}
                                             </p>
                                             <p className="fullpost--interaction-text">
                                                 Reposts
@@ -550,7 +558,6 @@ export default function FullPost(props) {
                             )}
                         </div>
                         {post?.replies?.map((comment) => {
-                            console.log(comment.deleted);
                             return (
                                 <Post
                                     key={comment.id}

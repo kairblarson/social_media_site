@@ -60,15 +60,15 @@ export default function Profile(props) {
                     return res.json();
                 })
                 .then((data) => {
-                    // console.log(data);
                     if (data.posts.length <= 0 || data.posts.length >= 200) {
                         setHasMore(false);
                     } else {
-                        setProfileDetails(data);
                         setPosts((prev) => {
                             return [...prev, ...data.posts];
                         });
                     }
+                    setProfileDetails(data);
+                    setLoading(false);
                 });
         } else if (currentLocation.pathname == `/${handle}/likes`) {
             fetch(`http://localhost:8080/${handle}/likes?page=${page}`, {
@@ -91,6 +91,7 @@ export default function Profile(props) {
                             return [...prev, ...data.posts];
                         });
                     }
+                    setLoading(false);
                     setProfileDetails(data);
                 });
         }
@@ -345,9 +346,11 @@ export default function Profile(props) {
                             {!isUserProfile && (
                                 <div
                                     className="profile--message"
-                                    onClick={() =>
-                                        (window.location = `http://localhost:3000/messages/${profileDetails.username}`)
-                                    }
+                                    onClick={() => {
+                                        if (profileDetails.username) {
+                                            window.location = `http://localhost:3000/messages/${profileDetails.username}`;
+                                        }
+                                    }}
                                     style={messageButtonStyle}
                                     onMouseEnter={handleMessageHover}
                                     onMouseLeave={handleMessageHover}
@@ -369,7 +372,11 @@ export default function Profile(props) {
                                 <button
                                     className="profile--follow"
                                     style={followStyle}
-                                    onClick={handleFollow}
+                                    onClick={() => {
+                                        if(profileDetails.username) {
+                                            handleFollow();
+                                        }
+                                    }}
                                     onMouseEnter={handleFollowHover}
                                     onMouseLeave={handleFollowHover}
                                 >
@@ -381,15 +388,16 @@ export default function Profile(props) {
                                 </button>
                             )}
                         </div>
-                        <img
-                            src={profilePicture}
+                        {profileDetails.username ? <img
+                            src={
+                                "data:image/png;base64," +
+                                profileDetails.profilePicture
+                            }
                             className="profile--image"
-                        ></img>
+                        ></img> : <div className="profile--image-empty"></div>}
                         <div className="profile--details">
                             <div className="profile--username-wrapper">
-                                <p className="profile--username">
-                                    {profileDetails.username}
-                                </p>
+                                <p className="profile--username">{handle}</p>
                                 {profileDetails?.followedBy && (
                                     <div className="profile--followsyou-wrapper">
                                         <p className="profile--followsyou">
@@ -474,33 +482,34 @@ export default function Profile(props) {
                         </div>
                     </div>
                     <div>
-                        <InfiniteScroll
-                            dataLength={posts.length}
-                            className="timeline"
-                            style={{ overflow: "hidden" }}
-                            next={fetchMoreData}
-                            hasMore={hasMore}
-                            endMessage={<p>You're all up to date!</p>}
-                            loader={
-                                <ColorRing
-                                    visible={true}
-                                    height="80"
-                                    width="80"
-                                    ariaLabel="blocks-loading"
-                                    wrapperStyle={{}}
-                                    wrapperClass="blocks-wrapper"
-                                    colors={[
-                                        "rgba(134, 63, 217, .9)",
-                                        "rgba(134, 63, 217, .7)",
-                                        "rgba(134, 63, 217, .5)",
-                                        "rgba(134, 63, 217, .3)",
-                                        "rgba(134, 63, 217, .1)",
-                                    ]}
-                                />
-                            }
-                        >
-                            {postElements}
-                        </InfiniteScroll>
+                        {profileDetails.username ? (
+                            <InfiniteScroll
+                                dataLength={posts.length}
+                                className="timeline"
+                                style={{ overflow: "hidden" }}
+                                next={fetchMoreData}
+                                hasMore={hasMore}
+                                loader={
+                                    <ColorRing
+                                        visible={true}
+                                        height="80"
+                                        width="80"
+                                        ariaLabel="blocks-loading"
+                                        wrapperStyle={{}}
+                                        wrapperClass="blocks-wrapper"
+                                        colors={[
+                                            "rgba(134, 63, 217, .9)",
+                                            "rgba(134, 63, 217, .7)",
+                                            "rgba(134, 63, 217, .5)",
+                                            "rgba(134, 63, 217, .3)",
+                                            "rgba(134, 63, 217, .1)",
+                                        ]}
+                                    />
+                                }
+                            >
+                                {postElements}
+                            </InfiniteScroll>
+                        ) : <h3>This account doesnt exist...</h3>}
                     </div>
                 </div>
             ) : (

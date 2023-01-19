@@ -3,7 +3,7 @@ import { BsChatDotsFill, BsColumnsGap, BsFile, BsFillReplyFill, BsTriangleFill }
 import axios from "axios";
 
 export default function SignoutModal(props) {
-    //this is really a popover ig
+    //this is really a popover but you get what i mean
     const [hoverState, setHoverState] = useState({
         logoutHover: false,
         moreHover: false,
@@ -65,7 +65,7 @@ export default function SignoutModal(props) {
                 <div className="signoutModal--logout-icon">
                     <BsFillReplyFill />
                 </div>
-                Logout
+                {props.isAuth ? "Sign out" : "Sign in"}
             </button>
             <button
                 style={moreButtonStyle}
