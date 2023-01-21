@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/social_db
+    url: mysql://root:PXOKggKgdmNHlTXx1KkT@containers-us-west-60.railway.app:7423/railway
     username: root
-    password: password123
+    password: PXOKggKgdmNHlTXx1KkT
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     show-sql: false
@@ -18,15 +18,3 @@ spring:
 
 project:
   image: /Users/kairb/Desktop/Fullstack projects/social_site/images
-
-
-#  security:
-#    oauth2:
-#      client:
-#        registration:
-#          google:
-#            clientId: 1028055706332-7qiiis1sto4he4noj4p94ahi978vt00s.apps.googleusercontent.com
-#            clientSecret: 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
-#            scope:
-#              - email
-#              - profile
