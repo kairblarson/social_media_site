@@ -2,6 +2,7 @@ com\project\social\model\PostModel.class
 com\project\social\model\Status.class
 com\project\social\repo\MessageRepo.class
 com\project\social\controller\ChatController.class
+com\project\social\config\AdditionalResourceWebConfig.class
 com\project\social\model\UserModel.class
 com\project\social\repo\PostRepo.class
 com\project\social\util\NotificationType.class
