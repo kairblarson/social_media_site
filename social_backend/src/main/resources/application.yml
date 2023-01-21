@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: mysql://root:PXOKggKgdmNHlTXx1KkT@containers-us-west-60.railway.app:7423/railway
-    username: root
-    password: PXOKggKgdmNHlTXx1KkT
+    url: jdbc:mysql://${{ MYSQLHOST }}:${{ MYSQLPORT }}/${{ MYSQLDATABASE }}
+    username: ${{ MYSQLHOST }}
+    password: ${{ MYSQLPASSWORD }}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     show-sql: false
