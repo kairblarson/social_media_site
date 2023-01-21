@@ -4,6 +4,7 @@ COPY package.json ./
 COPY package-lock.json ./
 COPY ./ ./
 RUN npm i
+CMD ["npm", "run", "start"]
 
 FROM nginx:alpine
 # Set working directory to nginx asset directory
