@@ -11,6 +11,7 @@ spring:
     show-sql: false
     hibernate:
       ddl-auto: update
+    database: mysql
   servlet:
     multipart:
       max-file-size: 10MB
