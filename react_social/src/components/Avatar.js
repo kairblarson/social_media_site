@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
+//nav done //local done
 export default function Avatar({
     conversationWith,
     tab,
@@ -9,11 +11,13 @@ export default function Avatar({
     senderName,
     currentUser,
     index,
-    currentIndex
+    currentIndex,
+    setCurrentChat,
 }) {
     const [hoverState, setHoverState] = useState({
         avatarHover: false,
     });
+    const navigate = useNavigate();
 
     function handleAvatarHover() {
         setHoverState((prevState) => {
@@ -32,7 +36,11 @@ export default function Avatar({
     };
 
     return (
-        <div key={id} className="chatroom--member-wrapper" style={{transform: `translate(-${currentIndex * 100}%)`}}>
+        <div
+            key={id}
+            className="chatroom--member-wrapper"
+            style={{ transform: `translate(-${currentIndex * 100}%)` }}
+        >
             {!viewed && senderName != currentUser.name && (
                 <div className="chatroom--new">New!</div>
             )}
@@ -41,9 +49,10 @@ export default function Avatar({
                 className={`chatroom--member${
                     tab === conversationWith ? "-active" : ""
                 }`}
-                onClick={() =>
-                    (window.location = `http://localhost:3000/messages/${conversationWith}`)
-                }
+                onClick={() => {
+                    setCurrentChat([]);
+                    navigate(`/messages/${conversationWith}`);
+                }}
                 style={avatarStyle}
                 onMouseEnter={handleAvatarHover}
                 onMouseLeave={handleAvatarHover}

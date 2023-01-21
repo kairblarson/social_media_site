@@ -8,6 +8,7 @@ import SignoutModal from "./SignoutModal";
 import { CPopover, CButton } from "@coreui/react";
 //you have to import your context component and the useContext hook
 
+//nav done //local done
 export default function Extra(props) {
     const [userState, setUserState] = useState({
         username: "",

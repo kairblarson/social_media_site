@@ -1,22 +1,27 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
+//nav done //local done
 export default function EditModal({ open, toggleEdit, oldImg }) {
-    const [currentUser, setCurrentUser] = useState();
+    const [currentUser, setCurrentUser] = useState(
+        JSON.parse(localStorage.getItem("userDetails"))
+    );
     const [userModel, setUserModel] = useState({
-        username: currentUser.name,
-        bio: currentUser.principal.bio,
+        username: currentUser?.name,
+        bio: currentUser?.principal?.bio,
         profilePicture: "",
     });
     const [exitHover, setExitHover] = useState(false);
     const [changePicHover, setChangePicHover] = useState(false);
     const [saveHover, setSaveHover] = useState(false);
     const [imagePreview, setImagePreview] = useState(oldImg);
+    const navigate = useNavigate();
 
     useEffect(() => {
         localStorage.setItem("userDetails", JSON.stringify(currentUser));
     }, [currentUser]);
-    
+
     if (!open) return null;
 
     const exitStyle = {
@@ -60,7 +65,7 @@ export default function EditModal({ open, toggleEdit, oldImg }) {
         formData.append("bio", userModel.bio);
         formData.append("profilePicture", userModel.profilePicture);
         axios({
-            url: `http://localhost:8080/${currentUser.name}/handle-edit`,
+            url: `${process.env.REACT_APP_BASE_URL}/${currentUser.name}/handle-edit`,
             withCredentials: true,
             method: "POST",
             data: formData,
@@ -76,7 +81,7 @@ export default function EditModal({ open, toggleEdit, oldImg }) {
                 },
             };
         });
-        window.location = `http://localhost:3000/${currentUser.name}`;
+        navigate(`/${currentUser.name}`);
     }
 
     return (

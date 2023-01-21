@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useParams, useLocation } from "react-router-dom";
+import { Link, useParams, useLocation, useNavigate } from "react-router-dom";
 import PostModal from "./PostModal";
 import Navbar from "./Navbar";
 import Extra from "./Extra";
@@ -9,6 +9,7 @@ import { BsArrowLeft } from "react-icons/bs";
 import Header from "./Header";
 import { ColorRing } from "react-loader-spinner";
 
+//nav done //local done
 export default function UserList(props) {
     const [userDetails, setUserDetails] = useState(
         JSON.parse(localStorage.getItem("userDetails"))
@@ -27,6 +28,7 @@ export default function UserList(props) {
     const [type, setType] = useState();
     const search = useLocation().search;
     const repostedBy = new URLSearchParams(search).get("repost");
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (
@@ -52,7 +54,7 @@ export default function UserList(props) {
                 .then((res) => {
                     if (res.status === 400) {
                         localStorage.setItem("userDetails", null);
-                        window.location = "http://localhost:3000/login";
+                        navigate("/login");
                     }
                     return res.json();
                 })
@@ -68,16 +70,19 @@ export default function UserList(props) {
                 })
                 .catch((err) => {});
         } else {
-            console.log("PAGE",page);
+            console.log("PAGE", page);
             setType("interactions");
-            fetch(`http://localhost:8080/${handle}/post/${id}/${interaction}?page=${page}`, {
-                method: "GET",
-                credentials: "include",
-            })
+            fetch(
+                `http://localhost:8080/${handle}/post/${id}/${interaction}?page=${page}`,
+                {
+                    method: "GET",
+                    credentials: "include",
+                }
+            )
                 .then((res) => {
                     if (res.status === 400) {
                         localStorage.setItem("userDetails", null);
-                        window.location = "http://localhost:3000/login";
+                        navigate("/login");
                     }
                     return res.json();
                 })
@@ -92,7 +97,7 @@ export default function UserList(props) {
                 })
                 .catch((err) => {});
         }
-    }, [page]);
+    }, [page, window.location.pathname]);
 
     function fetchMoreData() {
         setTimeout(() => {
@@ -144,6 +149,8 @@ export default function UserList(props) {
         }));
     }
 
+    // console.log("MOOSE");
+
     return (
         <div className="userlist">
             <Navbar />
@@ -157,9 +164,10 @@ export default function UserList(props) {
                                 onMouseEnter={handleFollowersHover}
                                 onMouseLeave={handleFollowersHover}
                                 style={followersWrapper}
-                                onClick={() =>
-                                    (window.location = `http://localhost:3000/${handle}/followers`)
-                                }
+                                onClick={() => {
+                                    setUsers([]);
+                                    navigate(`/${handle}/followers`);
+                                }}
                             >
                                 <h4 style={followersStyle}>Followers</h4>
                             </button>
@@ -168,9 +176,10 @@ export default function UserList(props) {
                                 onMouseEnter={handleFollowingHover}
                                 onMouseLeave={handleFollowingHover}
                                 style={followingWrapper}
-                                onClick={() =>
-                                    (window.location = `http://localhost:3000/${handle}/following`)
-                                }
+                                onClick={() => {
+                                    setUsers([]);
+                                    navigate(`/${handle}/following`);
+                                }}
                             >
                                 <h4 style={followingStyle}>Following</h4>
                             </button>

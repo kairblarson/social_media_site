@@ -4,7 +4,9 @@ import Extra from "./Extra";
 import PostModal from "./PostModal";
 import Header from "./Header";
 
+//nav done //local done
 export default function Home(props) {
+    console.log(props.isAuth);
     return (
         <div className="home">
             <Navbar />

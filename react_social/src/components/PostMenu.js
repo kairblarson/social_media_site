@@ -11,6 +11,7 @@ import {
 import axios from "axios";
 import { Link, useParams, useLocation, useNavigate } from "react-router-dom";
 
+//nav done //local done
 export default function PostMenu(props) {
     const [hoverState, setHoverState] = useState({
         deleteHover: false,
@@ -70,22 +71,22 @@ export default function PostMenu(props) {
 
     function handleDeletePost(e) {
         e.stopPropagation();
-        fetch(`http://localhost:8080/${props.id}/delete`, {
+        fetch(`${process.env.REACT_APP_BASE_URL}/${props.id}/delete`, {
             method: "DELETE",
             credentials: "include",
         })
             .then((res) => res.text())
             .then((data) => {
-                navigate(-1);
+                navigate(0);
             })
             .catch(() => {
-                window.location = "http://localhost:3000/login";
+                navigate("/login");
             });
     }
 
     function handleToProfileClick(e) {
         e.stopPropagation();
-        // window.location = `http://localhost:3000/${props.currentUsername}`;
+        navigate(`/${props.currentUsername}`);
     }
 
     return (
@@ -113,7 +114,7 @@ export default function PostMenu(props) {
                     <BsFlagFill />
                     Report
                 </div>
-                <Link to={`/${props.currentUsername}`}>
+                <Link to={`/${props.currentUsername}`} style={{color: "black"}}>
                     <div
                         className="postmenu--option"
                         name="toProfileHover"

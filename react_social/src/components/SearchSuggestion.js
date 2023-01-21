@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+//nav done //local done
 export default function SearchSuggestion({
     username,
     bio,

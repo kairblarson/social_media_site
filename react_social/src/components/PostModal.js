@@ -1,7 +1,9 @@
 import { useState } from "react";
 import axios from "axios";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
+//nav done //local done
 export default function PostModal({ open, closeModal, onSubmit, targetPost }) {
     const [userDetails, setUserDetails] = useState(
         JSON.parse(localStorage.getItem("userDetails"))
@@ -13,6 +15,8 @@ export default function PostModal({ open, closeModal, onSubmit, targetPost }) {
     const [inputState, setInputState] = useState({
         postInput: "",
     });
+    const navigate = useNavigate();
+
     if (!open) return null;
 
     function handleClick(e) {
@@ -95,7 +99,7 @@ export default function PostModal({ open, closeModal, onSubmit, targetPost }) {
                             maxLength={250}
                             onKeyDown={(e) => {
                                 if (e.key === "Enter") {
-                                    console.log("ENTER");
+                                    navigate(0);
                                     onSubmit(inputState.postInput);
                                 }
                             }}
@@ -107,7 +111,10 @@ export default function PostModal({ open, closeModal, onSubmit, targetPost }) {
                         </div>
                         <button
                             className="postmodal--post-button"
-                            onClick={() => onSubmit(inputState.postInput)}
+                            onClick={() => {
+                                navigate(0);
+                                onSubmit(inputState.postInput);
+                            }}
                             style={submitStyle}
                             onMouseEnter={handleSubmitHover}
                             onMouseLeave={handleSubmitHover}

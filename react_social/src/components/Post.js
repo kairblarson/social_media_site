@@ -6,10 +6,11 @@ import {
     BsEmojiFrown,
 } from "react-icons/bs";
 import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import PostMenu from "./PostMenu";
 import { motion } from "framer-motion";
 
+//nav done //local done
 export default function Post(props) {
     const [state, setState] = useState(props); //post state
     const [userDetails, setUserDetails] = useState(
@@ -31,6 +32,7 @@ export default function Post(props) {
     const { handle } = useParams();
     const [profilePicture, setProfilePicture] = useState(null);
     const [postHeight, setPostHeight] = useState(null);
+    const navigate = useNavigate();
 
     const date = new Date(); //raw
     date.setTime(state.postDate);
@@ -130,7 +132,7 @@ export default function Post(props) {
                 state.author.username == "Me"
                     ? userDetails.name
                     : state.author.username;
-            window.location = `http://localhost:3000/${handle}/post/${state.id}?repost=${state.repostedBy}`;
+            navigate(`/${handle}/post/${state.id}?repost=${state.repostedBy}`);
         }
     }
 
@@ -152,12 +154,12 @@ export default function Post(props) {
             state.author.username == "Me"
                 ? userDetails.name
                 : state.author.username;
-        window.location = `http://localhost:3000/${handle}`;
+        navigate(`/${handle}`);
     }
 
     function handleRepostUserClick(e) {
         e.stopPropagation();
-        window.location = `http://localhost:3000/${state.repostedBy}`;
+        navigate(`/${state.repostedBy}`);
     }
 
     function handleUsernameMouseOver() {
@@ -228,7 +230,7 @@ export default function Post(props) {
 
     function toggleLike(e) {
         e.stopPropagation();
-        fetch(`http://localhost:8080/handle-like?id=${state.id}`, {
+        fetch(`${process.env.REACT_APP_BASE_URL}/handle-like?id=${state.id}`, {
             method: "POST",
             credentials: "include",
         })
@@ -244,7 +246,7 @@ export default function Post(props) {
                 });
             })
             .catch(() => {
-                window.location = "http://localhost:3000/login";
+                navigate("/login");
             });
     }
     //------------------------------
@@ -271,7 +273,7 @@ export default function Post(props) {
 
     function toggleRepost(e) {
         e.stopPropagation();
-        fetch(`http://localhost:8080/handle-repost?id=${state.id}`, {
+        fetch(`${process.env.REACT_APP_BASE_URL}/handle-repost?id=${state.id}`, {
             method: "POST",
             credentials: "include",
         })
@@ -286,7 +288,7 @@ export default function Post(props) {
                 });
             })
             .catch(() => {
-                window.location = "http://localhost:3000/login";
+                navigate("/login");
             });
     }
     //------------------------------

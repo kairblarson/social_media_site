@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 
+//nav done //local done
 export default function Simple({
     username,
     fullName,
@@ -19,6 +20,7 @@ export default function Simple({
         JSON.parse(localStorage.getItem("userDetails"))
     );
     const [isSelf, setSelf] = useState(username == currentUser?.name);
+    const navigate = useNavigate();
 
     const followStyle = {
         background: isFollowed
@@ -68,9 +70,9 @@ export default function Simple({
     function toggleFollow(e) {
         e.stopPropagation();
         if (currentUser == null) {
-            window.location = "http://localhost:3000/login";
+            navigate("/login");
         }
-        fetch(`http://localhost:8080/${username}/follow`, {
+        fetch(`${process.env.REACT_APP_BASE_URL}/${username}/follow`, {
             method: "GET",
             credentials: "include",
         })
@@ -81,7 +83,7 @@ export default function Simple({
                 } else if (data == "failure") {
                     setFollowed((prev) => !prev);
                 } else {
-                    window.location = "http://localhost:3000/login";
+                    navigate("/login");
                 }
             });
     }
@@ -100,9 +102,7 @@ export default function Simple({
             style={postStyle}
             onMouseEnter={handlePostHover}
             onMouseLeave={handlePostHover}
-            onClick={() =>
-                (window.location = `http://localhost:3000/${username}`)
-            }
+            onClick={() => navigate(`/${username}`)}
         >
             <div className="simple--left">
                 <img

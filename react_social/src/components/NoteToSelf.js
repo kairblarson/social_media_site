@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+//nav done //local done
 export default function NoteToSelf(props) {
     const [reminder, setReminder] = useState("");
     const [hoverState, setHoverState] = useState({

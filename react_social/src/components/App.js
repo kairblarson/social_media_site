@@ -8,6 +8,8 @@ import {
     useParams,
     Link,
     NavLink,
+    Navigate,
+    useNavigate,
 } from "react-router-dom";
 import Profile from "../components/Profile";
 import ProtectedRoutes, { useAuth } from "./ProtectedRoutes";
@@ -19,12 +21,14 @@ import Notifications from "./Notifications";
 import Explore from "./Explore";
 import ChatRoom from "./ChatRoom";
 
+//nav done //local done
 export default function App() {
     const [modalState, setModalState] = useState(false);
     const [editModalState, setEditModalState] = useState(false);
     const [isAuth, setIsAuth] = useState();
     const [targetPost, setTargetPost] = useState();
     const { handle, id, interaction } = useParams();
+    const [key, setKey] = useState(0);
 
     function toggleModal(post) {
         setTargetPost(post);
@@ -45,7 +49,7 @@ export default function App() {
     function handleSubmit(content) {
         console.log("POSTED", content);
         axios({
-            url: `http://localhost:8080/process-post${
+            url: `${process.env.REACT_APP_BASE_URL}/process-post${
                 targetPost != null ? `?targetId=${targetPost.id}` : ""
             }`,
             withCredentials: true,
@@ -61,12 +65,13 @@ export default function App() {
             .catch((err) => {
                 console.log(err);
             });
-        window.location = `http://localhost:3000/home`;
+        toggleModal(false);
+        //figure out how to redirect w/o useNavigate
     }
 
     useEffect(() => {
         axios({
-            url: `http://localhost:8080/isAuth`,
+            url: `${process.env.REACT_APP_BASE_URL}/isAuth`,
             withCredentials: true,
             method: "GET",
             headers: {
@@ -75,10 +80,10 @@ export default function App() {
         })
             .then((res) => {
                 if (res.status === 200) {
-                    console.log("AUTH");
+                    // console.log("AUTH");
                     setIsAuth(true);
                 } else {
-                    console.log("NOT AUTH");
+                    // console.log("NOT AUTH");
                     setIsAuth(false);
                     localStorage.setItem("userDetails", null);
                 }
@@ -87,6 +92,8 @@ export default function App() {
                 console.log(err);
             });
     }, []);
+
+    console.log("APP: ",isAuth);
 
     return (
         <div className="app">
@@ -109,7 +116,7 @@ export default function App() {
                             }
                         />
                         <Route
-                            path=":handle/likes"
+                            path=":handle/:interaction"
                             element={
                                 <Profile
                                     toggleModal={toggleModal}
@@ -119,6 +126,7 @@ export default function App() {
                                     targetPost={targetPost}
                                     toggleEdit={toggleEdit}
                                     editModalState={editModalState}
+                                    key={interaction}
                                 />
                             }
                         />

@@ -1,6 +1,8 @@
 import { BsBugFill } from "react-icons/bs";
 import { useState, useEffect } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 
+//nav done //local done
 export default function Login() {
     const [loginInfo, setLoginInfo] = useState({
         email: "",
@@ -14,6 +16,7 @@ export default function Login() {
     const [loginButtonState, setLoginButtonState] = useState({
         isHover: false,
     });
+    const navigate = useNavigate();
 
     function handleChange(event) {
         setInputState({ emailIsEmpty: false, passwordIsEmpty: false });
@@ -61,7 +64,7 @@ export default function Login() {
                 setErrorMessage("please enter an email");
                 setInputState({ emailIsEmpty: true, passwordIsEmpty: false });
             } else {
-                fetch("http://localhost:8080/process", {
+                fetch(`${process.env.REACT_APP_BASE_URL}/process`, {
                     credentials: "include",
                     method: "POST",
                     body: new URLSearchParams({
@@ -86,7 +89,7 @@ export default function Login() {
                                 "userDetails",
                                 JSON.stringify(data)
                             );
-                            window.location = "http://localhost:3000/home";
+                            navigate('/home');
                         }
                     })
                     .catch((error) => {
@@ -97,7 +100,7 @@ export default function Login() {
     }
 
     useEffect(() => {
-        fetch("http://localhost:8080/getSessionId", {
+        fetch(`${process.env.REACT_APP_BASE_URL}/getSessionId`, {
             credentials: "include",
             method: "GET",
         })

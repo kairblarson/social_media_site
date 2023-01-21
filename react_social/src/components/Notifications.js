@@ -7,6 +7,7 @@ import PostModal from "./PostModal";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { ColorRing } from "react-loader-spinner";
 
+//nav done
 export default function Notifications(props) {
     const [notifications, setNotifications] = useState([]);
     const [page, setPage] = useState(1);
@@ -15,7 +16,7 @@ export default function Notifications(props) {
 
     useEffect(() => {
         fetch(
-            `http://localhost:8080/get-notifications?exact=true&page=${page}`,
+            `${process.env.REACT_APP_BASE_URL}/get-notifications?exact=true&page=${page}`,
             {
                 method: "GET",
                 credentials: "include",

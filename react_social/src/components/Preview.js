@@ -9,6 +9,7 @@ import {
 } from "react-icons/bs";
 import SignoutModal from "./SignoutModal";
 
+//nav done //local done
 export default function Preview(props) {
     const [userDetails, setUserDetails] = useState(
         JSON.parse(localStorage.getItem("userDetails"))

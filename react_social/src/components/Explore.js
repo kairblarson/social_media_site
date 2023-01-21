@@ -8,7 +8,9 @@ import SearchSuggestion from "./SearchSuggestion";
 import { ColorRing } from "react-loader-spinner";
 import Simple from "./Simple";
 import { AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
+//nav done //local done
 export default function Explore(props) {
     const [focused, setFocused] = useState(false);
     const [keyword, setKeyword] = useState("");
@@ -32,11 +34,12 @@ export default function Explore(props) {
     const [loading, setLoading] = useState(true);
     const [initialSearch, setInitialSearch] = useState(false);
     const searchBar = useRef(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (!postButtonFocus) {
             fetch(
-                `http://localhost:8080/${urlVariable}/search?keyword=${keyword}&page=${page}`,
+                `${process.env.REACT_APP_BASE_URL}/${urlVariable}/search?keyword=${keyword}&page=${page}`,
                 {
                     method: "GET",
                     credentials: "include",
@@ -74,7 +77,7 @@ export default function Explore(props) {
             setInitialSearch(true);
             if (topButtonFocus) {
                 fetch(
-                    `http://localhost:8080/search?keyword=${keyword}&page=${page}`,
+                    `${process.env.REACT_APP_BASE_URL}/search?keyword=${keyword}&page=${page}`,
                     {
                         method: "GET",
                         credentials: "include",
@@ -101,7 +104,7 @@ export default function Explore(props) {
             }
             if (userButtonFocus) {
                 fetch(
-                    `http://localhost:8080/${urlVariable}/search?keyword=${keyword}&page=${page}`,
+                    `${process.env.REACT_APP_BASE_URL}/${urlVariable}/search?keyword=${keyword}&page=${page}`,
                     {
                         method: "GET",
                         credentials: "include",
@@ -122,7 +125,7 @@ export default function Explore(props) {
             if (postButtonFocus) {
                 setUrlVariable("posts");
                 fetch(
-                    `http://localhost:8080/posts/search?keyword=${keyword}&page=${page}`,
+                    `${process.env.REACT_APP_BASE_URL}/posts/search?keyword=${keyword}&page=${page}`,
                     {
                         method: "GET",
                         credentials: "include",
@@ -297,7 +300,7 @@ export default function Explore(props) {
     }
 
     function handleClick(username) {
-        window.location = `http://localhost:3000/${username}`;
+        navigate(`/${username}`);
     }
 
     function handleMenuToggle(id) {

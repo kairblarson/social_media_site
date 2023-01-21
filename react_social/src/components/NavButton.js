@@ -1,3 +1,4 @@
+//nav done //local done
 export default function NavButton(props) {
     const buttonStyles = {
         fontWeight: props.isSelected ? "700" : "400",

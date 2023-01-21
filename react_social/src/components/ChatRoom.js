@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import PostModal from "./PostModal";
 import Extra from "./Extra";
@@ -17,10 +17,11 @@ import Avatar from "./Avatar";
 import { ColorRing } from "react-loader-spinner";
 import Message from "./Message";
 import InfiniteScroll from "react-infinite-scroll-component";
-import InfiniteScrollReverse from "react-infinite-scroll-reverse/dist/InfiniteScrollReverse";
 import { BeatLoader } from "react-spinners";
 import Sender from "./Sender";
+import { useUnmountEffect } from "framer-motion";
 
+//nav done //local done
 var stompClient = null;
 export default function ChatRoom(props) {
     const [currentUser, setCurrentUser] = useState(
@@ -28,7 +29,7 @@ export default function ChatRoom(props) {
     );
     const currentLocation = useLocation();
     const { handle, interaction, id, user } = useParams();
-    const [tab, setTab] = useState(handle);
+    const [tab, setTab] = useState("");
     const [currentChat, setCurrentChat] = useState([]);
     const [conversations, setConversations] = useState([]);
     const [userData, setUserData] = useState({
@@ -49,6 +50,10 @@ export default function ChatRoom(props) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isNewChat, setIsNewChat] = useState(false);
 
+    useEffect(() => {
+        setTab(window.location.pathname.substring(10));
+    }, [window.location.pathname]);
+
     //creates an initial connection to server (registerUser func)
     useEffect(() => {
         if (currentUser != null) {
@@ -56,7 +61,7 @@ export default function ChatRoom(props) {
                 ...prevState,
                 username: currentUser.name,
             }));
-            let Sock = new SockJS("http://localhost:8080/ws");
+            let Sock = new SockJS(`${process.env.REACT_APP_BASE_URL}/ws`);
             stompClient = over(Sock);
             stompClient.connect({}, onConnected, onError);
         }
@@ -64,8 +69,8 @@ export default function ChatRoom(props) {
 
     useEffect(() => {
         //this gets all the current conversations
-        if (tab !== undefined) {
-            fetch(`http://localhost:8080/messages/${tab}?page=${page}`, {
+        if (tab !== "") {
+            fetch(`${process.env.REACT_APP_BASE_URL}/messages/${tab}?page=${page}`, {
                 method: "GET",
                 credentials: "include",
             })
@@ -114,7 +119,7 @@ export default function ChatRoom(props) {
             status: "JOIN",
         };
         fetch(
-            `http://localhost:8080/messages?target=${
+            `${process.env.REACT_APP_BASE_URL}/messages?target=${
                 handle === undefined ? "" : handle
             }`,
             {
@@ -142,8 +147,6 @@ export default function ChatRoom(props) {
             });
         stompClient.send("/app/message", {}, JSON.stringify(chatMessage));
     }
-
-    console.log(conversations);
 
     useEffect(() => {
         if (conversations.length > 0) {
@@ -222,6 +225,10 @@ export default function ChatRoom(props) {
         chatRoomRef?.current?.scrollTo(0, chatRoomRef.current.scrollHeight);
     }, [currentChat, chatRoomRef?.current?.clientHeight]);
 
+    useUnmountEffect(() => {
+        document.body.style.overflowY = "auto";
+    });
+
     document.body.style.overflowY = "hidden";
 
     const forwardButtonStyle = {
@@ -279,6 +286,7 @@ export default function ChatRoom(props) {
                                         currentUser={currentUser}
                                         index={index}
                                         currentIndex={currentIndex}
+                                        setCurrentChat={setCurrentChat}
                                     />
                                 );
                             })}
@@ -303,7 +311,7 @@ export default function ChatRoom(props) {
                                     ref={chatRoomRef}
                                 >
                                     {!loading ? (
-                                        tab != undefined && (
+                                        tab != "" && (
                                             <div>
                                                 <InfiniteScroll
                                                     dataLength={
@@ -409,7 +417,7 @@ export default function ChatRoom(props) {
                     )}
                 </div>
                 {/*send private message UI *IMPORTANT* */}
-                {tab != null && (
+                {tab != "" && (
                     <Sender sendPrivateMessage={sendPrivateMessage} />
                 )}
             </div>

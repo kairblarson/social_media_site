@@ -6,7 +6,9 @@ import {
     BsPersonFill,
 } from "react-icons/bs";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
+//nav done //local done
 export default function Notif({ action, id, content, from, date }) {
     const [hoverState, setHoverState] = useState({
         mainHover: false,
@@ -15,6 +17,8 @@ export default function Notif({ action, id, content, from, date }) {
     const [currentUser, setCurrentUser] = useState(
         JSON.parse(localStorage.getItem("userDetails"))
     );
+    const navigate = useNavigate();
+
     if (action === "DM") return null;
     const actionToIcon = () => {
         let component;
@@ -65,16 +69,18 @@ export default function Notif({ action, id, content, from, date }) {
 
     function handleUsernameClick(e) {
         e.stopPropagation();
-        window.location = `http://localhost:3000/${from.username}`;
+        navigate(`/${from.username}`);
     }
 
     function handleNotifClick() {
         if (content == null) {
-            window.location = `http://localhost:3000/${from.username}`;
+            navigate(`/${from.username}`);
         }
-        window.location = `http://localhost:3000/${currentUser.name}/post/${
-            content.id
-        }?repost=${action == "repost" ? from.username : "null"}`;
+        navigate(
+            `/${currentUser.name}/post/${content.id}?repost=${
+                action == "repost" ? from.username : "null"
+            }`
+        );
     }
 
     return (

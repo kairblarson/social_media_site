@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
+//nav done //local done
 export default function Message({
     senderName,
     profilePicture,
@@ -14,6 +16,7 @@ export default function Message({
         JSON.parse(localStorage.getItem("userDetails"))
     );
     const [isHover, setHover] = useState(false);
+    const navigate = useNavigate();
 
     const hoverStyle = {
         cursor: isHover ? "pointer" : "default",
@@ -33,9 +36,7 @@ export default function Message({
             className={`chatroom--message${
                 senderName === currentUser.name ? "-self" : ""
             }`}
-            onClick={() =>
-                (window.location = `http://localhost:3000/${senderName}`)
-            }
+            onClick={() => navigate(`/${senderName}`)}
             style={{ marginBottom: backToBack ? "2px" : "30px" }}
         >
             {!backToBack ? (

@@ -13,8 +13,9 @@ import {
     BsPerson,
 } from "react-icons/bs";
 import NavButton from "./NavButton";
-import { Link, useParams, useLocation } from "react-router-dom";
+import { Link, useParams, useLocation, useNavigate } from "react-router-dom";
 
+//nav done //local done
 export default function Navbar() {
     const [userDetails, setUserDetails] = useState(
         JSON.parse(localStorage.getItem("userDetails"))
@@ -60,9 +61,10 @@ export default function Navbar() {
             isSelected: false,
         },
     ]);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        fetch("http://localhost:8080/get-notifications?exact=false", {
+        fetch(`${process.env.REACT_APP_BASE_URL}/get-notifications?exact=false`, {
             method: "GET",
             credentials: "include",
         })
@@ -86,7 +88,7 @@ export default function Navbar() {
     }, []);
 
     useEffect(() => {
-        fetch("http://localhost:8080/messages/unread", {
+        fetch(`${process.env.REACT_APP_BASE_URL}/messages/unread`, {
             method: "GET",
             credentials: "include",
         })
@@ -121,28 +123,28 @@ export default function Navbar() {
     function handleButtonclick(id) {
         switch (id) {
             case 0:
-                window.location = "http://localhost:3000/home";
+                navigate("/home");
                 break;
             case 1:
                 if (userDetails == null) {
-                    window.location = `http://localhost:3000/login`;
+                    navigate("/login");
                 }
-                window.location = `http://localhost:3000/${userDetails.name}/notifications`;
+                navigate(`/${userDetails.name}/notifications`);
                 break;
             case 2:
-                window.location = `http://localhost:3000/messages`;
+                navigate('/messages');
                 break;
             case 3:
                 if (userDetails == null) {
-                    window.location = `http://localhost:3000/login`;
+                    navigate("/login");
                 }
-                window.location = `http://localhost:3000/${userDetails.name}`;
+                navigate(`/${userDetails.name}`);
                 break;
             case 4:
-                window.location = `http://localhost:3000/explore`;
+                navigate("/explore");
                 break;
             default:
-                fetch("http://localhost:8080/test", {
+                fetch(`${process.env.REACT_APP_BASE_URL}/test`, {
                     method: "GET",
                     credentials: "include",
                 })

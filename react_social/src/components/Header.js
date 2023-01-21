@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams, useLocation, useNavigate } from "react-router-dom";
 import { BsArrowLeft } from "react-icons/bs";
 
+//nav done //local done
 export default function Header() {
     const { handle, interaction, id } = useParams();
     const currentLocation = useLocation();

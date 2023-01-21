@@ -1,25 +1,29 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Post from "./Post";
 import { useState, useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Header from "./Header";
 import { ColorRing } from "react-loader-spinner";
 
+//nav done //local done
 export default function Timeline(props) {
     const [posts, setPosts] = useState([]);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
-    const [counter, setCounter] = useState(0);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        fetch(`http://localhost:8080/request-timeline?page=${page}`, {
-            method: "GET",
-            credentials: "include",
-        })
+        fetch(
+            `${process.env.REACT_APP_BASE_URL}/request-timeline?page=${page}`,
+            {
+                method: "GET",
+                credentials: "include",
+            }
+        )
             .then((res) => {
                 if (res.status === 400) {
                     localStorage.setItem("userDetails", null);
-                    window.location = "http://localhost:3000/login";
+                    navigate("/login");
                 }
                 return res.json();
             })
@@ -32,13 +36,16 @@ export default function Timeline(props) {
                     });
                 }
             })
-            .catch((err) => (window.location = "http://localhost:3000/login"));
+            .catch((err) => {
+                console.log(err);
+                navigate("/login");
+            });
     }, [page]);
 
     function fetchMoreData() {
-            setTimeout(() => {
-                setPage((prev) => prev + 1);
-            }, 500);
+        setTimeout(() => {
+            setPage((prev) => prev + 1);
+        }, 500);
     }
 
     function handleMenuToggle(id) {

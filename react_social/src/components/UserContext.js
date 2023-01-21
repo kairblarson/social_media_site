@@ -3,6 +3,7 @@ import { useState, createContext } from "react";
 const UserContext = createContext(null);
 //this is how you create the context
 
+//nav done //local done
 export function UserContextProvider({ children }) {
     //the children object prop is all the children elements that this provider is wrapped around
     const [user, setUser] = useState({

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { BsCursor } from "react-icons/bs";
 
+//nav done //local done
 export default function Sender({ sendPrivateMessage, tab }) {
     const [isBlocked, setBlocked] = useState(true);
     const [userData, setUserData] = useState({

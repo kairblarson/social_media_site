@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
 import { BsChatDotsFill, BsColumnsGap, BsFile, BsFillReplyFill, BsTriangleFill } from "react-icons/bs";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
+//nav done //local done
 export default function SignoutModal(props) {
     //this is really a popover but you get what i mean
     const [hoverState, setHoverState] = useState({
         logoutHover: false,
         moreHover: false,
     });
+    const navigate = useNavigate();
 
     const logoutButtonStyle = {
         cursor: hoverState.logoutHover ? "pointer" : "none",
@@ -35,7 +38,7 @@ export default function SignoutModal(props) {
 
     function handleSignout() {
         axios({
-            url: "http://localhost:8080/logout",
+            url: `${process.env.REACT_APP_BASE_URL}/logout`,
             withCredentials: true,
             method: "GET",
             headers: {
@@ -46,7 +49,7 @@ export default function SignoutModal(props) {
                 console.log(res);
                 localStorage.setItem("userDetails", null);
                 console.log("SIGNOUT");
-                window.location = "http://localhost:3000/login";
+                navigate('/login');
             })
             .catch((err) => {
                 console.log(err);

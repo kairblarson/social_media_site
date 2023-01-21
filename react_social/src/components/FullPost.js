@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useParams, useLocation } from "react-router-dom";
+import { Link, useParams, useLocation, useNavigate } from "react-router-dom";
 import Extra from "./Extra";
 import PostModal from "./PostModal";
 import Navbar from "./Navbar";
@@ -17,6 +17,7 @@ import PostMenu from "./PostMenu";
 import DeletedPost from "./DeletedPost";
 import { AnimatePresence } from "framer-motion";
 
+//nav done //local done
 export default function FullPost(props) {
     const { handle, id, interaction } = useParams();
     const [currentUser, setCurrentUser] = useState(
@@ -49,17 +50,17 @@ export default function FullPost(props) {
     const search = useLocation().search;
     const repostedBy = new URLSearchParams(search).get("repost");
     const [loading, setLoading] = useState(true);
-    //*BUG* the target post gets set too early
+    const navigate = useNavigate();
 
     useEffect(() => {
-        fetch(`http://localhost:8080/${handle}/post/${id}`, {
+        fetch(`${process.env.REACT_APP_BASE_URL}/${handle}/post/${id}`, {
             method: "GET",
             credentials: "include",
         })
             .then((res) => {
                 if (res.status === 400) {
                     localStorage.setItem("userDetails", null);
-                    window.location = "http://localhost:3000/login";
+                    navigate("/login");
                 }
                 return res.json();
             })
@@ -74,7 +75,7 @@ export default function FullPost(props) {
                 });
                 setLoading(true);
             })
-            .catch((err) => (window.location = "http://localhost:3000/login"));
+            .catch((err) => navigate("/login"));
         setTargetPost(document.getElementById("target-post"));
     }, []);
 
@@ -186,7 +187,7 @@ export default function FullPost(props) {
 
     function toggleLike(e) {
         e.stopPropagation();
-        fetch(`http://localhost:8080/handle-like?id=${post.id}`, {
+        fetch(`${process.env.REACT_APP_BASE_URL}/handle-like?id=${post.id}`, {
             method: "POST",
             credentials: "include",
         })
@@ -203,12 +204,12 @@ export default function FullPost(props) {
             })
             .catch((err) => {
                 console.log(err);
-                window.location = "http://localhost:3000/login";
+                navigate("/login");
             });
     }
 
     function retrieveLikes() {
-        window.location = `http://localhost:3000/${handle}/post/${id}/likes?repost=${repostedBy}`;
+        navigate(`/${handle}/post/${id}/likes?repost=${repostedBy}`);
     }
     //---------------------------
 
@@ -249,7 +250,7 @@ export default function FullPost(props) {
 
     function toggleRepost(e) {
         e.stopPropagation();
-        fetch(`http://localhost:8080/handle-repost?id=${post.id}`, {
+        fetch(`${process.env.REACT_APP_BASE_URL}/handle-repost?id=${post.id}`, {
             method: "POST",
             credentials: "include",
         })
@@ -265,12 +266,12 @@ export default function FullPost(props) {
             })
             .catch((err) => {
                 console.log(err);
-                window.location = "http://localhost:3000/login";
+                navigate("/login");
             });
     }
 
     function retrieveReposts() {
-        window.location = `http://localhost:3000/${handle}/post/${id}/reposts?repost=${repostedBy}`;
+        navigate(`/${handle}/post/${id}/reposts?repost=${repostedBy}`);
     }
     //-------------------------
 
@@ -293,7 +294,7 @@ export default function FullPost(props) {
     function handleCommentToggle(e) {
         e.stopPropagation();
         if (!currentUser) {
-            window.location = "http://localhost:3000/login";
+            navigate("/login");
         } else {
             props.toggleModal(post);
         }
@@ -391,11 +392,13 @@ export default function FullPost(props) {
                                         <p
                                             className="fullpost--repostedBy"
                                             onClick={() => {
-                                                window.location = `http://localhost:3000/${
-                                                    repostedBy == "me"
-                                                        ? currentUser?.name
-                                                        : repostedBy
-                                                }`;
+                                                navigate(
+                                                    `/${
+                                                        repostedBy == "me"
+                                                            ? currentUser?.name
+                                                            : repostedBy
+                                                    }`
+                                                );
                                             }}
                                             style={repostedByStyle}
                                             onMouseEnter={handleRepostedByHover}
@@ -429,7 +432,7 @@ export default function FullPost(props) {
                                                 <h4
                                                     className="fullpost--username"
                                                     onClick={() =>
-                                                        (window.location = `http://localhost:3000/${handle}`)
+                                                        navigate(`/${handle}`)
                                                     }
                                                     style={usernameStyle}
                                                     onMouseEnter={
@@ -490,7 +493,8 @@ export default function FullPost(props) {
                                             }
                                         >
                                             <p className="fullpost--interaction-number">
-                                                {post.author && post.likes.length}
+                                                {post.author &&
+                                                    post.likes.length}
                                             </p>
                                             <p className="fullpost--interaction-text">
                                                 Likes

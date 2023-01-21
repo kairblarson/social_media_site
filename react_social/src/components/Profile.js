@@ -5,18 +5,20 @@ import {
     NavLink,
     Router,
     Route,
+    useNavigate,
 } from "react-router-dom";
 import Navbar from "./Navbar";
 import Extra from "./Extra";
 import PostModal from "./PostModal";
 import Post from "./Post";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useReducer } from "react";
 import Header from "./Header";
 import { ColorRing } from "react-loader-spinner";
 import EditModal from "./EditModal";
 import { BsEnvelope } from "react-icons/bs";
 
+//nav done //local done
 export default function Profile(props) {
     const [profileDetails, setProfileDetails] = useState({
         username: null,
@@ -30,7 +32,7 @@ export default function Profile(props) {
     const [posts, setPosts] = useState([]);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
-    const { handle } = useParams();
+    const { handle, interaction } = useParams();
     const [isUserProfile, setIsUserProfile] = useState(false);
     const [userDetails, setUserDetails] = useState(
         JSON.parse(localStorage.getItem("userDetails"))
@@ -45,17 +47,22 @@ export default function Profile(props) {
     });
     const currentLocation = useLocation();
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+    const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
 
     useEffect(() => {
         if (currentLocation.pathname == `/${handle}`) {
-            fetch(`http://localhost:8080/${handle}/posts?page=${page}`, {
-                method: "GET",
-                credentials: "include",
-            })
+            fetch(
+                `${process.env.REACT_APP_BASE_URL}/${handle}/posts?page=${page}`,
+                {
+                    method: "GET",
+                    credentials: "include",
+                }
+            )
                 .then((res) => {
                     if (res.status === 400) {
                         localStorage.setItem("userDetails", null);
-                        window.location = "http://localhost:3000/login";
+                        navigate("/login");
                     }
                     return res.json();
                 })
@@ -71,19 +78,21 @@ export default function Profile(props) {
                     setLoading(false);
                 });
         } else if (currentLocation.pathname == `/${handle}/likes`) {
-            fetch(`http://localhost:8080/${handle}/likes?page=${page}`, {
-                method: "GET",
-                credentials: "include",
-            })
+            fetch(
+                `${process.env.REACT_APP_BASE_URL}/${handle}/likes?page=${page}`,
+                {
+                    method: "GET",
+                    credentials: "include",
+                }
+            )
                 .then((res) => {
                     if (res.status === 400) {
                         localStorage.setItem("userDetails", null);
-                        window.location = "http://localhost:3000/login";
+                        navigate("/login");
                     }
                     return res.json();
                 })
                 .then((data) => {
-                    console.log(data);
                     if (data.posts.length <= 0 || data.posts.length >= 200) {
                         setHasMore(false);
                     } else {
@@ -95,7 +104,7 @@ export default function Profile(props) {
                     setProfileDetails(data);
                 });
         }
-    }, [page]);
+    }, [page, interaction]);
 
     function fetchMoreData() {
         setTimeout(() => {
@@ -112,7 +121,7 @@ export default function Profile(props) {
                 setIsUserProfile(true);
             } else {
                 setIsUserProfile(false);
-                fetch(`http://localhost:8080/isAuth`, {
+                fetch(`${process.env.REACT_APP_BASE_URL}/isAuth`, {
                     method: "GET",
                     credentials: "include",
                 })
@@ -257,9 +266,9 @@ export default function Profile(props) {
 
     function handleFollow() {
         if (userDetails == null) {
-            window.location = "http://localhost:3000/login";
+            navigate("/login");
         }
-        fetch(`http://localhost:8080/${handle}/follow`, {
+        fetch(`${process.env.REACT_APP_BASE_URL}/${handle}/follow`, {
             method: "GET",
             credentials: "include",
         })
@@ -270,7 +279,7 @@ export default function Profile(props) {
                 } else if (data == "failure") {
                     setProfileDetails((prev) => ({ ...prev, followed: false }));
                 } else {
-                    window.location = "http://localhost:3000/login";
+                    navigate("/login");
                 }
             });
     }
@@ -317,7 +326,6 @@ export default function Profile(props) {
                 );
             })
         );
-        // console.log(posts);
     }, [posts]);
 
     function handleMenuToggle(id) {
@@ -330,16 +338,14 @@ export default function Profile(props) {
         });
     }
 
-    // console.log(profileDetails);
-
     return (
-        <div className="profile">
+        <div className="profile" key={handle}>
             <Navbar />
             {!loading ? (
                 <div className="profile--middle">
                     <div className="profile--content">
                         <img
-                        style={{objectFit: "cover"}}
+                            style={{ objectFit: "cover" }}
                             src={"../images/background.jpg"}
                             className="profile--background"
                         ></img>
@@ -349,7 +355,9 @@ export default function Profile(props) {
                                     className="profile--message"
                                     onClick={() => {
                                         if (profileDetails.username) {
-                                            window.location = `http://localhost:3000/messages/${profileDetails.username}`;
+                                            navigate(
+                                                `/${profileDetails.username}`
+                                            );
                                         }
                                     }}
                                     style={messageButtonStyle}
@@ -374,7 +382,7 @@ export default function Profile(props) {
                                     className="profile--follow"
                                     style={followStyle}
                                     onClick={() => {
-                                        if(profileDetails.username) {
+                                        if (profileDetails.username) {
                                             handleFollow();
                                         }
                                     }}
@@ -389,13 +397,17 @@ export default function Profile(props) {
                                 </button>
                             )}
                         </div>
-                        {profileDetails.username ? <img
-                            src={
-                                "data:image/png;base64," +
-                                profileDetails.profilePicture
-                            }
-                            className="profile--image"
-                        ></img> : <div className="profile--image-empty"></div>}
+                        {profileDetails.username ? (
+                            <img
+                                src={
+                                    "data:image/png;base64," +
+                                    profileDetails.profilePicture
+                                }
+                                className="profile--image"
+                            ></img>
+                        ) : (
+                            <div className="profile--image-empty"></div>
+                        )}
                         <div className="profile--details">
                             <div className="profile--username-wrapper">
                                 <p className="profile--username">{handle}</p>
@@ -415,9 +427,7 @@ export default function Profile(props) {
                         <div className="profile--follow-details">
                             <div
                                 className="profile--followers"
-                                onClick={() =>
-                                    (window.location = `http://localhost:3000/${handle}/followers`)
-                                }
+                                onClick={() => navigate(`/${handle}/followers`)}
                             >
                                 <h4>{profileDetails.followers}</h4>
                                 <p
@@ -430,9 +440,7 @@ export default function Profile(props) {
                             </div>
                             <div
                                 className="profile--following"
-                                onClick={() =>
-                                    (window.location = `http://localhost:3000/${handle}/following`)
-                                }
+                                onClick={() => navigate(`/${handle}/following`)}
                             >
                                 <h4>{profileDetails.following}</h4>
                                 <p
@@ -447,9 +455,10 @@ export default function Profile(props) {
                         <div className="profile--navbar">
                             <button
                                 className="profile--navbutton"
-                                onClick={() =>
-                                    (window.location = `http://localhost:3000/${handle}`)
-                                }
+                                onClick={() => {
+                                    setPosts([]);
+                                    navigate(`../${handle}`);
+                                }}
                                 style={postsTabButtonStyle}
                                 onMouseEnter={handlePostsHover}
                                 onMouseLeave={handlePostsHover}
@@ -466,9 +475,10 @@ export default function Profile(props) {
                         </button> */}
                             <button
                                 className="profile--navbutton"
-                                onClick={() =>
-                                    (window.location = `http://localhost:3000/${handle}/likes`)
-                                }
+                                onClick={() => {
+                                    setPosts([]);
+                                    navigate(`/${handle}/likes`);
+                                }}
                                 style={likesTabButtonStyle}
                                 onMouseEnter={handleLikesHover}
                                 onMouseLeave={handleLikesHover}
@@ -510,7 +520,9 @@ export default function Profile(props) {
                             >
                                 {postElements}
                             </InfiniteScroll>
-                        ) : <h3>This account doesnt exist...</h3>}
+                        ) : (
+                            <h3>This account doesnt exist...</h3>
+                        )}
                     </div>
                 </div>
             ) : (
