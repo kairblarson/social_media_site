@@ -65,6 +65,7 @@ export default function Login() {
                 setInputState({ emailIsEmpty: true, passwordIsEmpty: false });
             } else {
                 fetch(`${process.env.REACT_APP_BASE_URL}/process`, {
+                    mode: 'no-cors',
                     credentials: "include",
                     method: "POST",
                     body: new URLSearchParams({
@@ -101,6 +102,7 @@ export default function Login() {
 
     useEffect(() => {
         fetch(`${process.env.REACT_APP_BASE_URL}/getSessionId`, {
+            mode: 'no-cors',
             credentials: "include",
             method: "GET",
         })
