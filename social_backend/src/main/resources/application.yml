@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://root:PXOKggKgdmNHlTXx1KkT@containers-us-west-60.railway.app:7423/railway
+    url: jdbc:mysql://localhost:3306/social_db
     username: root
-    password: PXOKggKgdmNHlTXx1KkT
+    password: password123
   jpa:
     show-sql: false
     hibernate:

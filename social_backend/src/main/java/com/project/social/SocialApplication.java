@@ -32,21 +32,21 @@ public class SocialApplication {
 		SpringApplication.run(SocialApplication.class, args);
 	}
 
-	@Bean
-	CommandLineRunner commandLineRunner(UserRepo userRepo) {
-		return args -> {
-			User user = new User();
-			user.setBio("admin");
-			user.setEnabled(true);
-			user.setProvider(Provider.LOCAL);
-			user.setEmail("admin@gmail.com");
-			user.setFullName("admin");
-			user.setUsername("admin");
-			user.setPassword(passwordEncoder.encode("password"));
-			user.setRole("ROLE_ADMIN");
-			userRepo.save(user);
-		};
-	}
+//	@Bean
+//	CommandLineRunner commandLineRunner(UserRepo userRepo) {
+//		return args -> {
+//			User user = new User();
+//			user.setBio("admin");
+//			user.setEnabled(true);
+//			user.setProvider(Provider.LOCAL);
+//			user.setEmail("admin@gmail.com");
+//			user.setFullName("admin");
+//			user.setUsername("admin");
+//			user.setPassword(passwordEncoder.encode("password"));
+//			user.setRole("ROLE_ADMIN");
+//			userRepo.save(user);
+//		};
+//	}
 
 //	@Bean
 //	CommandLineRunner commandLineRunner(PostRepo postRepo, RepostRepo repostRepo) {
@@ -62,6 +62,7 @@ public class SocialApplication {
 //	}
 	//if repost feature breaks again just run this code
 
+	//this is the code that is responsible for cors config
 	@Bean
 	public CorsFilter corsFilter() {
 		CorsConfiguration corsConfiguration = new CorsConfiguration();

@@ -48,12 +48,11 @@ export default function Profile(props) {
     const currentLocation = useLocation();
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
-    const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
 
     useEffect(() => {
         if (currentLocation.pathname == `/${handle}`) {
             fetch(
-                `${process.env.REACT_APP_BASE_URL}/${handle}/posts?page=${page}`,
+                `/${handle}/posts?page=${page}`,
                 {
                     method: "GET",
                     credentials: "include",
@@ -79,7 +78,7 @@ export default function Profile(props) {
                 });
         } else if (currentLocation.pathname == `/${handle}/likes`) {
             fetch(
-                `${process.env.REACT_APP_BASE_URL}/${handle}/likes?page=${page}`,
+                `/${handle}/likes?page=${page}`,
                 {
                     method: "GET",
                     credentials: "include",

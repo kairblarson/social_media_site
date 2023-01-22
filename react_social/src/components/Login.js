@@ -35,18 +35,14 @@ export default function Login() {
         border: inputState.emailIsEmpty
             ? "1px solid #de4b4b"
             : "1px solid #8a8a8a",
-        boxShadow: inputState.emailIsEmpty
-            ? "0 0 5px #de4b4b"
-            : "none",
+        boxShadow: inputState.emailIsEmpty ? "0 0 5px #de4b4b" : "none",
     };
 
     const passwordInputStyle = {
         border: inputState.passwordIsEmpty
             ? "1px solid #de4b4b"
             : "1px solid #8a8a8a",
-        boxShadow: inputState.passwordIsEmpty
-            ? "0 0 5px #de4b4b"
-            : "none",
+        boxShadow: inputState.passwordIsEmpty ? "0 0 5px #de4b4b" : "none",
     };
 
     function handleLoginRequest(e) {
@@ -64,8 +60,7 @@ export default function Login() {
                 setErrorMessage("please enter an email");
                 setInputState({ emailIsEmpty: true, passwordIsEmpty: false });
             } else {
-                fetch(`${process.env.REACT_APP_BASE_URL}/process`, {
-                    mode: 'no-cors',
+                fetch(`/process`, {
                     credentials: "include",
                     method: "POST",
                     body: new URLSearchParams({
@@ -75,7 +70,7 @@ export default function Login() {
                     }),
                 })
                     .then((res) => {
-                        if (res.status === 400) {
+                        if (res.status === 400 || res.status === 404) {
                             return "bad credentials";
                         }
                         return res.json();
@@ -90,7 +85,7 @@ export default function Login() {
                                 "userDetails",
                                 JSON.stringify(data)
                             );
-                            navigate('/home');
+                            navigate("/home");
                         }
                     })
                     .catch((error) => {
@@ -101,8 +96,7 @@ export default function Login() {
     }
 
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_BASE_URL}/getSessionId`, {
-            mode: 'no-cors',
+        fetch(`/getSessionId`, {
             credentials: "include",
             method: "GET",
         })
