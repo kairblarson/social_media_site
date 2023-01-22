@@ -1,5 +1,7 @@
 server:
   port: 8080
+  tomcat:
+    protocol-header: x-forwarded-proto
 
 spring:
   datasource:
@@ -15,8 +17,8 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
-    session:
-      tracking-modes: cookie
+#    session:
+#      tracking-modes: cookie
       #clean and install this and push to git and it should work maybe
 
 project:
