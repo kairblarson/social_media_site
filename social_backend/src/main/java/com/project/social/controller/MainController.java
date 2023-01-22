@@ -43,6 +43,7 @@ public class MainController {
 
     @GetMapping("/successful-login")
     public ResponseEntity<Object> successfulLogin(Authentication authentication) {
+        System.out.println("AUTHENTICATION: "+authentication);
         return ResponseEntity.ok().body(authentication);
     }
 

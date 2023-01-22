@@ -60,13 +60,14 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults()).csrf(csrf -> csrf.disable())
                 .authorizeRequests( auth -> auth.antMatchers(WHITE_LIST_URLS).permitAll().anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionFixation().none().sessionCreationPolicy(SessionCreationPolicy.ALWAYS).enableSessionUrlRewriting(true))
-                .formLogin(form -> form.loginPage("http://localhost:3000/login")
+                .formLogin(form -> form.loginPage("https://socialmediasite-production.up.railway.app/login")
                         .usernameParameter("email")
                         .passwordParameter("password")
                         .loginProcessingUrl("/process")
                         .successHandler(new AuthenticationSuccessHandler() {
                             @Override
                             public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+                                System.out.println("SUCCESSFUL LOGIN");
                                 response.sendRedirect("/successful-login");
                             }
                         })
