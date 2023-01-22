@@ -37,6 +37,7 @@ public class MainController {
 
     @GetMapping("/getSessionId")
     public ResponseEntity<String> getSessionId() {
+        System.out.println("Get session id");
         return ResponseEntity.ok().body("REDIRECT");
     }
 
