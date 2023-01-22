@@ -60,7 +60,7 @@ export default function Login() {
                 setErrorMessage("please enter an email");
                 setInputState({ emailIsEmpty: true, passwordIsEmpty: false });
             } else {
-                fetch(`/process`, {
+                fetch(`${process.env.REACT_APP_BASE_URL}/process`, {
                     credentials: "include",
                     method: "POST",
                     body: new URLSearchParams({
@@ -96,7 +96,7 @@ export default function Login() {
     }
 
     useEffect(() => {
-        fetch(`/getSessionId`, {
+        fetch(`${process.env.REACT_APP_BASE_URL}/getSessionId`, {
             credentials: "include",
             method: "GET",
         })

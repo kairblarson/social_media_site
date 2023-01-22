@@ -52,7 +52,7 @@ export default function Profile(props) {
     useEffect(() => {
         if (currentLocation.pathname == `/${handle}`) {
             fetch(
-                `/${handle}/posts?page=${page}`,
+                `${process.env.REACT_APP_BASE_URL}/${handle}/posts?page=${page}`,
                 {
                     method: "GET",
                     credentials: "include",
@@ -78,7 +78,7 @@ export default function Profile(props) {
                 });
         } else if (currentLocation.pathname == `/${handle}/likes`) {
             fetch(
-                `/${handle}/likes?page=${page}`,
+                `${process.env.REACT_APP_BASE_URL}/${handle}/likes?page=${page}`,
                 {
                     method: "GET",
                     credentials: "include",
