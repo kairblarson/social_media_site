@@ -59,7 +59,7 @@ public class SecurityConfig {
         return http
                 .cors(Customizer.withDefaults()).csrf(csrf -> csrf.disable())
                 .authorizeRequests( auth -> auth.antMatchers(WHITE_LIST_URLS).permitAll().anyRequest().authenticated())
-                .sessionManagement(session -> session.sessionFixation().none().sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
+                .sessionManagement(session -> session.sessionFixation().none().sessionCreationPolicy(SessionCreationPolicy.ALWAYS).enableSessionUrlRewriting(true))
                 .formLogin(form -> form.loginPage("http://localhost:3000/login")
                         .usernameParameter("email")
                         .passwordParameter("password")
