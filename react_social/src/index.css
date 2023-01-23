@@ -1036,6 +1036,7 @@ input:focus{
   display: flex;
   justify-content: center;
   height: 100%;
+  width: 100%w;
 }
 .notifications--middle{
   display: flex;
@@ -1050,7 +1051,7 @@ input:focus{
   overflow: hidden;
 }
 .notif{
-  width: 100%;
+  min-width: 550px;
   max-height: 175px;
   display: flex;
   border-radius: 10px;

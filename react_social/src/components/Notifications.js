@@ -68,7 +68,6 @@ export default function Notifications(props) {
                     ) : (
                         <InfiniteScroll
                             dataLength={notifications.length}
-                            className=""
                             style={{ overflow: "hidden" }}
                             next={fetchMoreData}
                             hasMore={hasMore}
