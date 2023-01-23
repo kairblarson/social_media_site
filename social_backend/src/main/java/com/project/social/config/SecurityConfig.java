@@ -33,6 +33,8 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Arrays;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
@@ -59,7 +61,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, HttpServletRequest request, HttpSession currentSession) throws Exception {
         return http
-                .cors(Customizer.withDefaults()).csrf(csrf -> csrf.disable())
+                .cors(withDefaults()).csrf(csrf -> csrf.disable())
                 .authorizeRequests( auth -> auth.antMatchers(WHITE_LIST_URLS).permitAll().anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionFixation().none().sessionCreationPolicy(SessionCreationPolicy.ALWAYS).enableSessionUrlRewriting(true))
                 .formLogin(form -> form.loginPage("https://socialmediasite-production.up.railway.app/login")
@@ -87,17 +89,6 @@ public class SecurityConfig {
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/successful-logout"))
                 .build();
-    }
-
-    @Bean
-    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-        http
-                // ...
-                .redirectToHttps(redirectToHttps ->
-                        redirectToHttps
-                                .httpsRedirectWhen(e -> e.getRequest().getHeaders().containsKey("X-Forwarded-Proto"))
-                );
-        return http.build();
     }
 
     @Bean
