@@ -49,7 +49,7 @@ export default function Notif({ action, id, content, from, date }) {
     const mainStyle = {
         background: hoverState.mainHover ? "#e8e8e8" : "white",
         cursor: hoverState.mainHover ? "pointer" : "none",
-        transition: "all .08s linear"
+        transition: "all .08s linear",
     };
     const usernameStyle = {
         textDecoration: hoverState.usernameHover ? "underline" : "none",
