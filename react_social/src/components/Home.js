@@ -22,6 +22,7 @@ export default function Home(props) {
                 modalState={props.modalState}
                 openModal={props.toggleModal}
                 isAuth={props.isAuth}
+                triggerUpdate={props.triggerUpdate}
             />
             <PostModal
                 open={props.modalState}

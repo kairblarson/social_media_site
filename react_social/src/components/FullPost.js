@@ -77,7 +77,7 @@ export default function FullPost(props) {
             })
             .catch((err) => navigate("/login"));
         setTargetPost(document.getElementById("target-post"));
-    }, []);
+    }, [window.location.pathname]);
 
     useEffect(() => {
         setFillerHeight(
@@ -154,7 +154,7 @@ export default function FullPost(props) {
 
     //-------like logic----------
     const likeIconStyle = {
-        color: post.liked ? "#de4b4b" : "#8a8a8a",
+        color: post?.liked ? "#de4b4b" : "#8a8a8a",
         transition: "all .08s linear",
     };
 
@@ -329,6 +329,21 @@ export default function FullPost(props) {
         }
     }
 
+    function handleOpenFromFull() {
+        setPost({
+            author: null,
+            comments: [],
+            content: null,
+            liked: null,
+            likes: 0,
+            reposts: 0,
+            repostedBy: null,
+            reposted: false,
+            replyTo: null,
+        });
+        setThread([]);
+    }
+
     useEffect(() => {
         window.addEventListener("scroll", handleMenuToggle);
 
@@ -371,6 +386,7 @@ export default function FullPost(props) {
                                         menuState={post.menuState}
                                         handleMenuToggle={handleMenuToggle}
                                         deleted={post.deleted}
+                                        openFromFull={handleOpenFromFull}
                                     />
                                 );
                             })}
@@ -389,7 +405,7 @@ export default function FullPost(props) {
                             {!post.deleted ? (
                                 <div className="fullpost--main">
                                     {repostedBy != "null" && (
-                                        <p
+                                        <div
                                             className="fullpost--repostedBy"
                                             onClick={() => {
                                                 navigate(
@@ -404,14 +420,14 @@ export default function FullPost(props) {
                                             onMouseEnter={handleRepostedByHover}
                                             onMouseLeave={handleRepostedByHover}
                                         >
-                                            <div className="fullpost--top-icon">
+                                            <p className="fullpost--top-icon">
                                                 <BsArrowRepeat />
-                                            </div>
+                                            </p>
                                             Reposted by{" "}
                                             {repostedBy == currentUser?.name
                                                 ? "me"
                                                 : repostedBy}
-                                        </p>
+                                        </div>
                                     )}
                                     <div className="fullpost--top">
                                         <div className="fullpost--image-wrapper">
@@ -585,6 +601,7 @@ export default function FullPost(props) {
                                     menuState={comment.menuState}
                                     handleMenuToggle={handleMenuToggle}
                                     deleted={comment.deleted}
+                                    openFromFull={handleOpenFromFull}
                                 />
                             );
                         })}

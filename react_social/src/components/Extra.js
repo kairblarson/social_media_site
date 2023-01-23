@@ -6,6 +6,7 @@ import UserContext from "./UserContext";
 import NoteToSelf from "./NoteToSelf";
 import SignoutModal from "./SignoutModal";
 import { CPopover, CButton } from "@coreui/react";
+import { useEffect } from "react";
 //you have to import your context component and the useContext hook
 
 //nav done //local done

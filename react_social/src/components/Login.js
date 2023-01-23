@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 
 //nav done //local done
-export default function Login() {
+export default function Login({ handleToggleUpdate }) {
     const [loginInfo, setLoginInfo] = useState({
         email: "",
         password: "",
@@ -87,6 +87,7 @@ export default function Login() {
                             );
                             navigate("/home");
                         }
+                        handleToggleUpdate();
                     })
                     .catch((error) => {
                         console.log("ERROR:", error);
@@ -155,13 +156,13 @@ export default function Login() {
                     >
                         Login
                     </button>
-                    Or
+                    {/* Or
                     <button className="login--signup">Sign up</button>
                     {errorMessage !== "" && (
                         <small style={{ color: "#de4b4b" }}>
                             {errorMessage}
                         </small>
-                    )}
+                    )} */}
                 </div>
             </div>
         </div>

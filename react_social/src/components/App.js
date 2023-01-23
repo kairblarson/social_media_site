@@ -28,7 +28,7 @@ export default function App() {
     const [isAuth, setIsAuth] = useState();
     const [targetPost, setTargetPost] = useState();
     const { handle, id, interaction } = useParams();
-    const [key, setKey] = useState(0);
+    const [update, toggleUpdate] = useState(true);
 
     function toggleModal(post) {
         setTargetPost(post);
@@ -70,6 +70,7 @@ export default function App() {
     }
 
     useEffect(() => {
+        console.log("CHECKING IS AUTH");
         axios({
             url: `${process.env.REACT_APP_BASE_URL}/isAuth`,
             withCredentials: true,
@@ -91,16 +92,18 @@ export default function App() {
             .catch((err) => {
                 console.log(err);
             });
-    }, []);
+    }, [update]);
 
-    console.log("APP: ",isAuth);
+    function handleToggleUpdate() {
+        toggleUpdate(prev => !prev);
+    }
 
     return (
         <div className="app">
             <UserContextProvider>
                 <Router>
                     <Routes>
-                        <Route path="/login" element={<Login />} />
+                        <Route path="/login" element={<Login handleToggleUpdate={handleToggleUpdate}/>} />
                         <Route
                             path=":handle"
                             element={

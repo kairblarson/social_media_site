@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import {
@@ -15,6 +15,10 @@ export default function Preview(props) {
         JSON.parse(localStorage.getItem("userDetails"))
     );
     const [isHover, setHover] = useState(false);
+
+    useEffect(() => {
+        setUserDetails(JSON.parse(localStorage.getItem("userDetails")));
+    }, [window.location.pathname]);
 
     const previewStyle = {
         cursor: isHover ? "pointer" : "none",
@@ -44,10 +48,7 @@ export default function Preview(props) {
                 ></img>
             )}
             {!props.isAuth && (
-                <img
-                    src="/images/standard.jpg"
-                    className="preview--pic"
-                ></img>
+                <img src="/images/standard.jpg" className="preview--pic"></img>
             )}
             <div className="preview--userdetails">
                 <h4 className="preview--username">
