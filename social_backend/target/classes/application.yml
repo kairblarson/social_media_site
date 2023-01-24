@@ -7,9 +7,10 @@ server:
 
 spring:
   datasource:
-    url: ${DEV_DB_URL}
-    username: ${DEV_DB_USER}
-    password: ${DEV_DB_PASS}
+    url: jdbc:mysql://root:PXOKggKgdmNHlTXx1KkT@containers-us-west-60.railway.app:7423/railway
+    username: root
+    password: PXOKggKgdmNHlTXx1KkT
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     show-sql: false
     hibernate:
@@ -24,5 +25,9 @@ spring:
 
 project:
   image: /Users/kairb/Desktop/Fullstack projects/social_site/images
+
+digital-ocean:
+  access-key: ${DO_ACCESS_KEY}
+  secret-key: ${DO_SECRET_KEY}
 
 #this will stay the same as long as you do not clean and install it with maven**

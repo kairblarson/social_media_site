@@ -8,6 +8,7 @@ C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\ja
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\config\AdditionalResourceWebConfig.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\util\NotificationType.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\dto\FullResults.java
+C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\service\S3Service.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\service\CustomUserDetailsService.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\repo\MessageRepo.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\repo\UserRepo.java

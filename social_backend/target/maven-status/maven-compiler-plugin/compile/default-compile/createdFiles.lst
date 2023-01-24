@@ -19,6 +19,7 @@ com\project\social\wrapper\PaginatedList.class
 com\project\social\dto\PostDTO.class
 com\project\social\entity\CustomOAuth2User.class
 com\project\social\SocialApplication.class
+com\project\social\service\S3Service.class
 com\project\social\entity\User.class
 com\project\social\entity\Repost.class
 com\project\social\controller\MainController.class

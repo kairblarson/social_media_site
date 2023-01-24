@@ -10,6 +10,7 @@ import com.amazonaws.services.s3.model.*;
 import com.project.social.entity.User;
 import com.project.social.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,6 +26,12 @@ public class S3Service {
 
     @Autowired
     private UserRepo userRepo;
+
+//    @Value("${digital-ocean.access-key}")
+//    private String accessKey;
+//
+//    @Value("${digital-ocean.secret-key}")
+//    private String secretKey;
 
     public S3Service() {
         AWSCredentialsProvider awsCredentialsProvider = new AWSStaticCredentialsProvider(
@@ -51,6 +58,7 @@ public class S3Service {
 
     //save file name to user as well
     public String uploadToSpace(MultipartFile file, String email) {
+        System.out.println("CHECKPOINT 2: ");
         User user = userRepo.findByEmail(email);
         if(user == null) {
             return "User not found";
@@ -66,10 +74,12 @@ public class S3Service {
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setContentType(file.getContentType());
             space.putObject(new PutObjectRequest("termitearchive", randomizedImageName, file.getInputStream(), objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
+            System.out.println("CHECKPOINT 3: ");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         user.setPpCDNLink("https://termitearchive.nyc3.cdn.digitaloceanspaces.com/"+randomizedImageName);
+        System.out.println("CHECKPOINT 4: ");
         userRepo.save(user);
 
         return "Image uploaded successfully";
