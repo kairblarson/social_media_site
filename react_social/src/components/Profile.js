@@ -47,6 +47,7 @@ export default function Profile(props) {
     });
     const currentLocation = useLocation();
     const [loading, setLoading] = useState(true);
+    const [postElements, setPostElements] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -283,16 +284,6 @@ export default function Profile(props) {
             });
     }
 
-    const [profilePicture, setProfilePicture] = useState();
-    useEffect(() => {
-        setProfilePicture(profileDetails.ppCDNLink);
-        if (profileDetails.profilePicture != undefined) {
-            setLoading(false);
-        }
-    }, [profileDetails]);
-
-    const [postElements, setPostElements] = useState(null);
-
     useEffect(() => {
         setPostElements(
             posts?.map((post) => {
@@ -335,6 +326,8 @@ export default function Profile(props) {
             });
         });
     }
+
+    console.log("PP CDN: ",profileDetails.ppCDNLink);
 
     return (
         <div className="profile" key={handle}>
@@ -397,7 +390,7 @@ export default function Profile(props) {
                         </div>
                         {profileDetails.username ? (
                             <img
-                                src={profileDetails.ppCDNLink}
+                                src={profileDetails?.ppCDNLink}
                                 className="profile--image"
                             ></img>
                         ) : (
@@ -554,7 +547,7 @@ export default function Profile(props) {
             <EditModal
                 open={props.editModalState}
                 toggleEdit={props.toggleEdit}
-                oldImg={profilePicture}
+                oldImg={profileDetails.ppCDNLink}
             />
         </div>
     );
