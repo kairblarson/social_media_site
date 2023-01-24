@@ -75,12 +75,11 @@ public class S3Service {
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setContentType(file.getContentType());
             space.putObject(new PutObjectRequest("termitearchive", randomizedImageName, file.getInputStream(), objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
-            System.out.println("CHECKPOINT 3: ");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
         user.setPpCDNLink("https://termitearchive.nyc3.cdn.digitaloceanspaces.com/"+randomizedImageName);
-        System.out.println("CHECKPOINT 4: ");
         userRepo.save(user);
 
         return "Image uploaded successfully";

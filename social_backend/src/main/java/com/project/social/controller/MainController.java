@@ -185,9 +185,7 @@ public class MainController {
                                            @RequestPart(value = "profilePicture", required = false) MultipartFile image,
                                            Authentication authentication) {
         try{
-            System.out.println("CHECKPOINT 0: ");
             User currentUser = userService.handleEditProfile(username, bio, image, getEmailFromAuth(authentication)); //CHANGE PATH
-            System.out.println("CHECKPOINT 1: ");
             String res = s3Service.uploadToSpace(image, getEmailFromAuth(authentication));
             System.out.println("S3 RES: "+res); //TRY THIS WHEN YOU GET BACK
             return ResponseEntity.ok().body(currentUser);

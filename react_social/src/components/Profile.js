@@ -397,10 +397,7 @@ export default function Profile(props) {
                         </div>
                         {profileDetails.username ? (
                             <img
-                                src={
-                                    "data:image/png;base64," +
-                                    profileDetails.profilePicture
-                                }
+                                src={profileDetails.ppCDNLink}
                                 className="profile--image"
                             ></img>
                         ) : (
