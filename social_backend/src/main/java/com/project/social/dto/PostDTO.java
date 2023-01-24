@@ -9,6 +9,7 @@ public class PostDTO extends Post {
 
     private byte[] profPicBytes;
     private List<PostDTO> replies = new ArrayList<>();
+    private String ppCDNLink;
 
     public byte[] getProfPicBytes() {
         return profPicBytes;
@@ -27,5 +28,13 @@ public class PostDTO extends Post {
 
     public void addToReplies(PostDTO postDTO) {
         replies.add(postDTO);
+    }
+
+    public String getPpCDNLink() {
+        return ppCDNLink;
+    }
+
+    public void setPpCDNLink(String ppCDNLink) {
+        this.ppCDNLink = ppCDNLink;
     }
 }

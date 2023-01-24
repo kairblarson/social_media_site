@@ -40,10 +40,7 @@ export default function Preview(props) {
         >
             {props.isAuth && (
                 <img
-                    src={
-                        "data:image/png;base64," +
-                        userDetails?.principal.profilePicture
-                    }
+                    src={userDetails?.principal.ppCDNLink}
                     className="preview--pic"
                 ></img>
             )}

@@ -49,6 +49,10 @@ public class CustomUserDetails implements UserDetails, Serializable {
         return null;
     }
 
+    public String getPpCDNLink() {
+        return user.getPpCDNLink();
+    }
+
     public String getEmail() {
 
         return user.getEmail();

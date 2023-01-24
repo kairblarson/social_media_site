@@ -324,10 +324,8 @@ export default function Post(props) {
     //------------------------------
 
     useEffect(() => {
-        setProfilePicture("data:image/png;base64," + state.profilePicture);
+        setProfilePicture(state.ppCDNLink);
     }, [state]);
-
-    // console.log(state.deleted);
 
     return (
         <motion.div

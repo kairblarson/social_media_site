@@ -73,7 +73,15 @@
     </key>
   </component>
   <component name="RunManager">
-    <configuration name="SocialApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+    <configuration name="com.project.social.SocialApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <envs>
+        <env name="DEV_DB_URL" value="jdbc:mysql://localhost:3306/social_db" />
+        <env name="DEV_DB_USER" value="root" />
+        <env name="DEV_DB_PASS" value="password123" />
+        <env name="PROD_DB_URL" value="jdbc:mysql://root:PXOKggKgdmNHlTXx1KkT@containers-us-west-60.railway.app:7423/railway" />
+        <env name="PROD_DB_USER" value="root" />
+        <env name="PROD_DB_PASS" value="PXOKggKgdmNHlTXx1KkT" />
+      </envs>
       <option name="MAIN_CLASS_NAME" value="com.project.social.SocialApplication" />
       <module name="social_backend" />
       <extension name="coverage">
@@ -88,7 +96,7 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.SocialApplication" />
+        <item itemvalue="Application.com.project.social.SocialApplication" />
       </list>
     </recent_temporary>
   </component>

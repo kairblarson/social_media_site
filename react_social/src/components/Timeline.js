@@ -110,6 +110,7 @@ export default function Timeline(props) {
                             profilePicture={post.profPicBytes}
                             menuState={post.menuState}
                             handleMenuToggle={handleMenuToggle}
+                            ppCDNLink={post.ppCDNLink}
                         />
                     );
                 })}

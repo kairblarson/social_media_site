@@ -19,6 +19,7 @@ public class MessageDTO {
     private Long messageDate = new Date().getTime(); //i guess a DTO doesnt really need this
     private Status status;
     private byte[] profilePicture;
+    private String ppCDNLink;
     private String conversationWith;
     private boolean viewed;
 }

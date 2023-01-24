@@ -11,6 +11,7 @@ export default function Message({
     backToBack,
     date,
     viewed,
+    ppCDNLink
 }) {
     const [currentUser, setCurrentUser] = useState(
         JSON.parse(localStorage.getItem("userDetails"))
@@ -42,7 +43,7 @@ export default function Message({
             {!backToBack ? (
                 senderName !== currentUser.name && (
                     <img
-                        src={"data:image/png;base64," + profilePicture}
+                        src={ppCDNLink}
                         className="chatroom--prof-pic"
                         style={hoverStyle}
                         onMouseEnter={() => setHover((prev) => !prev)}

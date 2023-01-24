@@ -13,6 +13,7 @@ export default function Avatar({
     index,
     currentIndex,
     setCurrentChat,
+    ppCDNLink
 }) {
     const [hoverState, setHoverState] = useState({
         avatarHover: false,
@@ -45,7 +46,7 @@ export default function Avatar({
                 <div className="chatroom--new">New!</div>
             )}
             <img
-                src={"data:image/png;base64," + profilePicture}
+                src={ppCDNLink}
                 className={`chatroom--member${
                     tab === conversationWith ? "-active" : ""
                 }`}

@@ -287,6 +287,7 @@ export default function ChatRoom(props) {
                                         index={index}
                                         currentIndex={currentIndex}
                                         setCurrentChat={setCurrentChat}
+                                        ppCDNLink={chat.ppCDNLink}
                                     />
                                 );
                             })}
@@ -381,6 +382,7 @@ export default function ChatRoom(props) {
                                                                     viewed={
                                                                         chat.viewed
                                                                     }
+                                                                    ppCDNLink={chat.ppCDNLink}
                                                                 />
                                                             );
                                                         }

@@ -7,10 +7,12 @@ import com.project.social.provider.Provider;
 import com.project.social.repo.PostRepo;
 import com.project.social.repo.RepostRepo;
 import com.project.social.repo.UserRepo;
+import com.project.social.service.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
@@ -30,6 +32,12 @@ public class SocialApplication {
 	public static void main(String[] args) {
 
 		SpringApplication.run(SocialApplication.class, args);
+
+//		ApplicationContext context = SpringApplication.run(SocialApplication.class, args);
+//
+//		S3Service s3Service = context.getBean(S3Service.class);
+//
+//		System.out.println(s3Service.getImageFileNames());
 	}
 
 //	@Bean

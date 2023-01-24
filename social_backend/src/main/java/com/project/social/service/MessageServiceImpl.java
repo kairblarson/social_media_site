@@ -59,6 +59,7 @@ public class MessageServiceImpl implements MessageService{
                 messageDTO.setMessageDate(message.getMessageDate());
                 messageDTO.setSenderName(message.getSender().getUsername());
                 messageDTO.setConversationWith(message.getReceiver().getUsername()); //people we have conversation with due to messaging them
+                messageDTO.setPpCDNLink(message.getReceiver().getPpCDNLink());
                 File imagePath = new File(basePath + "\\" + message.getReceiver().getProfilePicture());
                 try {
                     if (imagePath != null) {
@@ -87,6 +88,7 @@ public class MessageServiceImpl implements MessageService{
                 messageDTO.setViewed(message.isViewed());
                 messageDTO.setSenderName(message.getSender().getUsername());
                 messageDTO.setConversationWith(message.getSender().getUsername()); //people we have conversation with due to them messaging us
+                messageDTO.setPpCDNLink(message.getSender().getPpCDNLink());
                 File imagePath = new File(basePath + "\\" + message.getSender().getProfilePicture());
                 try {
                     if (imagePath != null) {
@@ -144,6 +146,7 @@ public class MessageServiceImpl implements MessageService{
             messageDTO.setSenderName(message.getSender().getUsername());
             messageDTO.setMessageDate(message.getMessageDate());
             messageDTO.setId(message.getId());
+            messageDTO.setPpCDNLink(message.getSender().getPpCDNLink());
             if(message.getReceiver().equals(currentUser)) {
                 message.setViewed(true);
                 messageRepo.save(message);

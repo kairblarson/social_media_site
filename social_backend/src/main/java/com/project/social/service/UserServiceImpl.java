@@ -268,6 +268,7 @@ public class UserServiceImpl implements UserService {
             postDTO.setComments(post.getComments());
             postDTO.setLikes(post.getLikes());
             postDTO.setDeleted(post.isDeleted());
+            postDTO.setPpCDNLink(post.getAuthor().getPpCDNLink());
             File imagePath = new File(basePath+"\\"+post.getAuthor().getProfilePicture());
             try{
                 if(imagePath != null) {
@@ -381,6 +382,7 @@ public class UserServiceImpl implements UserService {
             postDTO.setComments(post.getComments());
             postDTO.setLikes(post.getLikes());
             postDTO.setDeleted(post.isDeleted());
+            postDTO.setPpCDNLink(post.getAuthor().getPpCDNLink()); //add this line to every postDTO
             File imagePath = new File(basePath+"\\"+post.getAuthor().getProfilePicture());
             try{
                 if(imagePath != null) {
@@ -639,6 +641,7 @@ public class UserServiceImpl implements UserService {
                 postDTO.setFocus(post.getFocus());
                 postDTO.setComments(post.getComments());
                 postDTO.setDeleted(post.isDeleted());
+                postDTO.setPpCDNLink(post.getAuthor().getPpCDNLink());
                 postDTO.getComments().forEach(comment -> {
                     PostDTO commentDTO = new PostDTO();
                     commentDTO.setContent(comment.getContent());
@@ -654,7 +657,7 @@ public class UserServiceImpl implements UserService {
                     commentDTO.setFocus(comment.getFocus());
                     commentDTO.setDeleted(comment.isDeleted());
                     commentDTO.setComments(comment.getComments());
-
+                    commentDTO.setPpCDNLink(comment.getAuthor().getPpCDNLink());
                     File imagePath = new File(basePath+"\\"+comment.getAuthor().getProfilePicture());
                     try{
                         if(imagePath != null) {
@@ -749,6 +752,7 @@ public class UserServiceImpl implements UserService {
             postDTO.setFocus(post.getFocus());
             postDTO.setDeleted(post.isDeleted());
             postDTO.setComments(post.getComments());
+            postDTO.setPpCDNLink(post.getAuthor().getPpCDNLink());
             postDTO.getComments().forEach(comment -> {
                 PostDTO commentDTO = new PostDTO();
                 commentDTO.setContent(comment.getContent());
@@ -764,6 +768,7 @@ public class UserServiceImpl implements UserService {
                 commentDTO.setFocus(comment.getFocus());
                 commentDTO.setDeleted(comment.isDeleted());
                 commentDTO.setComments(comment.getComments());
+                commentDTO.setPpCDNLink(comment.getAuthor().getPpCDNLink());
 
                 File imagePath = new File(basePath+"\\"+comment.getAuthor().getProfilePicture());
                 try{
@@ -1098,6 +1103,7 @@ public class UserServiceImpl implements UserService {
                 postDTO.setComments(post.getComments());
                 postDTO.setLikes(post.getLikes());
                 postDTO.setDeleted(post.isDeleted());
+                postDTO.setPpCDNLink(post.getAuthor().getPpCDNLink());
                 File imagePath = new File(basePath + "\\" + post.getAuthor().getProfilePicture());
                 try {
                     if (imagePath != null) {

@@ -7,6 +7,7 @@ export default function SearchSuggestion({
     profilePicture,
     handleClick,
     fullName,
+    ppCDNLink
 }) {
     const [hover, setHover] = useState(false);
 
@@ -24,7 +25,7 @@ export default function SearchSuggestion({
             style={suggestionStyle}
         >
             <div className="searchsuggestion--left">
-                <img src={"data:image/png;base64," + profilePicture} className="searchsuggestion--img"></img>
+                <img src={ppCDNLink} className="searchsuggestion--img"></img>
             </div>
             <div className="searchsuggestion--right">
                 <div className="searchsuggestion--user">

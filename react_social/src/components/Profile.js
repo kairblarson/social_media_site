@@ -321,6 +321,7 @@ export default function Profile(props) {
                         profilePicture={post.profPicBytes}
                         menuState={post.menuState}
                         handleMenuToggle={handleMenuToggle}
+                        ppCDNLink={post.ppCDNLink}
                     />
                 );
             })

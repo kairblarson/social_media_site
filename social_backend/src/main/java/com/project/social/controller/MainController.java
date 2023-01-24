@@ -6,6 +6,7 @@ import com.project.social.entity.*;
 import com.project.social.model.PostModel;
 import com.project.social.model.UserModel;
 import com.project.social.service.CustomUserDetailsService;
+import com.project.social.service.S3Service;
 import com.project.social.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +35,9 @@ public class MainController {
 
     @Autowired
     private CustomUserDetailsService service;
+
+    @Autowired
+    private S3Service s3Service; //might have to be static idk yet
 
     @GetMapping("/getSessionId")
     public ResponseEntity<String> getSessionId() {
@@ -182,6 +186,8 @@ public class MainController {
                                            Authentication authentication) {
         try{
             User currentUser = userService.handleEditProfile(username, bio, image, getEmailFromAuth(authentication)); //CHANGE PATH
+            String res = s3Service.uploadToSpace(image, getEmailFromAuth(authentication));
+            System.out.println("S3 RES: "+res); //TRY THIS WHEN YOU GET BACK
             return ResponseEntity.ok().body(currentUser);
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());

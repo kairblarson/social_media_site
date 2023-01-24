@@ -7,9 +7,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/social_db
-    username: root
-    password: password123
+    url: ${DEV_DB_URL}
+    username: ${DEV_DB_USER}
+    password: ${DEV_DB_PASS}
   jpa:
     show-sql: false
     hibernate:

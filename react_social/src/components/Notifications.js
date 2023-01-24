@@ -42,6 +42,8 @@ export default function Notifications(props) {
         }, 500);
     }
 
+    console.log(notifications);
+
     return (
         <div className="notifications">
             <Navbar />
@@ -82,6 +84,7 @@ export default function Notifications(props) {
                                         content={notif.content}
                                         from={notif.from}
                                         date={notif.notificationDate}
+                                        ppCDNLink={notif.from.ppCDNLink}
                                     />
                                 );
                             })}

@@ -9,6 +9,7 @@ export default function Simple({
     bio,
     followed,
     profilePicture,
+    ppCDNLink
 }) {
     const [isFollowed, setFollowed] = useState(followed);
     const [hoverState, setHoverState] = useState({
@@ -106,7 +107,7 @@ export default function Simple({
         >
             <div className="simple--left">
                 <img
-                    src={"data:image/png;base64," + profilePicture}
+                    src={ppCDNLink}
                     className="simple--pic"
                 />
             </div>

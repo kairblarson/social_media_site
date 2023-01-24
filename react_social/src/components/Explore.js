@@ -323,6 +323,7 @@ export default function Explore(props) {
                     bio={res.bio}
                     profilePicture={res.fullImage}
                     handleClick={handleClick}
+                    ppCDNLink={res.ppCDNLink}
                 ></SearchSuggestion>
             );
         }
@@ -337,6 +338,7 @@ export default function Explore(props) {
                 profilePicture={user.fullImage}
                 bio={user.bio}
                 followed={user.followed}
+                ppCDNLink={user.ppCDNLink}
             />
         );
     });
@@ -350,6 +352,7 @@ export default function Explore(props) {
                 profilePicture={user.fullImage}
                 bio={user.bio}
                 followed={user.followed}
+                ppCDNLink={user.ppCDNLink}
             />
         );
     });
@@ -378,6 +381,7 @@ export default function Explore(props) {
                 profilePicture={res.profPicBytes}
                 menuState={res.menuState}
                 handleMenuToggle={handleMenuToggle}
+                ppCDNLink={res.ppCDNLink}
             />
         );
     });

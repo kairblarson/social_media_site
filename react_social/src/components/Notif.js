@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 //nav done //local done
-export default function Notif({ action, id, content, from, date }) {
+export default function Notif({ action, id, content, from, date, ppCDNLink }) {
     const [hoverState, setHoverState] = useState({
         mainHover: false,
         usernameHover: false,
@@ -105,7 +105,7 @@ export default function Notif({ action, id, content, from, date }) {
             <div className="notif--right">
                 <div>
                     <img
-                        src={"data:image/png;base64," + from.fullImage}
+                        src={ppCDNLink}
                         className="notif--img"
                     />
                 </div>

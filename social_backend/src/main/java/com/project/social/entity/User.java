@@ -61,6 +61,7 @@ public class User {
     private boolean isFollowed = false;
     private String profilePicture;
     private byte[] fullImage;
+    private String ppCDNLink;
 
     public User(String fullName, String username, String email, String password, String role, String bio, boolean enabled) {
         this.fullName = fullName;
@@ -257,6 +258,14 @@ public class User {
 
     public void setFullImage(byte[] fullImage) {
         this.fullImage = fullImage;
+    }
+
+    public String getPpCDNLink() {
+        return ppCDNLink;
+    }
+
+    public void setPpCDNLink(String ppCDNLink) {
+        this.ppCDNLink = ppCDNLink;
     }
 
     @Override
