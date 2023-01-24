@@ -964,6 +964,7 @@ public class UserServiceImpl implements UserService {
             //not supported, will have to change every instance where you get a user based on their username
             //to get it based on the email
         }
+        System.out.println("CHECKPOINT 0.925: ");
 //        if(file != null) {
 //            if(!file.isEmpty()) {
 //
@@ -985,8 +986,9 @@ public class UserServiceImpl implements UserService {
 //                currentUser.setProfilePicture(newFileName);
 //            }
 //        }
+        System.out.println("CHECKPOINT .95: "+currentUser.getEmail());
         userRepo.save(currentUser);
-        System.out.println("CHECKPOINT 0.925: ");
+        System.out.println("CHECKPOINT 0.975: ");
         return currentUser;
     }
 
