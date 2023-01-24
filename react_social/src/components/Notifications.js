@@ -42,8 +42,6 @@ export default function Notifications(props) {
         }, 500);
     }
 
-    console.log(notifications);
-
     return (
         <div className="notifications">
             <Navbar />

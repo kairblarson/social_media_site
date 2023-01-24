@@ -60,16 +60,6 @@ public class MessageServiceImpl implements MessageService{
                 messageDTO.setSenderName(message.getSender().getUsername());
                 messageDTO.setConversationWith(message.getReceiver().getUsername()); //people we have conversation with due to messaging them
                 messageDTO.setPpCDNLink(message.getReceiver().getPpCDNLink());
-                File imagePath = new File(basePath + "\\" + message.getReceiver().getProfilePicture());
-                try {
-                    if (imagePath != null) {
-                        if (imagePath.exists()) {
-                            messageDTO.setProfilePicture(FileUtil.readAsByteArray(imagePath));
-                        }
-                    }
-                } catch (Exception e) {
-                    System.out.println("CAUGHT!: " + e.getLocalizedMessage());
-                }
                 usernames.add(message.getReceiver().getUsername());
                 conversations.add(messageDTO);
             }
@@ -89,16 +79,6 @@ public class MessageServiceImpl implements MessageService{
                 messageDTO.setSenderName(message.getSender().getUsername());
                 messageDTO.setConversationWith(message.getSender().getUsername()); //people we have conversation with due to them messaging us
                 messageDTO.setPpCDNLink(message.getSender().getPpCDNLink());
-                File imagePath = new File(basePath + "\\" + message.getSender().getProfilePicture());
-                try {
-                    if (imagePath != null) {
-                        if (imagePath.exists()) {
-                            messageDTO.setProfilePicture(FileUtil.readAsByteArray(imagePath));
-                        }
-                    }
-                } catch (Exception e) {
-                    System.out.println("CAUGHT!: " + e.getLocalizedMessage());
-                }
                 usernames.add(message.getSender().getUsername());
                 conversations.add(messageDTO);
             }
@@ -111,16 +91,6 @@ public class MessageServiceImpl implements MessageService{
             MessageDTO messageDTO = new MessageDTO();
             messageDTO.setMessageDate(new Date().getTime());
             messageDTO.setConversationWith(targetUser);
-            File imagePath = new File(basePath+"\\"+userRepo.findByUsername(targetUser).getProfilePicture());
-            try{
-                if(imagePath != null) {
-                    if(imagePath.exists()) {
-                        messageDTO.setProfilePicture(FileUtil.readAsByteArray(imagePath));
-                    }
-                }
-            }catch (Exception e) {
-                System.out.println("CAUGHT!: "+e.getLocalizedMessage());
-            }
             conversations.add(messageDTO);
         }
 
@@ -151,16 +121,6 @@ public class MessageServiceImpl implements MessageService{
                 message.setViewed(true);
                 messageRepo.save(message);
                 messageDTO.setViewed(true);
-            }
-            File imagePath = new File(basePath+"\\"+message.getSender().getProfilePicture());
-            try{
-                if(imagePath != null) {
-                    if(imagePath.exists()) {
-                        messageDTO.setProfilePicture(FileUtil.readAsByteArray(imagePath));
-                    }
-                }
-            }catch (Exception e) {
-                System.out.println("CAUGHT!: "+e.getLocalizedMessage());
             }
             chat.add(messageDTO);
         });

@@ -64,10 +64,13 @@ export default function Navbar() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_BASE_URL}/get-notifications?exact=false`, {
-            method: "GET",
-            credentials: "include",
-        })
+        fetch(
+            `${process.env.REACT_APP_BASE_URL}/get-notifications?exact=false`,
+            {
+                method: "GET",
+                credentials: "include",
+            }
+        )
             .then((res) => res.json())
             .then((data) => {
                 let notifArray = [];
@@ -85,7 +88,7 @@ export default function Navbar() {
             .catch((err) => {
                 setNotifications([]);
             });
-    }, []);
+    }, [window.location.pathname]);
 
     useEffect(() => {
         fetch(`${process.env.REACT_APP_BASE_URL}/messages/unread`, {
@@ -106,9 +109,7 @@ export default function Navbar() {
             .catch((err) => {
                 console.log(err);
             });
-    }, []);
-
-    // console.log(unreadMessages);
+    }, [window.location.pathname]);
 
     function handleButtonHover(id) {
         setButtonState((prevState) => {
@@ -132,7 +133,7 @@ export default function Navbar() {
                 navigate(`/${userDetails.name}/notifications`);
                 break;
             case 2:
-                navigate('/messages');
+                navigate("/messages");
                 break;
             case 3:
                 if (userDetails == null) {

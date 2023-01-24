@@ -327,7 +327,11 @@ export default function Profile(props) {
         });
     }
 
-    console.log("PP CDN: ",profileDetails.ppCDNLink);
+    const [editModalPic, setEditModalPic] = useState();
+
+    useEffect(() => {
+        setEditModalPic(profileDetails.ppCDNLink);
+    },[profileDetails.ppCDNLink]);
 
     return (
         <div className="profile" key={handle}>
@@ -390,7 +394,7 @@ export default function Profile(props) {
                         </div>
                         {profileDetails.username ? (
                             <img
-                                src={profileDetails?.ppCDNLink}
+                                src={profileDetails.ppCDNLink}
                                 className="profile--image"
                             ></img>
                         ) : (
@@ -547,7 +551,7 @@ export default function Profile(props) {
             <EditModal
                 open={props.editModalState}
                 toggleEdit={props.toggleEdit}
-                oldImg={profileDetails.ppCDNLink}
+                oldImg={editModalPic}
             />
         </div>
     );

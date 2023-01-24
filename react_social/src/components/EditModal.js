@@ -15,12 +15,16 @@ export default function EditModal({ open, toggleEdit, oldImg }) {
     const [exitHover, setExitHover] = useState(false);
     const [changePicHover, setChangePicHover] = useState(false);
     const [saveHover, setSaveHover] = useState(false);
-    const [imagePreview, setImagePreview] = useState(oldImg);
+    const [imagePreview, setImagePreview] = useState();
     const navigate = useNavigate();
 
     useEffect(() => {
         localStorage.setItem("userDetails", JSON.stringify(currentUser));
     }, [currentUser]);
+
+    useEffect(() => {
+        setImagePreview(oldImg);
+    }, [oldImg]);
 
     if (!open) return null;
 

@@ -387,6 +387,7 @@ export default function FullPost(props) {
                                         handleMenuToggle={handleMenuToggle}
                                         deleted={post.deleted}
                                         openFromFull={handleOpenFromFull}
+                                        ppCDNLink={post.author.ppCDNLink}
                                     />
                                 );
                             })}
@@ -433,10 +434,7 @@ export default function FullPost(props) {
                                         <div className="fullpost--image-wrapper">
                                             {post.author ? (
                                                 <img
-                                                    src={
-                                                        "data:image/png;base64," +
-                                                        post.profPicBytes
-                                                    }
+                                                    src={post.author.ppCDNLink}
                                                     className="fullpost--image"
                                                 />
                                             ) : (
@@ -602,6 +600,7 @@ export default function FullPost(props) {
                                     handleMenuToggle={handleMenuToggle}
                                     deleted={comment.deleted}
                                     openFromFull={handleOpenFromFull}
+                                    ppCDNLink={comment.author.ppCDNLink}
                                 />
                             );
                         })}

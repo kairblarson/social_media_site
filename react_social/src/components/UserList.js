@@ -70,7 +70,6 @@ export default function UserList(props) {
                 })
                 .catch((err) => {});
         } else {
-            console.log("PAGE", page);
             setType("interactions");
             fetch(
                 `http://localhost:8080/${handle}/post/${id}/${interaction}?page=${page}`,
@@ -97,6 +96,7 @@ export default function UserList(props) {
                 })
                 .catch((err) => {});
         }
+        setUsers([]);
     }, [page, window.location.pathname]);
 
     function fetchMoreData() {
@@ -148,8 +148,6 @@ export default function UserList(props) {
             followingHover: !prevState.followingHover,
         }));
     }
-
-    // console.log("MOOSE");
 
     return (
         <div className="userlist">
@@ -218,6 +216,7 @@ export default function UserList(props) {
                             fullName={user.fullName}
                             bio={user.bio}
                             profilePicture={user.fullImage}
+                            ppCDNLink={user.ppCDNLink}
                         />
                     ))}
                 </InfiniteScroll>

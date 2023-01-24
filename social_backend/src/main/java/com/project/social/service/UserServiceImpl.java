@@ -43,9 +43,6 @@ public class UserServiceImpl implements UserService {
     @Lazy
     private PasswordEncoder passwordEncoder;
 
-    @Value("${project.image}")
-    private String basePath;
-
     @Override
     public List<User> getAllUsers() {
         return userRepo.findAll();
@@ -269,39 +266,12 @@ public class UserServiceImpl implements UserService {
             postDTO.setLikes(post.getLikes());
             postDTO.setDeleted(post.isDeleted());
             postDTO.setPpCDNLink(post.getAuthor().getPpCDNLink());
-            File imagePath = new File(basePath+"\\"+post.getAuthor().getProfilePicture());
-            try{
-                if(imagePath != null) {
-                    if(imagePath.exists()) {
-                        postDTO.setProfPicBytes(FileUtil.readAsByteArray(imagePath));
-                    }
-                }
-            }catch (Exception e) {
-                System.out.println("CAUGHT!: "+e.getLocalizedMessage());
-            }
             postDTOArray.add(postDTO);
         });
         //probably smarter to only add profile data to posts that have paginated not every post to make loading faster
 
         PaginatedList<PostDTO> paginatedList = new PaginatedList<>(postDTOArray);
-        File imgFile = new File(basePath+"\\"+userProfile.getProfilePicture());
-        System.out.println("USER: "+userProfile);
-        if(userProfile.getProfilePicture() != null) {
-            System.out.println("!CDN: "+userProfile.getPpCDNLink());
-            if(imgFile.exists()) {
-                return new ProfileDetails(username,
-                        userProfile.getFullName(),
-                        userProfile.getBio(),
-                        isFollowed,
-                        paginatedList.getPage(pageNum),
-                        userProfile.getFollowers().size(),
-                        userProfile.getFollowing().size(),
-                        FileUtil.readAsByteArray(imgFile),
-                        followedBy,
-                        userProfile.getPpCDNLink());
-            }
-        }
-        System.out.println("CDN: "+userProfile.getPpCDNLink());
+
         return new ProfileDetails(username,
                 userProfile.getFullName(),
                 userProfile.getBio(),
@@ -386,16 +356,6 @@ public class UserServiceImpl implements UserService {
             postDTO.setLikes(post.getLikes());
             postDTO.setDeleted(post.isDeleted());
             postDTO.setPpCDNLink(post.getAuthor().getPpCDNLink()); //add this line to every postDTO
-            File imagePath = new File(basePath+"\\"+post.getAuthor().getProfilePicture());
-            try{
-                if(imagePath != null) {
-                    if(imagePath.exists()) {
-                        postDTO.setProfPicBytes(FileUtil.readAsByteArray(imagePath));
-                    }
-                }
-            }catch (Exception e) {
-                System.out.println("CAUGHT!: "+e.getLocalizedMessage());
-            }
             postDTOArray.add(postDTO);
         });
         //instead of writing this code 4 separate times you couldve just wrote 1 util method
@@ -531,22 +491,14 @@ public class UserServiceImpl implements UserService {
         ArrayList<User> followers = new ArrayList<>();
 
         userProfile.getFollowers().forEach(follower -> {
-            File imagePath = new File(basePath+"\\"+follower.getFrom().getProfilePicture());
-            try{
-                if(imagePath != null) {
-                    if(imagePath.exists()) {
-                        follower.getFrom().setFullImage(FileUtil.readAsByteArray(imagePath));
-                    }
-                }
-            }catch (Exception e) {
-                System.out.println("CAUGHT!: "+e.getLocalizedMessage());
-            }
             followers.add(follower.getFrom());
         });
+
         if(currentUser == null) {
             PaginatedList<User> paginatedList = new PaginatedList<>(followers);
             return paginatedList.getPage(pageNum);
         }
+
         currentUser.getFollowing().forEach(follow -> {
             if(followers.contains(follow.getTo())) {
                 User user = follow.getTo();
@@ -555,6 +507,7 @@ public class UserServiceImpl implements UserService {
                 followers.add(user);
             }
         });
+
         PaginatedList<User> paginatedList = new PaginatedList<>(followers);
         return paginatedList.getPage(pageNum);
     }
@@ -567,40 +520,23 @@ public class UserServiceImpl implements UserService {
         ArrayList<User> following = new ArrayList<>();
 
         userProfile.getFollowing().forEach(follower -> {
-            File imagePath = new File(basePath+"\\"+follower.getTo().getProfilePicture());
-            try{
-                if(imagePath != null) {
-                    if(imagePath.exists()) {
-                        follower.getTo().setFullImage(FileUtil.readAsByteArray(imagePath));
-                    }
-                }
-            }catch (Exception e) {
-                System.out.println("CAUGHT!: "+e.getLocalizedMessage());
-            }
             following.add(follower.getTo());
         });
+
         if(currentUser == null) {
             PaginatedList<User> paginatedList = new PaginatedList<>(following);
             return paginatedList.getPage(pageNum);
         }
+
         currentUser.getFollowing().forEach(follow -> {
             if(following.contains(follow.getTo())) {
                 User user = follow.getTo();
                 following.remove(user);
                 user.setFollowed(true);
-                File imagePath = new File(basePath+"\\"+user.getProfilePicture());
-                try{
-                    if(imagePath != null) {
-                        if(imagePath.exists()) {
-                            user.setFullImage(FileUtil.readAsByteArray(imagePath));
-                        }
-                    }
-                }catch (Exception e) {
-                    System.out.println("CAUGHT!: "+e.getLocalizedMessage());
-                }
                 following.add(user);
             }
         });
+
         PaginatedList<User> paginatedList = new PaginatedList<>(following);
         return paginatedList.getPage(pageNum);
     }
@@ -661,29 +597,9 @@ public class UserServiceImpl implements UserService {
                     commentDTO.setDeleted(comment.isDeleted());
                     commentDTO.setComments(comment.getComments());
                     commentDTO.setPpCDNLink(comment.getAuthor().getPpCDNLink());
-                    File imagePath = new File(basePath+"\\"+comment.getAuthor().getProfilePicture());
-                    try{
-                        if(imagePath != null) {
-                            if(imagePath.exists()) {
-                                commentDTO.setProfPicBytes(FileUtil.readAsByteArray(imagePath));
-                            }
-                        }
-                    }catch (Exception e) {
-                        System.out.println("CAUGHT!: "+e.getLocalizedMessage());
-                    }
                     postDTO.addToReplies(commentDTO);
                 });
 
-                File imagePath = new File(basePath+"\\"+post.getAuthor().getProfilePicture());
-                try{
-                    if(imagePath != null) {
-                        if(imagePath.exists()) {
-                            postDTO.setProfPicBytes(FileUtil.readAsByteArray(imagePath));
-                        }
-                    }
-                }catch (Exception e) {
-                    System.out.println("CAUGHT!: "+e.getLocalizedMessage());
-                }
                 returnPosts.add(postDTO);
             });
             return returnPosts;
@@ -772,31 +688,9 @@ public class UserServiceImpl implements UserService {
                 commentDTO.setDeleted(comment.isDeleted());
                 commentDTO.setComments(comment.getComments());
                 commentDTO.setPpCDNLink(comment.getAuthor().getPpCDNLink());
-
-                File imagePath = new File(basePath+"\\"+comment.getAuthor().getProfilePicture());
-                try{
-                    if(imagePath != null) {
-                        if(imagePath.exists()) {
-                            commentDTO.setProfPicBytes(FileUtil.readAsByteArray(imagePath));
-                        }
-                    }
-                }catch (Exception e) {
-                    System.out.println("CAUGHT!: "+e.getLocalizedMessage());
-                }
-
                 postDTO.addToReplies(commentDTO);
                 //i did this in the most inefficient way possible but it works, make a UTIL method for converting post to DTO
             });
-            File imagePath = new File(basePath+"\\"+post.getAuthor().getProfilePicture());
-            try{
-                if(imagePath != null) {
-                    if(imagePath.exists()) {
-                        postDTO.setProfPicBytes(FileUtil.readAsByteArray(imagePath));
-                    }
-                }
-            }catch (Exception e) {
-                System.out.println("CAUGHT!: "+e.getLocalizedMessage());
-            }
             returnPosts.add(postDTO);
         });
         //having a non focused post being set to focused should be fixed
@@ -812,30 +706,9 @@ public class UserServiceImpl implements UserService {
 
         repostRepo.findByRePost(post).forEach(repost -> {
             User user = repost.getRePoster();
-            File imagePath = new File(basePath+"\\"+user.getProfilePicture());
-            try{
-                if(imagePath != null) {
-                    if(imagePath.exists()) {
-                        user.setFullImage(FileUtil.readAsByteArray(imagePath));
-                    }
-                }
-            }catch (Exception e) {
-                System.out.println("CAUGHT!: "+e.getLocalizedMessage());
-            }
             reposters.add(user);
         });
-        likers.forEach(user -> {
-            File imagePath = new File(basePath+"\\"+user.getProfilePicture());
-            try{
-                if(imagePath != null) {
-                    if(imagePath.exists()) {
-                        user.setFullImage(FileUtil.readAsByteArray(imagePath));
-                    }
-                }
-            }catch (Exception e) {
-                System.out.println("CAUGHT!: "+e.getLocalizedMessage());
-            }
-        });
+
         if(currentUser == null) {
             if(interaction.equalsIgnoreCase("likes")) {
                 PaginatedList paginatedList = new PaginatedList(likers);
@@ -919,28 +792,14 @@ public class UserServiceImpl implements UserService {
 
         if(exact) {
             notifications.forEach(notification -> {
-                if(!notification.getAction().equalsIgnoreCase("DM")) {
-                    notification.setViewed(true);
-                    notificationRepo.save(notification);
-                }
-            });
-
-            notifications.forEach(notification -> {
-                File imagePath = new File(basePath+"\\"+notification.getFrom().getProfilePicture());
-                try{
-                    if(imagePath != null) {
-                        if(imagePath.exists()) {
-                            notification.getFrom().setFullImage(FileUtil.readAsByteArray(imagePath));
-                        }
-                    }
-                }catch (Exception e) {
-                    System.out.println("CAUGHT!: "+e.getLocalizedMessage());
-                }
+                notification.setViewed(true);
+                notificationRepo.save(notification);
             });
             PaginatedList paginatedList = new PaginatedList(notifications);
 
             return paginatedList.getPage(page);
         }
+
         List<Notification> numOfNotifs = new ArrayList<>();
         notifications.forEach(notification -> {
             if(!notification.isViewed()) {
@@ -965,27 +824,7 @@ public class UserServiceImpl implements UserService {
             //not supported, will have to change every instance where you get a user based on their username
             //to get it based on the email
         }
-//        if(file != null) {
-//            if(!file.isEmpty()) {
-//
-//                String name = file.getOriginalFilename();
-//
-//                String randomID = UUID.randomUUID().toString();
-//
-//                String newFileName = randomID.concat(name.substring(name.lastIndexOf(".")));
-//
-//                String filePath = basePath+"/"+newFileName;
-//
-//                File f = new File(basePath);
-//                if(!f.exists()) {
-//                    f.mkdir();
-//                }
-//
-//                Files.copy(file.getInputStream(), Paths.get(filePath));
-//
-//                currentUser.setProfilePicture(newFileName);
-//            }
-//        }
+
         userRepo.save(currentUser);
         return currentUser;
     }
@@ -1040,17 +879,8 @@ public class UserServiceImpl implements UserService {
             if(following.contains(user)) {
                 user.setFollowed(true);
             }
-            File imagePath = new File(basePath+"\\"+user.getProfilePicture());
-            try{
-                if(imagePath != null) {
-                    if(imagePath.exists()) {
-                        user.setFullImage(FileUtil.readAsByteArray(imagePath));
-                    }
-                }
-            }catch (Exception e) {
-                System.out.println("CAUGHT!: "+e.getLocalizedMessage());
-            }
         });
+
         PaginatedList paginatedList = new PaginatedList(queryUsers);
 
         return paginatedList.getPage(page);
@@ -1101,16 +931,6 @@ public class UserServiceImpl implements UserService {
                 postDTO.setLikes(post.getLikes());
                 postDTO.setDeleted(post.isDeleted());
                 postDTO.setPpCDNLink(post.getAuthor().getPpCDNLink());
-                File imagePath = new File(basePath + "\\" + post.getAuthor().getProfilePicture());
-                try {
-                    if (imagePath != null) {
-                        if (imagePath.exists()) {
-                            postDTO.setProfPicBytes(FileUtil.readAsByteArray(imagePath));
-                        }
-                    }
-                } catch (Exception e) {
-                    System.out.println("CAUGHT!: " + e.getLocalizedMessage());
-                }
                 postDTOArray.add(postDTO);
             }
         });

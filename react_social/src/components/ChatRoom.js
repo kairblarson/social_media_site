@@ -76,7 +76,7 @@ export default function ChatRoom(props) {
             })
                 .then((res) => res.json())
                 .then((data) => {
-                    console.log(data);
+                    // console.log(data);
                     if (data.length <= 0 || data.length >= 200) {
                         setHasMore(false);
                     } else {
@@ -129,7 +129,7 @@ export default function ChatRoom(props) {
         )
             .then((res) => res.json())
             .then((data) => {
-                console.log(data);
+                // console.log(data);
                 let chat = [];
                 data.forEach((message) => {
                     if (!chat.includes(message.conversationWith)) {
@@ -179,7 +179,7 @@ export default function ChatRoom(props) {
                 receiverName: tab,
                 message: content,
                 messageDate: new Date().getTime(),
-                profilePicture: null,
+                ppCDNLink: null,
                 status: "MESSAGE",
             };
 
@@ -189,13 +189,15 @@ export default function ChatRoom(props) {
                 JSON.stringify(chatMessage)
             );
 
-            chatMessage.profilePicture = currentUser.principal.profilePicture;
+            chatMessage.ppCDNLink = currentUser.principal.ppCDNLink;
 
             if (userData.username !== tab) {
                 setCurrentChat((prevState) => [chatMessage, ...prevState]);
             }
         }
     }
+
+    console.log(currentChat);
 
     //if you cant connect to the server for some reason
     function onError(err) {
