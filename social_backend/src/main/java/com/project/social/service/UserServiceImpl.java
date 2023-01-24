@@ -964,33 +964,27 @@ public class UserServiceImpl implements UserService {
             //not supported, will have to change every instance where you get a user based on their username
             //to get it based on the email
         }
-        if(file != null) {
-            if(!file.isEmpty()) {
-                //file name
-                String name = file.getOriginalFilename();
-
-                //generate random string
-                String randomID = UUID.randomUUID().toString();
-                //adds random uuid before .jpg/.png
-                String newFileName = randomID.concat(name.substring(name.lastIndexOf(".")));
-
-                //adds a slash between filepath and the file w/ new name
-                String filePath = basePath+"/"+newFileName;
-
-                //creates images folder in project
-                File f = new File(basePath);
-                if(!f.exists()) {
-                    f.mkdir();
-                }
-
-                //this sets the file into the file path
-                Files.copy(file.getInputStream(), Paths.get(filePath));
-
-                //sets the profile picture path for the user
-                currentUser.setProfilePicture(newFileName);
-                //moose
-            }
-        }
+//        if(file != null) {
+//            if(!file.isEmpty()) {
+//
+//                String name = file.getOriginalFilename();
+//
+//                String randomID = UUID.randomUUID().toString();
+//
+//                String newFileName = randomID.concat(name.substring(name.lastIndexOf(".")));
+//
+//                String filePath = basePath+"/"+newFileName;
+//
+//                File f = new File(basePath);
+//                if(!f.exists()) {
+//                    f.mkdir();
+//                }
+//
+//                Files.copy(file.getInputStream(), Paths.get(filePath));
+//
+//                currentUser.setProfilePicture(newFileName);
+//            }
+//        }
         userRepo.save(currentUser);
         System.out.println("CHECKPOINT 0.925: ");
         return currentUser;
