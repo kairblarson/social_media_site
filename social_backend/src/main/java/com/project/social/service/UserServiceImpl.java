@@ -952,7 +952,9 @@ public class UserServiceImpl implements UserService {
     public User handleEditProfile(String username, String bio, MultipartFile file, String email) throws IOException {
         User currentUser = userRepo.findByEmail(email);
 
+        System.out.println("CHECKPOINT 0.5: ");
         if(currentUser == null) {
+            System.out.println("CHECKPOINT 0.75: ");
             return null;
         }
         if(bio != null) {
@@ -990,6 +992,7 @@ public class UserServiceImpl implements UserService {
             }
         }
         userRepo.save(currentUser);
+        System.out.println("CHECKPOINT 0.925: ");
         return currentUser;
     }
 

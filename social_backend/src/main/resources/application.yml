@@ -10,7 +10,7 @@ spring:
     url: jdbc:mysql://root:PXOKggKgdmNHlTXx1KkT@containers-us-west-60.railway.app:7423/railway
     username: root
     password: PXOKggKgdmNHlTXx1KkT
-    driver-class-name: com.mysql.cj.jdbc.Driver
+#    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     show-sql: false
     hibernate:
