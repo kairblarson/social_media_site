@@ -59,9 +59,10 @@ public class S3Service {
     //save file name to user as well
     public String uploadToSpace(MultipartFile file, String email) {
         System.out.println("CHECKPOINT 2: ");
+
         User user = userRepo.findByEmail(email);
         if(user == null) {
-            return "User not found";
+            return "User with email: "+email+" does not exist";
         }
 
         String name = file.getOriginalFilename(); //og file name
