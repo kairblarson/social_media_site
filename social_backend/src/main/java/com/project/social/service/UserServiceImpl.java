@@ -285,8 +285,9 @@ public class UserServiceImpl implements UserService {
 
         PaginatedList<PostDTO> paginatedList = new PaginatedList<>(postDTOArray);
         File imgFile = new File(basePath+"\\"+userProfile.getProfilePicture());
-
+        System.out.println("USER: "+userProfile);
         if(userProfile.getProfilePicture() != null) {
+            System.out.println("!CDN: "+userProfile.getPpCDNLink());
             if(imgFile.exists()) {
                 return new ProfileDetails(username,
                         userProfile.getFullName(),
@@ -300,7 +301,7 @@ public class UserServiceImpl implements UserService {
                         userProfile.getPpCDNLink());
             }
         }
-
+        System.out.println("CDN: "+userProfile.getPpCDNLink());
         return new ProfileDetails(username,
                 userProfile.getFullName(),
                 userProfile.getBio(),
@@ -310,7 +311,7 @@ public class UserServiceImpl implements UserService {
                 userProfile.getFollowing().size(),
                 null,
                 followedBy,
-                userProfile.getPpCDNLink()); //add a followedBy prop
+                userProfile.getPpCDNLink());
     } //moose
 
     @Override

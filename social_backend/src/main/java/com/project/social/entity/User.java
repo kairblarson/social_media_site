@@ -277,7 +277,8 @@ public class User {
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", role='" + role + '\'' +
-                ", enabled=" + enabled +
+                ", bio='" + bio + '\'' +
+                ", ppCDNLink='" + ppCDNLink + '\'' +
                 '}';
     }
 }
