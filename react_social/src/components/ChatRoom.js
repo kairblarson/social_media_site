@@ -70,10 +70,13 @@ export default function ChatRoom(props) {
     useEffect(() => {
         //this gets all the current conversations
         if (tab !== "") {
-            fetch(`${process.env.REACT_APP_BASE_URL}/messages/${tab}?page=${page}`, {
-                method: "GET",
-                credentials: "include",
-            })
+            fetch(
+                `${process.env.REACT_APP_BASE_URL}/messages/${tab}?page=${page}`,
+                {
+                    method: "GET",
+                    credentials: "include",
+                }
+            )
                 .then((res) => res.json())
                 .then((data) => {
                     // console.log(data);
@@ -384,7 +387,9 @@ export default function ChatRoom(props) {
                                                                     viewed={
                                                                         chat.viewed
                                                                     }
-                                                                    ppCDNLink={chat.ppCDNLink}
+                                                                    ppCDNLink={
+                                                                        chat.ppCDNLink
+                                                                    }
                                                                 />
                                                             );
                                                         }

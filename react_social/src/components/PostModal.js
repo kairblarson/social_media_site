@@ -61,10 +61,7 @@ export default function PostModal({ open, closeModal, onSubmit, targetPost }) {
                 <div className="postmodal--left">
                     <div className="postmodal--pic-wrapper">
                         <img
-                            src={
-                                "data:image/png;base64," +
-                                userDetails.principal.profilePicture
-                            }
+                            src={userDetails.principal.ppCDNLink}
                             className="postmodal--pic"
                         />
                     </div>
@@ -97,12 +94,6 @@ export default function PostModal({ open, closeModal, onSubmit, targetPost }) {
                             value={inputState.postInput}
                             onChange={handleChange}
                             maxLength={250}
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                    navigate(0);
-                                    onSubmit(inputState.postInput);
-                                }
-                            }}
                         ></textarea>
                     </div>
                     <div className="postmodal--bottom">

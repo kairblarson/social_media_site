@@ -85,7 +85,7 @@ export default function EditModal({ open, toggleEdit, oldImg }) {
                 },
             };
         });
-        navigate(`/${currentUser.name}`);
+        toggleEdit();
     }
 
     return (
@@ -138,6 +138,7 @@ export default function EditModal({ open, toggleEdit, oldImg }) {
                                 name="username"
                                 value={userModel.username}
                                 onChange={handleChange}
+                                disabled={true}
                             ></input>
                         </div>
                         <div className="editModal--input">
