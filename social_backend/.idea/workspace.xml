@@ -75,9 +75,9 @@
   <component name="RunManager">
     <configuration name="SocialApplication" type="Application" factoryName="Application" nameIsGenerated="true">
       <envs>
-        <env name="DEV_DB_PASS" value="password123" />
-        <env name="DEV_DB_URL" value="jdbc:mysql://localhost:3306/social_db" />
-        <env name="DEV_DB_USER" value="root" />
+        <env name="DB_PASS" value="password123" />
+        <env name="DB_URL" value="mysql://localhost:3306/social_db" />
+        <env name="DB_USER" value="root" />
         <env name="DO_ACCESS_KEY" value="DO008VAUXD7PPARHB3V8" />
         <env name="DO_SECRET_KEY" value="WnK51UBKmCPrOqHqLUNnah1YJtCJBC2NvRuTqfJ06Fg" />
         <env name="PROD_DB_PASS" value="PXOKggKgdmNHlTXx1KkT" />

@@ -19,7 +19,7 @@ public class ProfileDetails {
     private Integer following;
     private byte[] profilePicture;
     private boolean followedBy;
-    //add a followed by prop here
+    private String ppCDNLink;
 
     public ProfileDetails() {
     }
@@ -32,7 +32,8 @@ public class ProfileDetails {
                           Integer followers,
                           Integer following,
                           byte[] profilePicture,
-                          boolean followedBy) {
+                          boolean followedBy,
+                          String ppCDNLink) {
         this.username = username;
         this.fullName = fullName;
         this.bio = bio;
@@ -42,6 +43,7 @@ public class ProfileDetails {
         this.following = following;
         this.profilePicture = profilePicture;
         this.followedBy = followedBy;
+        this.ppCDNLink = ppCDNLink;
     }
 
     public String getUsername() {
@@ -114,5 +116,13 @@ public class ProfileDetails {
 
     public void setFollowedBy(boolean followedBy) {
         this.followedBy = followedBy;
+    }
+
+    public String getPpCDNLink() {
+        return ppCDNLink;
+    }
+
+    public void setPpCDNLink(String ppCDNLink) {
+        this.ppCDNLink = ppCDNLink;
     }
 }

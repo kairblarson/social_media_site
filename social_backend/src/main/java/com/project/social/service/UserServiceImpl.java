@@ -296,7 +296,8 @@ public class UserServiceImpl implements UserService {
                         userProfile.getFollowers().size(),
                         userProfile.getFollowing().size(),
                         FileUtil.readAsByteArray(imgFile),
-                        followedBy);
+                        followedBy,
+                        userProfile.getPpCDNLink());
             }
         }
 
@@ -308,7 +309,8 @@ public class UserServiceImpl implements UserService {
                 userProfile.getFollowers().size(),
                 userProfile.getFollowing().size(),
                 null,
-                followedBy); //add a followedBy prop
+                followedBy,
+                userProfile.getPpCDNLink()); //add a followedBy prop
     } //moose
 
     @Override
@@ -952,9 +954,7 @@ public class UserServiceImpl implements UserService {
     public User handleEditProfile(String username, String bio, MultipartFile file, String email) throws IOException {
         User currentUser = userRepo.findByEmail(email);
 
-        System.out.println("CHECKPOINT 0.5: ");
         if(currentUser == null) {
-            System.out.println("CHECKPOINT 0.75: ");
             return null;
         }
         if(bio != null) {
@@ -964,7 +964,6 @@ public class UserServiceImpl implements UserService {
             //not supported, will have to change every instance where you get a user based on their username
             //to get it based on the email
         }
-        System.out.println("CHECKPOINT 0.925: ");
 //        if(file != null) {
 //            if(!file.isEmpty()) {
 //
@@ -986,9 +985,7 @@ public class UserServiceImpl implements UserService {
 //                currentUser.setProfilePicture(newFileName);
 //            }
 //        }
-        System.out.println("CHECKPOINT .95: "+currentUser.getEmail());
         userRepo.save(currentUser);
-        System.out.println("CHECKPOINT 0.975: ");
         return currentUser;
     }
 

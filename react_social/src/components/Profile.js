@@ -285,9 +285,7 @@ export default function Profile(props) {
 
     const [profilePicture, setProfilePicture] = useState();
     useEffect(() => {
-        setProfilePicture(
-            "data:image/png;base64," + profileDetails.profilePicture
-        );
+        setProfilePicture(profileDetails.ppCDNLink);
         if (profileDetails.profilePicture != undefined) {
             setLoading(false);
         }
