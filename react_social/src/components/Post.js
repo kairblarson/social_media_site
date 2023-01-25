@@ -132,11 +132,11 @@ export default function Post(props) {
                 state.author.username == "Me"
                     ? userDetails.name
                     : state.author.username;
-            navigate(`/${handle}/post/${state.id}?repost=${state.repostedBy}`);
         }
         if(props.openFromFull) {
             props.openFromFull();
         }
+        navigate(`/${handle}/post/${state.id}?repost=${state.repostedBy}`);
     }
 
     function handlePostMouseOver() {
