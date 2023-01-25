@@ -6,10 +6,6 @@ import {
     Routes,
     BrowserRouter as Router,
     useParams,
-    Link,
-    NavLink,
-    Navigate,
-    useNavigate,
 } from "react-router-dom";
 import Profile from "../components/Profile";
 import ProtectedRoutes, { useAuth } from "./ProtectedRoutes";
@@ -47,6 +43,7 @@ export default function App() {
     }, [modalState, editModalState]);
 
     function handleSubmit(content) {
+        console.log("MADE IT TO APP COMP: ")
         console.log("POSTED", content);
         axios({
             url: `${process.env.REACT_APP_BASE_URL}/process-post${
@@ -60,17 +57,16 @@ export default function App() {
             data: content,
         })
             .then((res) => {
-                console.log(res);
+                // console.log(res);
             })
             .catch((err) => {
                 console.log(err);
             });
         toggleModal(false);
-        //figure out how to redirect w/o useNavigate
+
     }
 
     useEffect(() => {
-        console.log("CHECKING IS AUTH");
         axios({
             url: `${process.env.REACT_APP_BASE_URL}/isAuth`,
             withCredentials: true,
@@ -95,7 +91,7 @@ export default function App() {
     }, [update]);
 
     function handleToggleUpdate() {
-        toggleUpdate(prev => !prev);
+        toggleUpdate((prev) => !prev);
     }
 
     return (
@@ -103,7 +99,14 @@ export default function App() {
             <UserContextProvider>
                 <Router>
                     <Routes>
-                        <Route path="/login" element={<Login handleToggleUpdate={handleToggleUpdate}/>} />
+                        <Route
+                            path="/login"
+                            element={
+                                <Login
+                                    handleToggleUpdate={handleToggleUpdate}
+                                />
+                            }
+                        />
                         <Route
                             path=":handle"
                             element={

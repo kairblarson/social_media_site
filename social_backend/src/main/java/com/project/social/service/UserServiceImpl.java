@@ -405,9 +405,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Post addPost(PostModel postModel, User author, Long targetId) {
+        System.out.println("SERVICE-POST: "+postModel.getContent());
         Post post = new Post(author, postModel.getContent());
         postRepo.save(post);
-        if(targetId == null) { //if there is no target id(origin comment) return it
+        if(targetId == null) { //if there is no target id(origin post) return it
+            System.out.println("SERVICE-POSTID-NULL: "+post.getContent());
             return post;
         }
         //create a notif for when a user replies to another users post
@@ -416,6 +418,7 @@ public class UserServiceImpl implements UserService {
         post.setReplyTo(originalPost); //expressing that this post is a comment
         postRepo.save(post);
         postRepo.save(originalPost);
+        System.out.println("SERVICE: SAVED BOTH");
         return null;
     }
 

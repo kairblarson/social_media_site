@@ -89,6 +89,7 @@ public class MainController {
     public ResponseEntity<Post> createPost(@RequestBody PostModel postModel,
                                            Authentication authentication,
                                            @RequestParam(value = "targetId", required = false) Long targetId) {
+        System.out.println("CONTROLLER-POST: "+postModel.getContent());
         Post post = userService.addPost(postModel, userService.findByEmail(getEmailFromAuth(authentication)), targetId);
         return ResponseEntity.ok().body(post);
     }
