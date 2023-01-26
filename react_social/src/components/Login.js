@@ -1,6 +1,6 @@
 import { BsBugFill } from "react-icons/bs";
 import { useState, useEffect } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 
 //nav done //local done
 export default function Login({ handleToggleUpdate }) {
@@ -13,8 +13,9 @@ export default function Login({ handleToggleUpdate }) {
         emailIsEmpty: false,
         passwordIsEmpty: false,
     });
-    const [loginButtonState, setLoginButtonState] = useState({
-        isHover: false,
+    const [hoverState, setHoverState] = useState({
+        loginHover: false,
+        signupHover: false,
     });
     const navigate = useNavigate();
 
@@ -25,10 +26,17 @@ export default function Login({ handleToggleUpdate }) {
     }
 
     const loginButtonStyle = {
-        background: loginButtonState.isHover
+        background: hoverState.loginHover
             ? "rgba(36, 49, 135, .6)"
             : "rgba(34, 58, 214, .6)",
-        cursor: loginButtonState.isHover ? "pointer" : "none",
+        cursor: hoverState.loginHover ? "pointer" : "default",
+    };
+
+    const signupButtonStyle = {
+        background: hoverState.signupHover ? "white" : "black",
+        color: hoverState.signupHover ? "black" : "white",
+        cursor: hoverState.signupHover ? "pointer" : "default",
+        border: hoverState.signupHover ? "1px solid black" : "1px solid white",
     };
 
     const emailInputStyle = {
@@ -85,6 +93,7 @@ export default function Login({ handleToggleUpdate }) {
                                 "userDetails",
                                 JSON.stringify(data)
                             );
+                            setErrorMessage("");
                             navigate("/home");
                         }
                         handleToggleUpdate();
@@ -93,6 +102,8 @@ export default function Login({ handleToggleUpdate }) {
                         console.log("ERROR:", error);
                     });
             }
+        } else {
+            setErrorMessage("");
         }
     }
 
@@ -103,12 +114,18 @@ export default function Login({ handleToggleUpdate }) {
         })
             .then((res) => res.text())
             .then((data) => {
-                console.log(data);
+                // console.log(data);
             })
             .catch((error) => {
                 console.log("ERROR:", error);
             });
     }, []);
+
+    useEffect(() => {
+        if (loginInfo.password.trim() != "") {
+            setErrorMessage("");
+        }
+    }, [loginInfo.password]);
 
     return (
         <div className="login">
@@ -142,27 +159,46 @@ export default function Login({ handleToggleUpdate }) {
                         className="login--submit"
                         style={loginButtonStyle}
                         onMouseEnter={() =>
-                            setLoginButtonState((prevState) => ({
+                            setHoverState((prevState) => ({
                                 ...prevState,
-                                isHover: !prevState.isHover,
+                                loginHover: !prevState.loginHover,
                             }))
                         }
                         onMouseLeave={() =>
-                            setLoginButtonState((prevState) => ({
+                            setHoverState((prevState) => ({
                                 ...prevState,
-                                isHover: !prevState.isHover,
+                                loginHover: !prevState.loginHover,
                             }))
                         }
                     >
                         Login
                     </button>
-                    {/* Or
-                    <button className="login--signup">Sign up</button>
+                    Or
+                    <Link to={"/signup"} className="login--signup-wrapper">
+                        <button
+                            className="login--signup"
+                            style={signupButtonStyle}
+                            onMouseEnter={() =>
+                                setHoverState((prevState) => ({
+                                    ...prevState,
+                                    signupHover: !prevState.signupHover,
+                                }))
+                            }
+                            onMouseLeave={() =>
+                                setHoverState((prevState) => ({
+                                    ...prevState,
+                                    signupHover: !prevState.signupHover,
+                                }))
+                            }
+                        >
+                            Sign up
+                        </button>
+                    </Link>
                     {errorMessage !== "" && (
                         <small style={{ color: "#de4b4b" }}>
                             {errorMessage}
                         </small>
-                    )} */}
+                    )}
                 </div>
             </div>
         </div>

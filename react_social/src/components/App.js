@@ -16,6 +16,7 @@ import FullPost from "./FullPost";
 import Notifications from "./Notifications";
 import Explore from "./Explore";
 import ChatRoom from "./ChatRoom";
+import SignupPage from "./SignupPage";
 
 //nav done //local done
 export default function App() {
@@ -43,7 +44,7 @@ export default function App() {
     }, [modalState, editModalState]);
 
     function handleSubmit(content) {
-        console.log("MADE IT TO APP COMP: ")
+        console.log("MADE IT TO APP COMP: ");
         console.log("POSTED", content);
         axios({
             url: `${process.env.REACT_APP_BASE_URL}/process-post${
@@ -63,7 +64,6 @@ export default function App() {
                 console.log(err);
             });
         toggleModal(false);
-
     }
 
     useEffect(() => {
@@ -171,6 +171,14 @@ export default function App() {
                                     isAuth={isAuth}
                                     targetPost={targetPost}
                                     interaction={interaction}
+                                />
+                            }
+                        />
+                        <Route
+                            path="/signup"
+                            element={
+                                <SignupPage
+                                    handleToggleUpdate={handleToggleUpdate}
                                 />
                             }
                         />

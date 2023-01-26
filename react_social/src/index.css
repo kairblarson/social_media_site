@@ -538,6 +538,9 @@ input:focus{
   width: 100%;
   font-size: 17px;
 }
+.login--signup-wrapper{
+  width: 100%;
+}
 .login--signup{
   background: black;
   border: none;
@@ -1666,4 +1669,103 @@ input:focus{
   background-color: white;
   font-size: 20px;
   color: rgba(134, 63, 217, 1);
+}
+.signupPage{
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(134, 63, 217, 1);
+}
+.signupPage--container{
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  margin-top: 100px;
+  width: 60%;
+  min-width: 200px;
+  max-width: 800px;
+  padding: 10px;
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgb(41, 41, 41);
+}
+.signupPage--title{
+  background-color: black;
+  margin-bottom: 10px;
+  padding: 10px;
+  font-size: 25px;
+  font-weight: 600;
+  border-radius: 10px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  width: 50%;
+}
+.signupPage--main{
+  display: flex;
+
+}
+.signupPage--input{
+  width: 80%;
+  padding: 8px;
+  margin-block: 5px;
+  border-radius: 5px;
+  background-color: white;
+  font-size: 17px;
+  border: 2px solid #e8e8e8;
+}
+.signupPage--left{
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  align-items: center;
+  gap: 20px;
+}
+.signupPage--image-wrapper{
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 50px;
+  min-height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid #e8e8e8;
+  margin-bottom: 10px;
+}
+.signupPage--pic{
+  width: 130px;
+  height: 130px;
+  object-fit: cover;
+}
+.signupPage--upload-image{
+  display: flex;
+  background-color: white;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  padding: 6px;
+  color: black;
+  font-weight: 600;
+  height: 30px;
+  border-radius: 100px;
+  margin-top: -10px;
+  border: 2px solid #e8e8e8;
+}
+.signupPage--right{
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  align-items: center;
+  gap: 20px;
+}
+.signupPage--bio-input{
+  background-color: white;
+  width: 80%;
+  height: 80%;
+  font-size: 17px;
+  padding: 8px;
+  border: 2px solid #e8e8e8;
 }

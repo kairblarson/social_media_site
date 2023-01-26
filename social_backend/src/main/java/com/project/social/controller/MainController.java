@@ -85,7 +85,7 @@ public class MainController {
         return ResponseEntity.ok().body(userService.getProfileDetails(username, email, pageNum, "likes"));
     }
 
-    @PostMapping("/process-post")
+    @PostMapping(value = "/process-post", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Post> createPost(@RequestBody PostModel postModel,
                                            Authentication authentication,
                                            @RequestParam(value = "targetId", required = false) Long targetId) {
@@ -180,7 +180,7 @@ public class MainController {
         return ResponseEntity.ok().body(userService.getNotifications(getEmailFromAuth(authentication), exact, page)); //exact vs relative
     }
 
-    @PostMapping("/{username}/handle-edit")
+    @PostMapping(value = "/{username}/handle-edit", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<User> handleEdit(@RequestPart(value = "username", required = false) String username,
                                            @RequestPart(value = "bio", required = false) String bio,
                                            @RequestPart(value = "profilePicture", required = false) MultipartFile image,
