@@ -170,6 +170,7 @@ export default function ChatRoom(props) {
     //this is more important in our use case
     function onPrivateMessageReceived(payload) {
         let payloadData = JSON.parse(payload.body);
+        console.log("REC MSG:", payloadData);
         if (currentLocation.pathname != "/messages") {
             setCurrentChat((prevState) => [payloadData, ...prevState]);
         }
@@ -182,7 +183,7 @@ export default function ChatRoom(props) {
                 receiverName: tab,
                 message: content,
                 messageDate: new Date().getTime(),
-                ppCDNLink: null,
+                ppCDNLink: currentUser.principal.ppCDNLink,
                 status: "MESSAGE",
             };
 
@@ -192,15 +193,13 @@ export default function ChatRoom(props) {
                 JSON.stringify(chatMessage)
             );
 
-            chatMessage.ppCDNLink = currentUser.principal.ppCDNLink;
-
             if (userData.username !== tab) {
                 setCurrentChat((prevState) => [chatMessage, ...prevState]);
             }
         }
     }
 
-    console.log(currentChat);
+    // console.log(currentChat);
 
     //if you cant connect to the server for some reason
     function onError(err) {

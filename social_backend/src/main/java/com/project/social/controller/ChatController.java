@@ -54,18 +54,6 @@ public class ChatController {
 //        System.out.println("PRIVATE MESSAGE: "+messageDTO);
         messageService.handleMessage(messageDTO, getEmailFromAuth(authentication));
         //these are dynamic topics
-
-        //this only works for loading messages someone sends you
-        File imagePath = new File(basePath+"\\"+userRepo.findByUsername(messageDTO.getSenderName()).getProfilePicture());
-        try{
-            if(imagePath != null) {
-                if(imagePath.exists()) {
-                    messageDTO.setProfilePicture(FileUtil.readAsByteArray(imagePath));
-                }
-            }
-        }catch (Exception e) {
-            System.out.println("CAUGHT!: "+e.getLocalizedMessage());
-        }
         simpMessagingTemplate.convertAndSendToUser(messageDTO.getReceiverName(), "/private", messageDTO); // /user/{username}/private
         return messageDTO;
     }
