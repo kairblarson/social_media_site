@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3a82b9ce-f448-41bd-80bb-05876d1411cc" name="Changes" comment="&quot;Initial backend commit&quot;">
-      <change beforePath="$PROJECT_DIR$/../react_social/src/components/SignupPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/../react_social/src/components/SignupPage.js" afterDir="false" />
-    </list>
+    <list default="true" id="3a82b9ce-f448-41bd-80bb-05876d1411cc" name="Changes" comment="&quot;Initial backend commit&quot;" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

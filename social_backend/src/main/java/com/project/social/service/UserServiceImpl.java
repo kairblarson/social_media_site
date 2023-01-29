@@ -116,13 +116,11 @@ public class UserServiceImpl implements UserService {
             user.setBio(userModel.getBio());
         }
 
-        String res = emailService.sendEmail(userModel, request);
+        emailService.sendEmail(userModel, request);
 
         userRepo.save(user);
 
-        if(userModel.getProfilePicture() != null) {
-            res = s3Service.uploadToSpace(userModel.getProfilePicture(), userModel.getEmail());
-        }
+        String res = s3Service.uploadToSpace(userModel.getProfilePicture(), userModel.getEmail());
 
         System.out.println("RES: "+res);
 

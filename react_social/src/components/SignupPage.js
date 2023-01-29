@@ -32,11 +32,6 @@ export default function SignupPage() {
         formData.append("fullName", inputState.fullName);
         formData.append("password", inputState.password);
         formData.append("profilePicture", inputState.profilePicture);
-        console.log("FORM DATA: ", formData);
-        console.log(
-            "URL: ",
-            `${process.env.REACT_APP_BASE_URL}/process-signup`
-        );
         axios({
             url: `${process.env.REACT_APP_BASE_URL}/process-signup`,
             withCredentials: true,
