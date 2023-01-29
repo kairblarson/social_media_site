@@ -1,8 +1,4 @@
-import {
-    useParams,
-    useLocation,
-    useNavigate,
-} from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import Extra from "./Extra";
 import PostModal from "./PostModal";
@@ -326,7 +322,7 @@ export default function Profile(props) {
 
     useEffect(() => {
         setEditModalPic(profileDetails.ppCDNLink);
-    },[profileDetails.ppCDNLink]);
+    }, [profileDetails.ppCDNLink]);
 
     return (
         <div className="profile" key={handle}>
@@ -344,9 +340,10 @@ export default function Profile(props) {
                                 <div
                                     className="profile--message"
                                     onClick={() => {
+                                        console.log("ENV");
                                         if (profileDetails.username) {
                                             navigate(
-                                                `/${profileDetails.username}`
+                                                `/messages/${profileDetails.username}`
                                             );
                                         }
                                     }}
