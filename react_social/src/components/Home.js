@@ -16,6 +16,7 @@ export default function Home(props) {
                     modalState={props.modalState}
                     openModal={props.toggleModal}
                     isAuth={props.isAuth}
+                    update={props.update}
                 />
             </div>
             <Extra

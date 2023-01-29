@@ -103,7 +103,10 @@ export default function PostModal({ open, closeModal, onSubmit, targetPost }) {
                             className="postmodal--post-button"
                             onClick={() => {
                                 onSubmit(inputState.postInput);
-                                // navigate(0);
+                                setTimeout(() => {
+                                    console.log("Im going insane");
+                                    navigate(0);
+                                }, 1000);
                             }}
                             style={submitStyle}
                             onMouseEnter={handleSubmitHover}

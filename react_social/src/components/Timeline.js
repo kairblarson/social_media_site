@@ -58,6 +58,8 @@ export default function Timeline(props) {
         });
     }
 
+    console.log(props.update);
+
     return (
         <div>
             <InfiniteScroll

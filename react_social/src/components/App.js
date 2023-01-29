@@ -44,12 +44,6 @@ export default function App() {
     }, [modalState, editModalState]);
 
     function handleSubmit(content) {
-        console.log("PRE SEND: ", content);
-        console.log(
-            `PRE URL: ${process.env.REACT_APP_BASE_URL}/process-post${
-                targetPost != null ? `?targetId=${targetPost.id}` : ""
-            }`
-        );
         axios({
             url: `${process.env.REACT_APP_BASE_URL}/process-post${
                 targetPost != null ? `?targetId=${targetPost.id}` : ""
@@ -62,12 +56,12 @@ export default function App() {
             data: content,
         })
             .then((res) => {
-                console.log("RES", res.data);
+                handleToggleUpdate();
+                return "success";
             })
             .catch((err) => {
                 console.log("ERROR: ", err);
             });
-        console.log("POST POST: ");
         toggleModal(false);
     }
 
@@ -96,6 +90,7 @@ export default function App() {
     }, [update]);
 
     function handleToggleUpdate() {
+        console.log("toggle update");
         toggleUpdate((prev) => !prev);
     }
 
@@ -197,6 +192,7 @@ export default function App() {
                                         handleSubmit={handleSubmit}
                                         isAuth={isAuth}
                                         targetPost={targetPost}
+                                        update={update}
                                     />
                                 }
                             />
@@ -209,6 +205,7 @@ export default function App() {
                                         handleSubmit={handleSubmit}
                                         isAuth={isAuth}
                                         targetPost={targetPost}
+                                        update={update}
                                     />
                                 }
                             />
