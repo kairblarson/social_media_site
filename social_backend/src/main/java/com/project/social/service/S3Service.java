@@ -66,7 +66,7 @@ public class S3Service {
         }
 
         System.out.println(user.getPpCDNLink());
-        if(!file.isEmpty()) {
+        if(file != null) {
             System.out.println("NON EMPTY PROF PIC");
             String name = file.getOriginalFilename(); //og file name
 
