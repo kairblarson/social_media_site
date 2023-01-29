@@ -7,6 +7,7 @@ import com.project.social.model.PostModel;
 import com.project.social.model.UserModel;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
@@ -17,7 +18,8 @@ public interface UserService {
     User findByUsername(String username);
     User findByEmail(String email);
     void processOAuthPostLogin(String email, String name, String role);
-    String processAccount(UserModel userModel);
+    String processAccount(UserModel userModel, HttpServletRequest request);
+    String verifyAccount(String token);
     ProfileDetails getProfileDetails(String username, String email, Integer pageNum, String postType) throws Exception;
     List<PostDTO> requestTimeline(String username, Integer page);
     String addFollower(String username, String email);

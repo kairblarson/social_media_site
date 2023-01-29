@@ -44,8 +44,8 @@ export default function App() {
     }, [modalState, editModalState]);
 
     function handleSubmit(content) {
-        console.log("MADE IT TO APP COMP: ");
-        console.log("POSTED", content);
+        console.log("POST", content);
+        console.log(`BASE URL: ${process.env.REACT_APP_BASE_URL}`)
         axios({
             url: `${process.env.REACT_APP_BASE_URL}/process-post${
                 targetPost != null ? `?targetId=${targetPost.id}` : ""
@@ -58,10 +58,11 @@ export default function App() {
             data: content,
         })
             .then((res) => {
-                // console.log(res);
+                console.log("RES",res.data);
+                console.log("RES 2: ",res.status);
             })
             .catch((err) => {
-                console.log(err);
+                console.log("ERROR: ",err);
             });
         toggleModal(false);
     }

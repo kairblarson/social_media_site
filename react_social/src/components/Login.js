@@ -30,6 +30,7 @@ export default function Login({ handleToggleUpdate }) {
             ? "rgba(36, 49, 135, .6)"
             : "rgba(34, 58, 214, .6)",
         cursor: hoverState.loginHover ? "pointer" : "default",
+        transition: "all .08s linear",
     };
 
     const signupButtonStyle = {
@@ -37,6 +38,7 @@ export default function Login({ handleToggleUpdate }) {
         color: hoverState.signupHover ? "black" : "white",
         cursor: hoverState.signupHover ? "pointer" : "default",
         border: hoverState.signupHover ? "1px solid black" : "1px solid white",
+        transition: "all .08s linear",
     };
 
     const emailInputStyle = {
@@ -78,15 +80,19 @@ export default function Login({ handleToggleUpdate }) {
                     }),
                 })
                     .then((res) => {
+                        console.log("RES: ", res);
                         if (res.status === 400 || res.status === 404) {
                             return "bad credentials";
+                        } else if (res.status === 500) {
+                            return "not enabled";
                         }
                         return res.json();
                     })
                     .then((data) => {
                         if (data === "bad credentials") {
-                            console.log("FAILURE");
                             setErrorMessage("invalid email and password");
+                        } else if (data === "not enabled") {
+                            setErrorMessage("Account not yet verified")
                         } else {
                             console.log("SUCCESS");
                             localStorage.setItem(

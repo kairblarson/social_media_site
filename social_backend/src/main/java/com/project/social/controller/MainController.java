@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,7 +23,10 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -49,6 +53,32 @@ public class MainController {
     public ResponseEntity<Object> successfulLogin(Authentication authentication) {
         System.out.println("AUTHENTICATION: "+authentication);
         return ResponseEntity.ok().body(authentication);
+    }
+
+    @PostMapping(value = "/process-signup", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> processNewAccount(@RequestPart(value = "username", required = true) String username,
+                                                    @RequestPart(value = "bio", required = false) String bio,
+                                                    @RequestPart(value = "fullName", required = true) String fullName,
+                                                    @RequestPart(value = "email", required = true) String email,
+                                                    @RequestPart(value = "password", required = true) String password,
+                                                    @RequestPart(value = "profilePicture", required = false) MultipartFile image,
+                                                    HttpServletRequest request) {
+        UserModel userModel = new UserModel();
+        userModel.setFullName(fullName);
+        userModel.setUsername(username);
+        userModel.setProfilePicture(image);
+        userModel.setPassword(password);
+        userModel.setEmail(email);
+        userModel.setBio(bio);
+
+        String res = userService.processAccount(userModel, request);
+
+        return ResponseEntity.ok().body(res);
+    }
+
+    @GetMapping("/verify-email")
+    public ResponseEntity<Object> verifyEmail(@RequestParam(value = "token") String token, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("/")).body(userService.verifyAccount(token));
     }
 
     @GetMapping("/successful-logout")

@@ -65,21 +65,26 @@ public class S3Service {
             return "User with email: "+email+" does not exist";
         }
 
-        String name = file.getOriginalFilename(); //og file name
+        if(!file.isEmpty()) {
+            String name = file.getOriginalFilename(); //og file name
 
-        String randomID = UUID.randomUUID().toString(); //generates randome string
+            String randomID = UUID.randomUUID().toString(); //generates randome string
 
-        String randomizedImageName = randomID.concat(name.substring(name.lastIndexOf("."))); //combines random string w/ .*
+            String randomizedImageName = randomID.concat(name.substring(name.lastIndexOf("."))); //combines random string w/ .*
 
-        try {
-            ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentType(file.getContentType());
-            space.putObject(new PutObjectRequest("termitearchive", randomizedImageName, file.getInputStream(), objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            try {
+                ObjectMetadata objectMetadata = new ObjectMetadata();
+                objectMetadata.setContentType(file.getContentType());
+                space.putObject(new PutObjectRequest("termitearchive", randomizedImageName, file.getInputStream(), objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            user.setPpCDNLink("https://termitearchive.nyc3.cdn.digitaloceanspaces.com/"+randomizedImageName);
         }
-
-        user.setPpCDNLink("https://termitearchive.nyc3.cdn.digitaloceanspaces.com/"+randomizedImageName);
+        else {
+            user.setPpCDNLink("https://termitearchive.nyc3.cdn.digitaloceanspaces.com/standard.jpg");
+        }
         userRepo.save(user);
 
         return "Image uploaded successfully";

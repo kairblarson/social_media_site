@@ -1,16 +1,14 @@
 package com.project.social.model;
 
 import com.project.social.entity.ImageModel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class UserModel {
 
     String fullName;
@@ -19,7 +17,7 @@ public class UserModel {
     String password;
     String role;
     String bio;
-    String profilePicture;
+    MultipartFile profilePicture;
     byte[] fullImage;
     boolean enabled;
 }

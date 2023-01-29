@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,6 +31,10 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepo userRepo;
     @Autowired
+    private EmailService emailService;
+    @Autowired
+    private S3Service s3Service;
+    @Autowired
     private PostRepo postRepo;
     @Autowired
     private CommentRepo commentRepo;
@@ -39,6 +44,8 @@ public class UserServiceImpl implements UserService {
     private FollowerRepo followerRepo;
     @Autowired
     private NotificationRepo notificationRepo;
+    @Autowired
+    private VerificationTokenRepo verificationTokenRepo;
     @Autowired
     @Lazy
     private PasswordEncoder passwordEncoder;
@@ -75,27 +82,63 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String processAccount(UserModel userModel) {
+    public String processAccount(UserModel userModel, HttpServletRequest request) {
         User user = userRepo.findByEmail(userModel.getEmail());
+        User usernameCheck = userRepo.findByUsername(userModel.getUsername());
 
         if(user != null) {
-            return "taken";
+            System.out.println("EMAIL TAKEN");
+            return "email taken";
         }
+
+        if(usernameCheck != null) {
+            System.out.println("USER TAKEN");
+            return "username taken";
+        }
+
         if(userModel.getEmail().trim() == "" || userModel.getPassword().trim() == "" || userModel.getFullName().trim() == "") {
-            return "null-fields";
+            return "null fields";
         }
+
         user = new User();
-        user.setEnabled(true);
+        user.setEnabled(false);
         user.setRole("ROLE_USER");
         user.setPassword(passwordEncoder.encode(userModel.getPassword()));
         user.setProvider(Provider.LOCAL);
         user.setEmail(userModel.getEmail());
         user.setFullName(userModel.getFullName());
-        user.setBio(userModel.getBio());
+        user.setUsername(userModel.getUsername());
+
+        if(userModel.getBio() == null) {
+            user.setBio("User does not have a bio yet");
+        }
+        else {
+            user.setBio(userModel.getBio());
+        }
+
+        String res = emailService.sendEmail(userModel, request);
 
         userRepo.save(user);
 
-        return "Success";
+        if(userModel.getProfilePicture() != null) {
+            res = s3Service.uploadToSpace(userModel.getProfilePicture(), userModel.getEmail());
+        }
+
+        System.out.println("RES: "+res);
+
+        return res;
+    }
+
+    @Override
+    public String verifyAccount(String token) {
+        //should design a check to make sure the token isnt older than n
+        VerificationToken verificationToken = verificationTokenRepo.getTokenByToken(token);
+        User user = userRepo.findByEmail(verificationToken.getUserEmail());
+        user.setEnabled(true);
+        userRepo.save(user);
+        verificationTokenRepo.delete(verificationToken);
+
+        return "User verified";
     }
 
     @Override
@@ -405,6 +448,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Post addPost(PostModel postModel, User author, Long targetId) {
+        if(postModel.getContent() == "" || author.equals(null)) {
+            System.out.println("SERVICE: "+postModel.getContent());
+            System.out.println("AUTHOR: "+author);
+            System.out.println("TARGET: "+targetId);
+            return null;
+        }
         System.out.println("SERVICE-POST: "+postModel.getContent());
         Post post = new Post(author, postModel.getContent());
         postRepo.save(post);
@@ -419,7 +468,7 @@ public class UserServiceImpl implements UserService {
         postRepo.save(post);
         postRepo.save(originalPost);
         System.out.println("SERVICE: SAVED BOTH");
-        return null;
+        return post;
     }
 
     @Override
