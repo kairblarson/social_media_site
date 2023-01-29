@@ -1,10 +1,6 @@
 import {
-    Link,
     useParams,
     useLocation,
-    NavLink,
-    Router,
-    Route,
     useNavigate,
 } from "react-router-dom";
 import Navbar from "./Navbar";
@@ -13,7 +9,6 @@ import PostModal from "./PostModal";
 import Post from "./Post";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useState, useEffect, useReducer } from "react";
-import Header from "./Header";
 import { ColorRing } from "react-loader-spinner";
 import EditModal from "./EditModal";
 import { BsEnvelope } from "react-icons/bs";
@@ -540,6 +535,7 @@ export default function Profile(props) {
                 modalState={props.modalState}
                 openModal={props.toggleModal}
                 isAuth={props.isAuth}
+                update={props.editModalState}
             />
             <PostModal
                 open={props.modalState}

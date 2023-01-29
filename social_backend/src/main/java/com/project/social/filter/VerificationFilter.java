@@ -1,5 +1,6 @@
 package com.project.social.filter;
 
+import com.project.social.config.SecurityConfig;
 import com.project.social.entity.User;
 import com.project.social.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -34,7 +37,6 @@ public class VerificationFilter extends OncePerRequestFilter {
                 }
             }
         }
-
         filterChain.doFilter(request, response);
     }
 }

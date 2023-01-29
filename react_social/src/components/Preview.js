@@ -1,13 +1,5 @@
 import { useEffect, useState } from "react";
-import Cookies from "js-cookie";
-import axios from "axios";
-import {
-    BsArrowUpSquareFill,
-    BsThreeDots,
-    BsTriangle,
-    BsTriangleFill,
-} from "react-icons/bs";
-import SignoutModal from "./SignoutModal";
+import { BsThreeDots } from "react-icons/bs";
 
 //nav done //local done
 export default function Preview(props) {
@@ -18,7 +10,7 @@ export default function Preview(props) {
 
     useEffect(() => {
         setUserDetails(JSON.parse(localStorage.getItem("userDetails")));
-    }, [window.location.pathname]);
+    }, [window.location.pathname, props.update]);
 
     const previewStyle = {
         cursor: isHover ? "pointer" : "none",

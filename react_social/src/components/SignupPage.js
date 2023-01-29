@@ -38,7 +38,6 @@ export default function SignupPage() {
             method: "POST",
             data: formData,
         }).then((res) => {
-            //for some reason when trying to sign up i get an error, look into it.
             console.log("RES: ", res);
             setLoading(false);
             if (res.data == "email taken") {
