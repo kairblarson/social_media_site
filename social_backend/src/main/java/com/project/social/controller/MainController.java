@@ -63,6 +63,7 @@ public class MainController {
                                                     @RequestPart(value = "password", required = true) String password,
                                                     @RequestPart(value = "profilePicture", required = false) MultipartFile image,
                                                     HttpServletRequest request) {
+        System.out.println("REQ REC");
         UserModel userModel = new UserModel();
         userModel.setFullName(fullName);
         userModel.setUsername(username);

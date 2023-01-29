@@ -6,10 +6,12 @@ C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\ja
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\entity\Followers.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\entity\ProfileDetails.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\config\AdditionalResourceWebConfig.java
+C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\repo\VerificationTokenRepo.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\util\NotificationType.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\dto\FullResults.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\service\S3Service.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\service\CustomUserDetailsService.java
+C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\filter\VerificationFilter.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\repo\MessageRepo.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\repo\UserRepo.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\SocialApplication.java
@@ -17,6 +19,7 @@ C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\ja
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\service\UserService.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\service\MessageServiceImpl.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\repo\FollowerRepo.java
+C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\service\EmailService.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\controller\ChatController.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\model\UserModel.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\dto\PostDTO.java
@@ -24,12 +27,14 @@ C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\ja
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\dto\MessageDTO.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\entity\User.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\config\WebsocketConfig.java
+C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\dto\VerificationTokenDTO.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\repo\PostRepo.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\provider\Provider.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\repo\CommentRepo.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\service\MessageService.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\dto\FileResponse.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\service\UserServiceImpl.java
+C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\entity\VerificationToken.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\wrapper\PaginatedList.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\entity\CustomOAuth2User.java
 C:\Users\kairb\Desktop\Fullstack projects\social_site\social_backend\src\main\java\com\project\social\model\Status.java

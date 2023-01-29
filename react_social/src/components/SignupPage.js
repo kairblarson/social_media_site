@@ -32,12 +32,19 @@ export default function SignupPage() {
         formData.append("fullName", inputState.fullName);
         formData.append("password", inputState.password);
         formData.append("profilePicture", inputState.profilePicture);
+        console.log("FORM DATA: ", formData);
+        console.log(
+            "URL: ",
+            `${process.env.REACT_APP_BASE_URL}/process-signup`
+        );
         axios({
             url: `${process.env.REACT_APP_BASE_URL}/process-signup`,
             withCredentials: true,
             method: "POST",
             data: formData,
         }).then((res) => {
+            //for some reason when trying to sign up i get an error, look into it.
+            console.log("RES: ", res);
             setLoading(false);
             if (res.data == "email taken") {
                 setErrorMessage("an account with that email already exists");
