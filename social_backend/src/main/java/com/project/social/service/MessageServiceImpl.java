@@ -91,6 +91,7 @@ public class MessageServiceImpl implements MessageService{
             MessageDTO messageDTO = new MessageDTO();
             messageDTO.setMessageDate(new Date().getTime());
             messageDTO.setConversationWith(targetUser);
+            messageDTO.setPpCDNLink(userRepo.findByUsername(targetUser).getPpCDNLink());
             conversations.add(messageDTO);
         }
 

@@ -132,7 +132,7 @@ export default function ChatRoom(props) {
         )
             .then((res) => res.json())
             .then((data) => {
-                // console.log(data);
+                console.log(data);
                 let chat = [];
                 data.forEach((message) => {
                     if (!chat.includes(message.conversationWith)) {

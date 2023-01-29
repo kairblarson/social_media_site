@@ -57,7 +57,7 @@ export default function App() {
         })
             .then((res) => {
                 handleToggleUpdate();
-                return "success";
+                window.location = `${process.env.REACT_APP_SELF_URL}/home`;
             })
             .catch((err) => {
                 console.log("ERROR: ", err);
