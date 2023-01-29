@@ -65,7 +65,9 @@ public class S3Service {
             return "User with email: "+email+" does not exist";
         }
 
+        System.out.println(user.getPpCDNLink());
         if(!file.isEmpty()) {
+            System.out.println("NON EMPTY PROF PIC");
             String name = file.getOriginalFilename(); //og file name
 
             String randomID = UUID.randomUUID().toString(); //generates randome string
@@ -83,6 +85,7 @@ public class S3Service {
             user.setPpCDNLink("https://termitearchive.nyc3.cdn.digitaloceanspaces.com/"+randomizedImageName);
         }
         else {
+            System.out.println("EMPTY PROF PIC");
             user.setPpCDNLink("https://termitearchive.nyc3.cdn.digitaloceanspaces.com/standard.jpg");
         }
         userRepo.save(user);
