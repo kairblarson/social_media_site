@@ -102,11 +102,8 @@ export default function PostModal({ open, closeModal, onSubmit, targetPost }) {
                         <button
                             className="postmodal--post-button"
                             onClick={() => {
-                                console.log("PRE SUB FUNC CALL");
                                 onSubmit(inputState.postInput);
-                                console.log("POST SUB FUNC CALL");
-                                navigate(0);
-                                console.log("POST NAV");
+                                // navigate(0);
                             }}
                             style={submitStyle}
                             onMouseEnter={handleSubmitHover}
