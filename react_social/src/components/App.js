@@ -44,6 +44,12 @@ export default function App() {
     }, [modalState, editModalState]);
 
     function handleSubmit(content) {
+        console.log("PRE SEND: ", content);
+        console.log(
+            `PRE URL: ${process.env.REACT_APP_BASE_URL}/process-post${
+                targetPost != null ? `?targetId=${targetPost.id}` : ""
+            }`
+        );
         axios({
             url: `${process.env.REACT_APP_BASE_URL}/process-post${
                 targetPost != null ? `?targetId=${targetPost.id}` : ""
@@ -61,6 +67,7 @@ export default function App() {
             .catch((err) => {
                 console.log("ERROR: ", err);
             });
+        console.log("POST POST: ");
         toggleModal(false);
     }
 
