@@ -447,16 +447,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public Post addPost(PostModel postModel, User author, Long targetId) {
         if(postModel.getContent() == "" || author.equals(null)) {
-            System.out.println("SERVICE: "+postModel.getContent());
-            System.out.println("AUTHOR: "+author);
-            System.out.println("TARGET: "+targetId);
             return null;
         }
-        System.out.println("SERVICE-POST: "+postModel.getContent());
         Post post = new Post(author, postModel.getContent());
         postRepo.save(post);
-        if(targetId == null) { //if there is no target id(origin post) return it
-            System.out.println("SERVICE-POSTID-NULL: "+post.getContent());
+        if(targetId == null) {
             return post;
         }
         //create a notif for when a user replies to another users post
@@ -465,7 +460,6 @@ public class UserServiceImpl implements UserService {
         post.setReplyTo(originalPost); //expressing that this post is a comment
         postRepo.save(post);
         postRepo.save(originalPost);
-        System.out.println("SERVICE: SAVED BOTH");
         return post;
     }
 
@@ -485,12 +479,11 @@ public class UserServiceImpl implements UserService {
             userRepo.save(currentUser);
             return post.getLikes();
         }
-        if(currentUser.equals(post.getAuthor())) {
-            //put the below code here in production but its okay for testing
+        if(!currentUser.equals(post.getAuthor())) {
+            createNotification(currentUser, "like", post, post.getAuthor());
+            currentUser.addToLikes(post);
+            userRepo.save(currentUser);
         }
-        createNotification(currentUser, "like", post, post.getAuthor());
-        currentUser.addToLikes(post);
-        userRepo.save(currentUser);
 
         return post.getLikes();
 
@@ -518,17 +511,17 @@ public class UserServiceImpl implements UserService {
                 return repostRepo.findByRePost(post);
             }
         }
-        if(user.equals(post.getAuthor())) {
-            //put the below code here in production but its okay for testing
-        }
-        createNotification(user, "repost", post, post.getAuthor());
+        if(!user.equals(post.getAuthor())) {
+            createNotification(user, "repost", post, post.getAuthor());
 
-        Repost repost = new Repost(user, post); //reposter and repost
-        user.addPostToReposts(repost);
-        userRepo.save(user);
-        repostRepo.save(repost);
-        post.setReposts(post.getReposts()+1);
-        postRepo.save(post);
+            Repost repost = new Repost(user, post); //reposter and repost
+            user.addPostToReposts(repost);
+            userRepo.save(user);
+            repostRepo.save(repost);
+            post.setReposts(post.getReposts()+1);
+            postRepo.save(post);
+        }
+
         return repostRepo.findByRePost(post);
 
     }
