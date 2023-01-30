@@ -881,12 +881,23 @@ input:focus{
 .fullpost--top{
   display: flex;
 }
+.fullpost--author{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
 .fullpost--username{
   font-weight: 600;
   font-size: 20px;
+  white-space:nowrap;
+  display:inline-block;
+  text-overflow:ellipsis;
 }
 .fullpost--fullname{
   color: #757575;
+  white-space:nowrap;
+  display:inline-block;
+  text-overflow:ellipsis;
 }
 .fullpost--image-wrapper{
   display: flex;

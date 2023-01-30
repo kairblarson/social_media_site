@@ -23,6 +23,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -42,6 +44,8 @@ public class SecurityConfig {
     @Autowired
     private VerificationFilter verificationFilter;
 
+    public static Integer users_online = 0;
+
     @Bean
     public AuthenticationManager manager(HttpSecurity http,
                                          CustomUserDetailsService customUserDetailsService,
@@ -56,7 +60,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http, HttpServletRequest request, HttpSession currentSession) throws Exception {
         return http
                 .cors(withDefaults()).csrf(csrf -> csrf.disable())
-                .authorizeRequests( auth -> auth.antMatchers(WHITE_LIST_URLS).permitAll().anyRequest().authenticated())
+                .authorizeRequests(auth -> auth.antMatchers(WHITE_LIST_URLS).permitAll().anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionFixation().none().sessionCreationPolicy(SessionCreationPolicy.ALWAYS).enableSessionUrlRewriting(true).maximumSessions(1))
                 .formLogin(form -> form.loginPage("https://socialmediasite-production.up.railway.app/login")
                         .usernameParameter("email")
@@ -66,6 +70,7 @@ public class SecurityConfig {
                             @Override
                             public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
                                 System.out.println("SUCCESSFUL LOGIN");
+                                users_online = users_online+1;
                                 response.sendRedirect("/successful-login");
                             }
                         })

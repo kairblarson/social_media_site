@@ -1,5 +1,6 @@
 package com.project.social.entity;
 
+import com.project.social.config.SecurityConfig;
 import org.aspectj.util.FileUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;

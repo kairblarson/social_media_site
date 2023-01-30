@@ -1,5 +1,6 @@
 package com.project.social.controller;
 
+import com.project.social.config.SecurityConfig;
 import com.project.social.dto.FullResults;
 import com.project.social.dto.PostDTO;
 import com.project.social.entity.*;
@@ -87,15 +88,16 @@ public class MainController {
                                                    HttpServletRequest request,
                                                    HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
-        if (cookies != null)
+        if (cookies != null) {
             for (Cookie cookie : cookies) {
                 cookie.setValue("");
                 cookie.setPath("/");
                 cookie.setMaxAge(0);
                 response.addCookie(cookie);
             }
+        }
         System.out.println("LOGOUT");
-        System.out.println("CONTEXT HOLDER: "+SecurityContextHolder.getContext());
+        SecurityConfig.users_online = SecurityConfig.users_online-1;
         return ResponseEntity.ok().body(HttpServletResponse.SC_ACCEPTED);
     }
 
