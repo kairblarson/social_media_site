@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 //nav done //local done
 export default function PostModal({ open, closeModal, onSubmit, targetPost }) {
@@ -56,7 +57,18 @@ export default function PostModal({ open, closeModal, onSubmit, targetPost }) {
 
     return (
         <div className="postmodal--overlay" onClick={() => closeModal()}>
-            <div className="postmodal--container" onClick={handleClick}>
+            <motion.div
+                variants={{
+                    visible: { scale: 1, opacity: 1 },
+                    exit: { scale: 0.5, opacity: 1 },
+                }}
+                initial="exit"
+                animate="visible"
+                exit="exit"
+                layout
+                className="postmodal--container"
+                onClick={handleClick}
+            >
                 <div className="postmodal--left">
                     <div className="postmodal--pic-wrapper">
                         <img
@@ -112,7 +124,7 @@ export default function PostModal({ open, closeModal, onSubmit, targetPost }) {
                         </button>
                     </div>
                 </div>
-            </div>
+            </motion.div>
         </div>
     );
 }

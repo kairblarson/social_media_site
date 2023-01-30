@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { ColorRing } from "react-loader-spinner";
+import { motion } from "framer-motion";
 
 //nav done //local done
 export default function EditModal({ open, toggleEdit, oldImg }) {
@@ -113,7 +114,18 @@ export default function EditModal({ open, toggleEdit, oldImg }) {
             style={{ background: loading ? "white" : "rgba(0, 0, 0, .35)" }}
         >
             {!loading ? (
-                <div className="editModal" onClick={(e) => e.stopPropagation()}>
+                <motion.div
+                    variants={{
+                        visible: { scale: 1, opacity: 1 },
+                        exit: { scale: 0.5, opacity: 1 },
+                    }}
+                    initial="exit"
+                    animate="visible"
+                    exit="exit"
+                    layout
+                    className="editModal"
+                    onClick={(e) => e.stopPropagation()}
+                >
                     <div className="editModal--header">
                         <div
                             className="editModal--exit"
@@ -194,7 +206,7 @@ export default function EditModal({ open, toggleEdit, oldImg }) {
                             </button>
                         </div>
                     </div>
-                </div>
+                </motion.div>
             ) : (
                 <ColorRing
                     visible={true}

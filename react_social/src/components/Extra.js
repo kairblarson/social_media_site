@@ -63,7 +63,6 @@ export default function Extra(props) {
                     Post
                 </button>
             )}
-            {props.isAuth && <NoteToSelf />}
             <Preview
                 username={userState.username}
                 img={userState.profile_img}
@@ -75,5 +74,5 @@ export default function Extra(props) {
         </div>
     );
 }
-//at the top show the currently logged in user
-//at the bottom or right below the current user display have the search bar
+//{props.isAuth && <NoteToSelf />}
+//if you even want to bring back note to self
