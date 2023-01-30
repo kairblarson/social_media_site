@@ -32,6 +32,7 @@ public class Notification {
     @OneToOne
     @JoinColumn(name = "post_id", referencedColumnName = "id")
     private Post content;
+    private String comment;
     private Long notificationDate = new Date().getTime();
 
     public Notification(String action, User from, User to) {

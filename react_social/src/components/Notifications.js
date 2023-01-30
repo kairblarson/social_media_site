@@ -83,6 +83,7 @@ export default function Notifications(props) {
                                         from={notif.from}
                                         date={notif.notificationDate}
                                         ppCDNLink={notif.from.ppCDNLink}
+                                        comment={notif.comment}
                                     />
                                 );
                             })}

@@ -4,12 +4,22 @@ import {
     BsChatDotsFill,
     BsArrowRepeat,
     BsPersonFill,
+    BsQuestionCircle,
 } from "react-icons/bs";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import Post from "./Post";
 
 //nav done //local done
-export default function Notif({ action, id, content, from, date, ppCDNLink }) {
+export default function Notif({
+    action,
+    id,
+    content,
+    from,
+    date,
+    ppCDNLink,
+    comment,
+}) {
     const [hoverState, setHoverState] = useState({
         mainHover: false,
         usernameHover: false,
@@ -32,12 +42,38 @@ export default function Notif({ action, id, content, from, date, ppCDNLink }) {
             case "follow":
                 component = <BsPersonFill />;
                 break;
+            case "reply":
+                component = <BsChatDotsFill />;
+                break;
             default:
-                component = "Unknown action";
+                component = <BsQuestionCircle />;
                 break;
         }
         return component;
     };
+
+    function actionToText() {
+        let text;
+        switch (action) {
+            case "like":
+                text = "liked your post";
+                break;
+            case "repost":
+                text = "reposted your post";
+                break;
+            case "follow":
+                text = "followed you";
+                break;
+            case "reply":
+                text = "replied to your post";
+                break;
+            default:
+                text = "something went wrong...";
+                break;
+        }
+        return text;
+    }
+
     const actionStyle = {
         color:
             action == "like"
@@ -104,10 +140,7 @@ export default function Notif({ action, id, content, from, date, ppCDNLink }) {
             </div>
             <div className="notif--right">
                 <div>
-                    <img
-                        src={ppCDNLink}
-                        className="notif--img"
-                    />
+                    <img src={ppCDNLink} className="notif--img" />
                 </div>
                 <div className="notif--header">
                     <h4
@@ -119,14 +152,10 @@ export default function Notif({ action, id, content, from, date, ppCDNLink }) {
                     >
                         {from.username}{" "}
                     </h4>
-                    {content != null
-                        ? action == "like"
-                            ? " liked your post"
-                            : " reposted your post"
-                        : "followed you"}
+                    {content != null && actionToText()}
                 </div>
                 {content != null && (
-                    <div className="notif--content">
+                    <div className="notif--content" style={{color: comment != null ? "black" : "#757575"}}>
                         {content.deleted
                             ? "This post has been deleted..."
                             : content.content}

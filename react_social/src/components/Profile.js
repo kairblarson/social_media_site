@@ -298,7 +298,6 @@ export default function Profile(props) {
                         openModal={props.toggleModal}
                         isAuth={props.isAuth}
                         isHome={false}
-                        profilePicture={post.profPicBytes}
                         menuState={post.menuState}
                         handleMenuToggle={handleMenuToggle}
                         ppCDNLink={post.ppCDNLink}

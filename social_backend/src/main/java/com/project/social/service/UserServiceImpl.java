@@ -433,7 +433,7 @@ public class UserServiceImpl implements UserService {
             }
         }
 
-        createNotification(agent, "follow", null, recipient);
+        createNotification(agent, "follow", null, recipient, null);
         //if you are not following, this logic does the following
         Followers follower = new Followers(
                 agent,
@@ -454,8 +454,11 @@ public class UserServiceImpl implements UserService {
         if(targetId == null) {
             return post;
         }
-        //create a notif for when a user replies to another users post
+        //create a notif for when a user replies to another users post moose
         Post originalPost = postRepo.getReferenceById(targetId);
+        if(!originalPost.getAuthor().getUsername().equalsIgnoreCase(author.getUsername())) {
+            createNotification(post.getAuthor(), "reply", post, originalPost.getAuthor(), postModel.getContent());
+        }
         originalPost.addReplyToComments(post); //adding comment to post
         post.setReplyTo(originalPost); //expressing that this post is a comment
         postRepo.save(post);
@@ -480,10 +483,10 @@ public class UserServiceImpl implements UserService {
             return post.getLikes();
         }
         if(!currentUser.equals(post.getAuthor())) {
-            createNotification(currentUser, "like", post, post.getAuthor());
-            currentUser.addToLikes(post);
-            userRepo.save(currentUser);
+            createNotification(currentUser, "like", post, post.getAuthor(), null);
         }
+        currentUser.addToLikes(post);
+        userRepo.save(currentUser);
 
         return post.getLikes();
 
@@ -512,15 +515,14 @@ public class UserServiceImpl implements UserService {
             }
         }
         if(!user.equals(post.getAuthor())) {
-            createNotification(user, "repost", post, post.getAuthor());
-
-            Repost repost = new Repost(user, post); //reposter and repost
-            user.addPostToReposts(repost);
-            userRepo.save(user);
-            repostRepo.save(repost);
-            post.setReposts(post.getReposts()+1);
-            postRepo.save(post);
+            createNotification(user, "repost", post, post.getAuthor(), null);
         }
+        Repost repost = new Repost(user, post); //reposter and repost
+        user.addPostToReposts(repost);
+        userRepo.save(user);
+        repostRepo.save(repost);
+        post.setReposts(post.getReposts()+1);
+        postRepo.save(post);
 
         return repostRepo.findByRePost(post);
 
@@ -791,13 +793,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Notification createNotification(User agent, String action, Post content, User userTo) {
+    public Notification createNotification(User agent, String action, Post content, User userTo, String comment) {
         //call this method everytime a post is liked, reposted, commented on OR if user is followed
         Notification notification = new Notification();
         notification.setAction(action); //what type of notif (enum)
         notification.setContent(content); //post, this might be null
         notification.setFrom(agent); //who did it
         notification.setTo(userTo);
+        notification.setComment(comment);
         notificationRepo.save(notification);
         if(content == null) {
             userTo.addToNotifications(notification);

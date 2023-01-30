@@ -30,7 +30,7 @@ public interface UserService {
     List<User> getFollowing(String username, String email, Integer pageNum);
     List<PostDTO> getPost(Long id, User currentUser);
     List<User> getPostInteractions(Long postId, String interaction, User currentUser, Integer page);
-    Notification createNotification(User agent, String action, Post content, User userTo);
+    Notification createNotification(User agent, String action, Post content, User userTo, String comment);
     void viewNotifications(User to);
     List<Notification> getNotifications(String email, Boolean exact, Integer page);
     User handleEditProfile(String username, String bio, MultipartFile file, String email) throws IOException;
