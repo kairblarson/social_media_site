@@ -45,7 +45,7 @@ export default function UserList(props) {
                 setTogglePage(false);
             }
             fetch(
-                `http://localhost:8080/${handle}/${urlVariable}?page=${page}`,
+                `${process.env.REACT_APP_BASE_URL}/${handle}/${urlVariable}?page=${page}`,
                 {
                     method: "GET",
                     credentials: "include",
